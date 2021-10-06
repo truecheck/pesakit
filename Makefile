@@ -12,3 +12,6 @@ sync:
 	go mod download
 	go fmt
 	git add -A
+
+docker:
+	docker build . -t pesakit

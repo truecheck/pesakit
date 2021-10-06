@@ -321,6 +321,20 @@ func init() {
 
 func main() {
 
+	execPath, err := os.Executable()
+	if err != nil {
+		return
+	}
+
+	fmt.Printf("result of os.Executable: %v\n",execPath)
+
+	getwd, err := os.Getwd()
+	if err != nil {
+		return
+	}
+
+	fmt.Printf("current working dir: %v\n",getwd)
+
 	airtelDeployEnv := strings.ToLower(env.String(envAirtelDeploymentEnv, defAirtelDeploymentEnv))
 
 	debugMode := env.Bool(envDebugMode, defDebugMode)
