@@ -39,13 +39,14 @@ docker pull ghcr.io/techcraftlabs/pesakit:latest
 
 ```
 run the image,
-```bash
+
 ```bash
 docker run --env-file .env ghcr.io/techcraftlabs/pesakit:latest
-
 ```
 
-```
+## note
+
+Look at the file [ENV.md](ENV.md) to see how to set env vars for pesakit
 
 ## use as library
 pesakit can be used in go projects as a library
