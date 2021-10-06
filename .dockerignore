@@ -1,0 +1,13 @@
+Dockerfile
+*.yaml
+Makefile
+.git
+.idea
+.gitignore
+.dockerignore
+vendor
+*.md
+*_test.go
+.github
+go.sum
+bin
