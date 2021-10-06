@@ -12,11 +12,11 @@ tested for Tanzania only.
 
 ## commands
 ```bash
-pesakit disburse --phone=0784AAAAAA --amount=1000 --description=testing --id=BAGATATSVSNSUXNJ  
+  pesakit disburse --phone=0784AAAAAA --amount=1000 --description=testing --id=BAGATATSVSNSUXNJ  
 ```
 
 ```bash
-pesakit push --phone=067AAAAAAA --amount=1000 --description=testing --reference=BAGATATSVSNSUXNJ    
+  pesakit push --phone=067AAAAAAA --amount=1000 --description=testing --reference=BAGATATSVSNSUXNJ    
 ```
 
 ## use as library
