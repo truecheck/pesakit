@@ -7,10 +7,13 @@ import (
 	"github.com/techcraftlabs/pesakit"
 	"github.com/techcraftlabs/pesakit/airtel"
 	"github.com/techcraftlabs/pesakit/cli"
-	"github.com/techcraftlabs/pesakit/env"
 	"github.com/techcraftlabs/pesakit/mpesa"
+	"github.com/techcraftlabs/pesakit/pkg/env"
 	"github.com/techcraftlabs/pesakit/tigo"
+	"log"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"text/tabwriter"
 )
@@ -319,22 +322,41 @@ func init() {
 	_ = godotenv.Load(".env")
 }
 
+type OS int
+
+const (
+	LINUX OS = iota
+	DARWIN
+	WINDOWS
+	UNKNOWN
+)
+
+func detectOS()OS{
+	goos := runtime.GOOS
+	switch goos {
+	case "windows":
+		return WINDOWS
+	case "darwin":
+		return DARWIN
+	case "linux":
+		return LINUX
+	default:
+		return UNKNOWN
+	}
+}
+
 func main() {
-
-	execPath, err := os.Executable()
+	wd, err := os.Getwd()
 	if err != nil {
+		log.Printf("could not get current working directory %v\n",err)
+		os.Exit(1)
 		return
 	}
 
-	fmt.Printf("result of os.Executable: %v\n",execPath)
-
-	getwd, err := os.Getwd()
-	if err != nil {
-		return
-	}
-
-	fmt.Printf("current working dir: %v\n",getwd)
-
+	// automatically load in current path the files named .env or pesakit.env
+	f1 := fmt.Sprintf(filepath.Join(wd,".env"))
+	f2 := fmt.Sprintf(filepath.Join(wd,"pesakit.env"))
+	_ = godotenv.Load(f1,f2)
 	airtelDeployEnv := strings.ToLower(env.String(envAirtelDeploymentEnv, defAirtelDeploymentEnv))
 
 	debugMode := env.Bool(envDebugMode, defDebugMode)
@@ -371,9 +393,7 @@ func main() {
 	app := cli.New(client)
 
 	if err := app.Run(os.Args); err != nil {
-		fmt.Printf("error: %v\n", err)
+		log.Printf("error: %v\n", err)
 		os.Exit(1)
 	}
-
-	//	select {}
 }

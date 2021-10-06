@@ -9,7 +9,7 @@ RUN cd cmd && go build -o pesakit
 FROM alpine:latest
 LABEL name="pesakit - commandline tool for mobile payment api"
 RUN apk --no-cache add ca-certificates
-WORKDIR /root/
+WORKDIR /pesakit/
 COPY --from=builder /pesakit ./
 ENTRYPOINT ["cmd/pesakit"]
 CMD ["--help"]

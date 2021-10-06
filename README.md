@@ -19,6 +19,19 @@ tested for Tanzania only.
   pesakit push --phone=067AAAAAAA --amount=1000 --description=testing --reference=BAGATATSVSNSUXNJ    
 ```
 
+## docker image
+
+to build the image
+
+```bash
+make docker
+```
+then run,
+
+```bash
+docker run pesakit push --phone=0784956141 --amount=1000 --description=testing --id=BAGATsjksndhjSNSUXNJ  
+```
+
 ## use as library
 pesakit can be used in go projects as a library
 
