@@ -1,5 +1,5 @@
 # pesakit
-pesakit is a highly configurable commandline tool that comes on handy during testing and
+pesakit is a highly configurable commandline tool that comes in handy during testing and
 development of systems that integrate with mobile money vendors. With pesakit you can send
 C2B (pushpay) requests or B2C (disbursement) requests. You can do this on either production
 or staging stage, it just depends on how you configure it. Meaning you can use pesakit in
@@ -30,6 +30,21 @@ then run,
 
 ```bash
 docker run pesakit push --phone=0784956141 --amount=1000 --description=testing --id=BAGATsjksndhjSNSUXNJ  
+```
+
+you can also download the pre-built image from our github container registry
+
+```bash
+docker pull ghcr.io/techcraftlabs/pesakit:latest
+
+```
+run the image,
+```bash
+```bash
+docker run --env-file .env ghcr.io/techcraftlabs/pesakit:latest
+
+```
+
 ```
 
 ## use as library
