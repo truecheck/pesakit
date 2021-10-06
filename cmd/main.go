@@ -341,15 +341,15 @@ func main() {
 	aConfig := loadAirtelEnv()
 	vConfig := loadMpesaEnv()
 	tConfig := loadTigoEnv()
-	//
-	//go func(debug bool) {
-	//	if debug{
-	//		printConfigs(aConfig, vConfig, tConfig)
-	//	}
-	//
-	//	return
-	//
-	//}(debugMode)
+
+	go func(debug bool) {
+		if debug{
+			printConfigs(aConfig, vConfig, tConfig)
+		}
+
+		return
+
+	}(debugMode)
 
 	var airtelOptions []airtel.ClientOption
 	airtelDebugOption := airtel.WithDebugMode(debugMode)
