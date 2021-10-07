@@ -18,7 +18,7 @@ func WithCallbackHandler(handler PushCallbackHandler) ClientOption {
 // WithApiPlatform .....
 func WithApiPlatform(platform Platform) ClientOption {
 	return func(client *Client) {
-		client.Platform = platform
+		client.Conf.Platform = platform
 
 	}
 }
@@ -26,7 +26,7 @@ func WithApiPlatform(platform Platform) ClientOption {
 // WithMarket .....
 func WithMarket(market Market) ClientOption {
 	return func(client *Client) {
-		client.Market = market
+		client.Conf.Market = market
 
 	}
 }

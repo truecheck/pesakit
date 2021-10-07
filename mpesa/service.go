@@ -42,6 +42,8 @@ type (
 		Version                string
 		Description            string
 		BasePath               string
+		Market                 Market
+		Platform               Platform
 		APIKey                 string
 		PublicKey              string
 		SessionLifetimeMinutes int64
@@ -58,8 +60,8 @@ type (
 	Client struct {
 		Conf              *Config
 		base              *internal.BaseClient
-		Market            Market
-		Platform          Platform
+		//Market            Market
+		//Platform          Platform
 		encryptedApiKey   *string
 		sessionID         *string
 		sessionExpiration time.Time
@@ -79,8 +81,8 @@ func NewClient(conf *Config, opts ...ClientOption) *Client {
 	client = &Client{
 		Conf:              conf,
 		base:              internal.NewBaseClient(),
-		Market:            TanzaniaMarket,
-		Platform:          SANDBOX,
+		//Market:            TanzaniaMarket,
+		//Platform:          SANDBOX,
 		encryptedApiKey:   enc,
 		sessionID:         ses,
 		sessionExpiration: time.Now(),
@@ -90,8 +92,8 @@ func NewClient(conf *Config, opts ...ClientOption) *Client {
 		opt(client)
 	}
 
-	platform := client.Platform
-	market := client.Market
+	platform := client.Conf.Platform
+	market := client.Conf.Market
 
 	platformStr, marketStr := platform.String(), market.URLContextValue()
 	p := fmt.Sprintf("https://%s/%s/ipg/v2/%s/", basePath, platformStr, marketStr)

@@ -11,11 +11,8 @@ import (
 )
 
 const (
-	SuccessCode = "BILLER-30-0000-S"
-	FailureCode = "BILLER-30-3030-E"
-)
-
-const (
+	SuccessCode                 = "BILLER-30-0000-S"
+	FailureCode                 = "BILLER-30-3030-E"
 	ErrSuccessTxn               = "error000"
 	ErrServiceNotAvailable      = "error001"
 	ErrInvalidCustomerRefNumber = "error010"
@@ -27,9 +24,8 @@ const (
 	ErrInvalidPayment           = "error016"
 	ErrGeneralError             = "error100"
 	ErrRetryConditionNoResponse = "error111"
-
-	requestType    = "REQMFCI"
-	senderLanguage = "EN"
+	requestType                 = "REQMFCI"
+	senderLanguage              = "EN"
 )
 
 type (

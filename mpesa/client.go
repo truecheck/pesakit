@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/techcraftlabs/pesakit/internal"
 	"net/http"
+	"strings"
 )
 
 var (
@@ -38,6 +39,30 @@ type (
 	Market      int
 	RequestType int
 )
+
+func MarketFmt(marketString string)Market{
+	if strings.ToLower(marketString) == "ghana"{
+		return GhanaMarket
+	}
+
+	if strings.ToLower(marketString) == "tanzania"{
+		return TanzaniaMarket
+	}
+
+	return Market(-1)
+}
+
+func PlatformFmt(platformString string)Platform{
+	if strings.ToLower(platformString) == "openapi"{
+		return OPENAPI
+	}
+
+	if strings.ToLower(platformString) == "sandbox"{
+		return SANDBOX
+	}
+
+	return Platform(-1)
+}
 
 func (p Platform) String() string {
 	if p == OPENAPI {

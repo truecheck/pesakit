@@ -55,6 +55,8 @@ const (
 	defAirtelTransactionSummaryEndpoint  = "/merchant/v1/transactions"
 	defAirtelBalanceEnquiryEndpoint      = "/standard/v1/users/balance"
 	defAirtelUserEnquiryEndpoint         = "/standard/v1/users/"
+	envMpesaPlatform                     = "PK_MPESA_PLATFORM"
+	envMpesaMarket                       = "PK_MPESA_MARKET"
 	envMpesaAuthEndpoint                 = "PK_MPESA_AUTH_ENDPOINT"
 	envMpesaPushEndpoint                 = "PK_MPESA_PUSH_ENDPOINT"
 	envMpesaDisburseEndpoint             = "PK_MPESA_DISBURSE_ENDPOINT"
@@ -62,11 +64,15 @@ const (
 	envMpesaAppName                      = "PK_MPESA_APP_NAME"
 	envMpesaAppVersion                   = "PK_MPESA_APP_VERSION"
 	envMpesaAppDesc                      = "PK_MPESA_APP_DESCRIPTION"
-	envMpesaApiKey                       = "PK_MPESA_API_KEY"
-	envMpesaPubKey                       = "PK_MPESA_PUBLIC_KEY"
+	envMpesaSandboxApiKey                = "PK_MPESA_SANDBOX_API_KEY"
+	envMpesaOpenApiKey                   = "PK_MPESA_OPENAPI_KEY"
+	envMpesaSandboxPubKey                = "PK_MPESA_SANDBOX_PUBLIC_KEY"
+	envMpesaOpenApiPubKey                = "PK_MPESA_OPENAPI_PUBLIC_KEY"
 	envMpesaSessionLifetimeMinutes       = "PK_MPESA_SESSION_LIFETIME_MINUTES"
 	envMpesaServiceProvideCode           = "PK_MPESA_SERVICE_PROVIDER_CODE"
 	envMpesaTrustedSources               = "PK_MPESA_TRUSTED_SOURCES"
+	defMpesaPlatform                     = "sandbox"
+	defMpesaMarket                       = "Tanzania"
 	defMpesaAuthEndpoint                 = "/getSession/"
 	defMpesaPushEndpoint                 = ""
 	defMpesaDisburseEndpoint             = ""
@@ -74,13 +80,15 @@ const (
 	defMpesaAppName                      = "beanpay"
 	defMpesaAppVersion                   = "1.0"
 	defMpesaAppDesc                      = "unified payment as a service"
-	defMpesaApiKey                       = ""
-	defMpesaPubKey                       = ""
+	defMpesaSandboxApiKey                = ""
+	defMpesaOpenApiKey                   = ""
+	defMpesaSandboxPubKey                = ""
+	defMpesaOpenApiPubKey                = ""
 	defMpesaSessionLifetimeMinutes       = 60
 	defMpesaServiceProvideCode           = ""
 	defMpesaTrustedSources               = "openapi.m-pesa.com"
 	envTigoDisbursePIN                   = "PK_TIGO_DISBURSE_PIN"
-	envTigoDisburseURL                   = "PK_TIGO_DISBURSE_URL"
+	envTigoDisburseURL                   = "PK_TIGO_DISaBURSE_URL"
 	envTigoDisburseBrandID               = "PK_TIGO_DISBURSE_BRAND_ID"
 	envTigoDisburseAccountMSISDN         = "PK_TIGO_DISBURSE_ACCOUNT_MSISDN"
 	envTigoDisburseAccountName           = "PK_TIGO_DISBURSE_ACCOUNT_NAME"
@@ -174,22 +182,41 @@ func loadTigoEnv() *tigo.Config {
 
 func loadMpesaEnv() *mpesa.Config {
 
+
 	var (
 		name                = env.String(envMpesaAppName, defMpesaAppName)
 		version             = env.String(envMpesaAppVersion, defMpesaAppVersion)
 		desc                = env.String(envMpesaAppDesc, defMpesaAppDesc)
 		basePath            = env.String(envMpesaBaseURL, defMpesaBaseURL)
-		apiKey              = env.String(envMpesaApiKey, defMpesaApiKey)
-		pubKey              = env.String(envMpesaPubKey, defMpesaPubKey)
+		sandboxApiKey       = env.String(envMpesaSandboxApiKey, defMpesaSandboxApiKey)
+		sandboxPubKey       = env.String(envMpesaSandboxPubKey, defMpesaSandboxPubKey)
+		openApiKey          = env.String(envMpesaOpenApiKey, defMpesaOpenApiKey)
+		openApiPubKey       = env.String(envMpesaOpenApiPubKey, defMpesaOpenApiPubKey)
 		spc                 = env.String(envMpesaServiceProvideCode, defMpesaServiceProvideCode)
 		trustArray          = strings.Split(env.String(envMpesaTrustedSources, defMpesaTrustedSources), " ")
 		sessLifeTimeMinutes = env.Int64(envMpesaSessionLifetimeMinutes, defMpesaSessionLifetimeMinutes)
 		authEndpoint        = env.String(envMpesaAuthEndpoint, defMpesaAuthEndpoint)
 		pushEndpoint        = env.String(envMpesaPushEndpoint, defMpesaPushEndpoint)
 		disburseEndpoint    = env.String(envMpesaDisburseEndpoint, defMpesaDisburseEndpoint)
+		platformEnv           = env.String(envMpesaPlatform,defMpesaPlatform)
+		marketEnv           = env.String(envMpesaMarket,defMpesaMarket)
 	)
 
+
+	market := mpesa.MarketFmt(marketEnv)
+	platform := mpesa.PlatformFmt(platformEnv)
+
+	var apiKey, pubKey string
+
+	if platform == mpesa.OPENAPI{
+		apiKey,pubKey = openApiKey,openApiPubKey
+	}else{
+		apiKey,pubKey = sandboxApiKey, sandboxPubKey
+	}
+
 	conf := &mpesa.Config{
+		Market: market,
+		Platform: platform,
 		Endpoints: &mpesa.Endpoints{
 			AuthEndpoint:     authEndpoint,
 			PushEndpoint:     pushEndpoint,
@@ -305,8 +332,8 @@ func printConfigs(a *airtel.Config, v *mpesa.Config, t *tigo.Config) {
 	_, _ = fmt.Fprintf(w, "\n %s\t", "-------------------------")
 	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaAppName, v.Name)
 	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaAppVersion, v.Version)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaPubKey, v.PublicKey)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaApiKey, v.APIKey)
+	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaSandboxPubKey, v.PublicKey)
+	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaSandboxApiKey, v.APIKey)
 	_, _ = fmt.Fprintf(w, "\n %s: \t%d\t", envMpesaSessionLifetimeMinutes, v.SessionLifetimeMinutes)
 	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaTrustedSources, v.TrustedSources)
 	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaServiceProvideCode, v.ServiceProvideCode)
@@ -331,7 +358,7 @@ const (
 	UNKNOWN
 )
 
-func detectOS()OS{
+func detectOS() OS {
 	goos := runtime.GOOS
 	switch goos {
 	case "windows":
@@ -348,15 +375,15 @@ func detectOS()OS{
 func main() {
 	wd, err := os.Getwd()
 	if err != nil {
-		log.Printf("could not get current working directory %v\n",err)
+		log.Printf("could not get current working directory %v\n", err)
 		os.Exit(1)
 		return
 	}
 
 	// automatically load in current path the files named .env or pesakit.env
-	f1 := fmt.Sprintf(filepath.Join(wd,".env"))
-	f2 := fmt.Sprintf(filepath.Join(wd,"pesakit.env"))
-	_ = godotenv.Load(f1,f2)
+	f1 := fmt.Sprintf(filepath.Join(wd, ".env"))
+	f2 := fmt.Sprintf(filepath.Join(wd, "pesakit.env"))
+	_ = godotenv.Load(f1, f2)
 	airtelDeployEnv := strings.ToLower(env.String(envAirtelDeploymentEnv, defAirtelDeploymentEnv))
 
 	debugMode := env.Bool(envDebugMode, defDebugMode)
@@ -365,7 +392,7 @@ func main() {
 	tConfig := loadTigoEnv()
 
 	go func(debug bool) {
-		if debug{
+		if debug {
 			printConfigs(aConfig, vConfig, tConfig)
 		}
 
@@ -381,10 +408,9 @@ func main() {
 
 	// create mpesa client
 	var mpesaOptions []mpesa.ClientOption
-	marketOption := mpesa.WithMarket(mpesa.TanzaniaMarket)
-	platformOption := mpesa.WithApiPlatform(mpesa.SANDBOX)
+
 	debugOption := mpesa.WithDebugMode(debugMode)
-	mpesaOptions = append(mpesaOptions, marketOption, platformOption, debugOption)
+	mpesaOptions = append(mpesaOptions,debugOption)
 	m := mpesa.NewClient(vConfig, mpesaOptions...)
 
 	t := tigo.NewClient(tConfig, tigo.WithDebugMode(debugMode))
