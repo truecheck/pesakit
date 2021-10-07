@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/techcraftlabs/pesakit"
 	"github.com/techcraftlabs/pesakit/airtel"
-	"github.com/techcraftlabs/pesakit/internal/io"
 	"github.com/techcraftlabs/pesakit/mpesa"
 	"github.com/techcraftlabs/pesakit/pkg/countries"
 	"github.com/techcraftlabs/pesakit/pkg/mno"
@@ -93,7 +92,6 @@ func (c *Cmd) airtelDisburseAction(ctx context.Context, id, description string, 
 }
 
 func (c *Cmd) tigoDisburseAction(ctx context.Context, id string, amount int64, phone string) error {
-	fmt.Fprintf(io.Stderr, "tigo disbursement....to")
 	req := tigo.Request{
 		ReferenceID: id,
 		MSISDN:      phone,

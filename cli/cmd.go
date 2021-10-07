@@ -18,7 +18,8 @@ type (
 func commands(client *pesakit.Client) []*clix.Command {
 	pushCmd := PushCommand(client).Command()
 	disburseCmd := DisburseCommand(client).Command()
-	return appendCommands(pushCmd, disburseCmd)
+	configCmd := ConfigCommand(client).Command()
+	return appendCommands(pushCmd, disburseCmd,configCmd)
 }
 
 func appendCommands(comm ...*clix.Command) []*clix.Command {

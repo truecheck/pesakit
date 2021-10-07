@@ -15,7 +15,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"text/tabwriter"
 )
 
 const (
@@ -280,70 +279,6 @@ func loadAirtelEnv() *airtel.Config {
 	return config
 }
 
-func printConfigs(a *airtel.Config, v *mpesa.Config, t *tigo.Config) {
-	// initialize tabwriter
-	w := new(tabwriter.Writer)
-
-	w.Init(os.Stdout, 8, 8, 0, '\t', 0)
-
-	defer func(w *tabwriter.Writer) {
-		err := w.Flush()
-		if err != nil {
-			fmt.Printf("error while closing tabwriter: %v\n", err)
-		}
-	}(w)
-
-	p := t.PushConfig
-	d := t.DisburseConfig
-
-	_, _ = fmt.Fprintf(w, "\n %s\t", "TIGO CONFIGURATIONS")
-	_, _ = fmt.Fprintf(w, "\n %s\t", "-------------------------")
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoPushUsername, p.Username)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoPushPassword, p.Password)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoPushBaseURL, t.BaseURL)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoPushTokenURL, p.TokenEndpoint)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoPushPayURL, p.PushPayEndpoint)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoPushBillerCode, p.BillerCode)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoPushBillerMSISDN, p.BillerMSISDN)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoDisburseURL, d.RequestURL)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoDisbursePIN, d.PIN)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoDisburseBrandID, d.BrandID)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoDisburseAccountMSISDN, d.AccountMSISDN)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoDisburseAccountName, d.AccountName)
-	_, _ = fmt.Fprintf(w, "\n %s\t", "-------------------------")
-	_, _ = fmt.Fprintf(w, "\n %s\t", "AIRTEL CONFIGURATIONS")
-	_, _ = fmt.Fprintf(w, "\n %s\t", "-------------------------")
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelPublicKey, a.PublicKey)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelDisbursePin, a.DisbursePIN)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelCallbackPrivKey, a.CallbackPrivateKey)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelClientId, a.ClientID)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelClientSecret, a.Secret)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%v\t", envAirtelCountries, a.AllowedCountries)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelAuthEndpoint, a.Endpoints.AuthEndpoint)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelPushEndpoint, a.Endpoints.PushEndpoint)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelRefundEndpoint, a.Endpoints.RefundEndpoint)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelPushEnquiryEndpoint, a.Endpoints.PushEnquiryEndpoint)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelDisbursementEndpoint, a.Endpoints.DisbursementEndpoint)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelTransactionSummaryEndpoint, a.Endpoints.TransactionSummaryEndpoint)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelBalanceEnquiryEndpoint, a.Endpoints.BalanceEnquiryEndpoint)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelUserEnquiryEndpoint, a.Endpoints.UserEnquiryEndpoint)
-	_, _ = fmt.Fprintf(w, "\n %s\t", "-------------------------")
-	_, _ = fmt.Fprintf(w, "\n %s\t", "MPESA CONFIGURATIONS")
-	_, _ = fmt.Fprintf(w, "\n %s\t", "-------------------------")
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaAppName, v.Name)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaAppVersion, v.Version)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaSandboxPubKey, v.PublicKey)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaSandboxApiKey, v.APIKey)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%d\t", envMpesaSessionLifetimeMinutes, v.SessionLifetimeMinutes)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaTrustedSources, v.TrustedSources)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaServiceProvideCode, v.ServiceProvideCode)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaBaseURL, v.BasePath)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaAppDesc, v.Description)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaAuthEndpoint, v.Endpoints.AuthEndpoint)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaDisburseEndpoint, v.Endpoints.DisburseEndpoint)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envMpesaPushEndpoint, v.Endpoints.PushEndpoint)
-	_, _ = fmt.Fprintf(w, "\n")
-}
 
 func init() {
 	_ = godotenv.Load(".env")
@@ -390,15 +325,15 @@ func main() {
 	aConfig := loadAirtelEnv()
 	vConfig := loadMpesaEnv()
 	tConfig := loadTigoEnv()
-
-	go func(debug bool) {
-		if debug {
-			printConfigs(aConfig, vConfig, tConfig)
-		}
-
-		return
-
-	}(debugMode)
+	//
+	//go func(debug bool) {
+	//	if debug {
+	//		printConfigs(aConfig, vConfig, tConfig)
+	//	}
+	//
+	//	return
+	//
+	//}(debugMode)
 
 	var airtelOptions []airtel.ClientOption
 	airtelDebugOption := airtel.WithDebugMode(debugMode)

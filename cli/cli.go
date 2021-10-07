@@ -18,6 +18,7 @@ const (
 const (
 	Push RequestType = iota
 	Disburse
+	Config
 )
 
 type (
@@ -75,6 +76,11 @@ func (c *Cmd) After(ctx *clix.Context) error {
 
 func (c *Cmd) Action(ctx *clix.Context) error {
 	reqType := c.RequestType
+
+	if reqType == Config{
+		return c.configAction(ctx)
+	}
+
 	phone := ctx.String("phone")
 	operator, s, err := c.ApiClient.DetermineMNO(phone)
 	if err != nil {
@@ -98,6 +104,7 @@ func (c *Cmd) PrintOut(payload interface{}, format outFormat) error {
 	return err
 }
 
+
 func (c *Cmd) action(ctx *clix.Context, requestType RequestType, operator mno.Operator, phone string) error {
 	switch requestType {
 	case Push:
@@ -106,6 +113,6 @@ func (c *Cmd) action(ctx *clix.Context, requestType RequestType, operator mno.Op
 	case Disburse:
 		return c.disburseAction(ctx, operator, phone)
 	}
-
 	return fmt.Errorf("unrecognized action")
 }
+
