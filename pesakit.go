@@ -46,7 +46,7 @@ func (c *Client) Do(ctx context.Context, action Action, request Request) (interf
 	tc := c.TigoPesa
 	mp := c.Mpesa
 
-	operator, fmtPhone, err := c.mnoAutoCheck(request.MSISDN)
+	operator, fmtPhone, err := c.MnoAutoCheck(request.MSISDN)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +142,7 @@ func NewClient(airtelMoney *airtel.Client, tigopesa *tigo.Client, vodaMpesa *mpe
 	}
 }
 
-func (c *Client) mnoAutoCheck(phone string) (mno.Operator, string, error) {
+func (c *Client) MnoAutoCheck(phone string) (mno.Operator, string, error) {
 	op, fmtPhone, err := mno.Get(phone)
 	if op == mno.Airtel{
 		return op, fmtPhone[3:],err
