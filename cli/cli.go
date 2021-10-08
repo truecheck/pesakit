@@ -75,9 +75,27 @@ func (c *Cmd) After(ctx *clix.Context) error {
 }
 
 func (c *Cmd) Action(ctx *clix.Context) error {
+
+	//id := ctx.String("reference")
+	//description := ctx.String("description")
+	//amount := ctx.Int64("amount")
+	//msisdn := ctx.String("phone")
+	//thirdparty :=  ctx.String("third-party")
+	//transCountry := ctx.String("trans-country")
+	//subCountry := ctx.String("sub-country")
+	//
+	//req := pesakit.Request{
+	//	ID:                    id,
+	//	Amount: float64(amount),
+	//	MSISDN:                msisdn,
+	//	Description:           description,
+	//	ThirdPartyReferenceID: thirdparty,
+	//	SubscriberCountry:     subCountry,
+	//	TransactionCountry:    transCountry,
+	//}
 	reqType := c.RequestType
 
-	if reqType == Config{
+	if reqType == Config {
 		return c.configAction(ctx)
 	}
 
@@ -105,10 +123,10 @@ func (c *Cmd) PrintOut(payload interface{}, format outFormat) error {
 	return err
 }
 
-
 func (c *Cmd) action(ctx *clix.Context, requestType RequestType, operator mno.Operator, phone string) error {
 	switch requestType {
 	case Push:
+
 		return c.pushAction(ctx, operator, phone)
 
 	case Disburse:
@@ -116,4 +134,3 @@ func (c *Cmd) action(ctx *clix.Context, requestType RequestType, operator mno.Op
 	}
 	return fmt.Errorf("unrecognized action")
 }
-

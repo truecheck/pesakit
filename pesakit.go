@@ -51,13 +51,13 @@ func (c *Client) Do(ctx context.Context, action Action, request Request) (interf
 		return nil, err
 	}
 
-	vodaSelectedButNil := mp == nil && operator == mno.Vodacom
-	tigoSelectedButNil := tc == nil && operator == mno.Tigo
-	airtSelectedButNil := ac == nil && operator == mno.Airtel
+	mpesaSelectedButNil := (mp == nil) && (operator == mno.Vodacom)
+	tigoSelectedButNil := (tc == nil) && (operator == mno.Tigo)
+	airtelSelectedButNil := (ac == nil) && (operator == mno.Airtel)
 
-	selectedButNil := vodaSelectedButNil || tigoSelectedButNil || airtSelectedButNil
+	selectedButNil := mpesaSelectedButNil || tigoSelectedButNil || airtelSelectedButNil
 
-	if selectedButNil{
+	if selectedButNil {
 		return nil, ErrClientNil
 	}
 
@@ -67,11 +67,11 @@ func (c *Client) Do(ctx context.Context, action Action, request Request) (interf
 		case mno.Tigo:
 			req := tigo.PayRequest{
 				CustomerMSISDN: fmtPhone,
-				Amount: int64(request.Amount),
+				Amount:         int64(request.Amount),
 				Remarks:        request.Description,
 				ReferenceID:    request.ID,
 			}
-			return tc.Push(ctx,req)
+			return tc.Push(ctx, req)
 
 		case mno.Vodacom:
 			req := mpesa.Request{
@@ -81,21 +81,21 @@ func (c *Client) Do(ctx context.Context, action Action, request Request) (interf
 				MSISDN:       request.MSISDN,
 				Desc:         request.Description,
 			}
-			return mp.PushAsync(ctx,req)
+			return mp.PushAsync(ctx, req)
 
 		case mno.Airtel:
 			req := airtel.PushPayRequest{
 				Reference:          request.Description,
 				SubscriberCountry:  request.SubscriberCountry,
 				SubscriberMsisdn:   request.MSISDN,
-				TransactionAmount: int64(request.Amount),
+				TransactionAmount:  int64(request.Amount),
 				TransactionCountry: request.TransactionCountry,
 				TransactionID:      request.ID,
 			}
-			return ac.Push(ctx,req)
+			return ac.Push(ctx, req)
 
 		default:
-			return nil,fmt.Errorf("unknown action only push and disburse allowed for mpesa, tigopesa and airtel")
+			return nil, fmt.Errorf("unknown action only push and disburse allowed for mpesa, tigopesa and airtel")
 		}
 
 	case Disburse:
@@ -108,16 +108,16 @@ func (c *Client) Do(ctx context.Context, action Action, request Request) (interf
 				MSISDN:       request.MSISDN,
 				Desc:         request.Description,
 			}
-			return mp.Disburse(ctx,req)
+			return mp.Disburse(ctx, req)
 		case mno.Airtel:
 			req := airtel.DisburseRequest{
 				ID:                   request.ID,
 				MSISDN:               request.MSISDN,
-				Amount: int64(request.Amount),
+				Amount:               int64(request.Amount),
 				Reference:            request.Description,
 				CountryOfTransaction: request.TransactionCountry,
 			}
-			return ac.Disburse(ctx,req)
+			return ac.Disburse(ctx, req)
 		case mno.Tigo:
 			req := tigo.Request{
 				ReferenceID: request.ID,
@@ -126,11 +126,11 @@ func (c *Client) Do(ctx context.Context, action Action, request Request) (interf
 			}
 			return tc.Disburse(ctx, req)
 		default:
-			return nil,fmt.Errorf("unknown action only push and disburse allowed for mpesa, tigopesa and airtel")
+			return nil, fmt.Errorf("unknown action only push and disburse allowed for mpesa, tigopesa and airtel")
 		}
 
 	default:
-		return nil,fmt.Errorf("unknown action only push and disburse allowed for mpesa, tigopesa and airtel")
+		return nil, fmt.Errorf("unknown action only push and disburse allowed for mpesa, tigopesa and airtel")
 	}
 }
 
@@ -144,8 +144,8 @@ func NewClient(airtelMoney *airtel.Client, tigopesa *tigo.Client, vodaMpesa *mpe
 
 func (c *Client) MnoAutoCheck(phone string) (mno.Operator, string, error) {
 	op, fmtPhone, err := mno.Get(phone)
-	if op == mno.Airtel{
-		return op, fmtPhone[3:],err
+	if op == mno.Airtel {
+		return op, fmtPhone[3:], err
 	}
-	return op,fmtPhone,err
+	return op, fmtPhone, err
 }

@@ -67,7 +67,7 @@ func ConfigCommand(client *pesakit.Client) *Cmd {
 		},
 		&clix.BoolFlag{
 			Name:    "mpesa",
-			Aliases: []string{"v", "vodacom","voda"},
+			Aliases: []string{"v", "vodacom", "voda"},
 			Usage:   "set to true if you want to print vodacom mpesa config",
 		},
 		&clix.BoolFlag{
@@ -87,7 +87,7 @@ func ConfigCommand(client *pesakit.Client) *Cmd {
 	}
 }
 
-func printMpesaConf(w *tabwriter.Writer, v *mpesa.Config){
+func printMpesaConf(w *tabwriter.Writer, v *mpesa.Config) {
 
 	_, _ = fmt.Fprintf(w, "\n %s\t", "-------------------------")
 	_, _ = fmt.Fprintf(w, "\n %s\t", "MPESA CONFIGURATIONS")
@@ -109,7 +109,7 @@ func printMpesaConf(w *tabwriter.Writer, v *mpesa.Config){
 	_, _ = fmt.Fprintf(w, "\n")
 }
 
-func printAirtelConf(w *tabwriter.Writer, a *airtel.Config)  {
+func printAirtelConf(w *tabwriter.Writer, a *airtel.Config) {
 	_, _ = fmt.Fprintf(w, "\n %s\t", "-------------------------")
 	_, _ = fmt.Fprintf(w, "\n %s\t", "AIRTEL CONFIGURATIONS")
 	_, _ = fmt.Fprintf(w, "\n %s\t", "-------------------------")
@@ -131,10 +131,9 @@ func printAirtelConf(w *tabwriter.Writer, a *airtel.Config)  {
 	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelDisbursementEnquiryEndpoint, a.Endpoints.DisbursementEnquiryEndpoint)
 }
 
-func printTigoConf(w *tabwriter.Writer, tc *tigo.Config){
+func printTigoConf(w *tabwriter.Writer, tc *tigo.Config) {
 	p := tc.PushConfig
 	d := tc.DisburseConfig
-
 
 	_, _ = fmt.Fprintf(w, "\n %s\t", "-------------------------")
 	_, _ = fmt.Fprintf(w, "\n %s\t", "TIGO CONFIGURATIONS")
@@ -155,12 +154,10 @@ func printTigoConf(w *tabwriter.Writer, tc *tigo.Config){
 
 }
 
-
-
-func printConfigs(w *tabwriter.Writer,a *airtel.Config, v *mpesa.Config, t *tigo.Config) {
-	printMpesaConf(w,v)
-	printAirtelConf(w,a)
-	printTigoConf(w,t)
+func printConfigs(w *tabwriter.Writer, a *airtel.Config, v *mpesa.Config, t *tigo.Config) {
+	printMpesaConf(w, v)
+	printAirtelConf(w, a)
+	printTigoConf(w, t)
 }
 
 func (c *Cmd) configAction(ctx *clix.Context) error {
@@ -185,20 +182,20 @@ func (c *Cmd) configAction(ctx *clix.Context) error {
 	isPrintAirtel := ctx.Bool("airtel")
 	isPrintAll := (!isPrintVoda && !isPrintAirtel && !isPrintTigo) || (isPrintVoda && isPrintAirtel && isPrintTigo)
 	if isPrintAll {
-		printConfigs(w,ac,mc,tc)
+		printConfigs(w, ac, mc, tc)
 		return nil
 	}
 
 	if isPrintVoda {
-		printMpesaConf(w,mc)
+		printMpesaConf(w, mc)
 	}
 
 	if isPrintAirtel {
-		printAirtelConf(w,ac)
+		printAirtelConf(w, ac)
 	}
 
 	if isPrintTigo {
-		printTigoConf(w,tc)
+		printTigoConf(w, tc)
 	}
 
 	return nil

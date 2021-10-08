@@ -40,24 +40,24 @@ type (
 	RequestType int
 )
 
-func MarketFmt(marketString string)Market{
-	if strings.ToLower(marketString) == "ghana"{
+func MarketFmt(marketString string) Market {
+	if strings.ToLower(marketString) == "ghana" {
 		return GhanaMarket
 	}
 
-	if strings.ToLower(marketString) == "tanzania"{
+	if strings.ToLower(marketString) == "tanzania" {
 		return TanzaniaMarket
 	}
 
 	return Market(-1)
 }
 
-func PlatformFmt(platformString string)Platform{
-	if strings.ToLower(platformString) == "openapi"{
+func PlatformFmt(platformString string) Platform {
+	if strings.ToLower(platformString) == "openapi" {
 		return OPENAPI
 	}
 
-	if strings.ToLower(platformString) == "sandbox"{
+	if strings.ToLower(platformString) == "sandbox" {
 		return SANDBOX
 	}
 

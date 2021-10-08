@@ -181,7 +181,6 @@ func loadTigoEnv() *tigo.Config {
 
 func loadMpesaEnv() *mpesa.Config {
 
-
 	var (
 		name                = env.String(envMpesaAppName, defMpesaAppName)
 		version             = env.String(envMpesaAppVersion, defMpesaAppVersion)
@@ -197,24 +196,23 @@ func loadMpesaEnv() *mpesa.Config {
 		authEndpoint        = env.String(envMpesaAuthEndpoint, defMpesaAuthEndpoint)
 		pushEndpoint        = env.String(envMpesaPushEndpoint, defMpesaPushEndpoint)
 		disburseEndpoint    = env.String(envMpesaDisburseEndpoint, defMpesaDisburseEndpoint)
-		platformEnv           = env.String(envMpesaPlatform,defMpesaPlatform)
-		marketEnv           = env.String(envMpesaMarket,defMpesaMarket)
+		platformEnv         = env.String(envMpesaPlatform, defMpesaPlatform)
+		marketEnv           = env.String(envMpesaMarket, defMpesaMarket)
 	)
-
 
 	market := mpesa.MarketFmt(marketEnv)
 	platform := mpesa.PlatformFmt(platformEnv)
 
 	var apiKey, pubKey string
 
-	if platform == mpesa.OPENAPI{
-		apiKey,pubKey = openApiKey,openApiPubKey
-	}else{
-		apiKey,pubKey = sandboxApiKey, sandboxPubKey
+	if platform == mpesa.OPENAPI {
+		apiKey, pubKey = openApiKey, openApiPubKey
+	} else {
+		apiKey, pubKey = sandboxApiKey, sandboxPubKey
 	}
 
 	conf := &mpesa.Config{
-		Market: market,
+		Market:   market,
 		Platform: platform,
 		Endpoints: &mpesa.Endpoints{
 			AuthEndpoint:     authEndpoint,
@@ -278,7 +276,6 @@ func loadAirtelEnv() *airtel.Config {
 
 	return config
 }
-
 
 func init() {
 	_ = godotenv.Load(".env")
@@ -345,7 +342,7 @@ func main() {
 	var mpesaOptions []mpesa.ClientOption
 
 	debugOption := mpesa.WithDebugMode(debugMode)
-	mpesaOptions = append(mpesaOptions,debugOption)
+	mpesaOptions = append(mpesaOptions, debugOption)
 	m := mpesa.NewClient(vConfig, mpesaOptions...)
 
 	t := tigo.NewClient(tConfig, tigo.WithDebugMode(debugMode))

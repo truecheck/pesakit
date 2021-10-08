@@ -19,7 +19,7 @@ func commands(client *pesakit.Client) []*clix.Command {
 	pushCmd := PushCommand(client).Command()
 	disburseCmd := DisburseCommand(client).Command()
 	configCmd := ConfigCommand(client).Command()
-	return appendCommands(pushCmd, disburseCmd,configCmd)
+	return appendCommands(pushCmd, disburseCmd, configCmd)
 }
 
 func appendCommands(comm ...*clix.Command) []*clix.Command {
@@ -49,7 +49,7 @@ func authors(auth ...*clix.Author) []*clix.Author {
 func New(httpApiClient *pesakit.Client) *App {
 
 	desc :=
-		 `pesakit is a highly configurable commandline tool that comes on handy during testing and
+		`pesakit is a highly configurable commandline tool that comes on handy during testing and
 development of systems that integrate with mobile money vendors. With pesakit you can send
 C2B (pushpay) requests or B2C (disbursement) requests. You can do this on either production
 or staging stage, it just depends on how you configure it. Meaning you can use pesakit in

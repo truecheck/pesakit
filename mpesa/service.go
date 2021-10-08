@@ -58,8 +58,8 @@ type (
 	}
 
 	Client struct {
-		Conf              *Config
-		base              *internal.BaseClient
+		Conf *Config
+		base *internal.BaseClient
 		//Market            Market
 		//Platform          Platform
 		encryptedApiKey   *string
@@ -79,8 +79,8 @@ func NewClient(conf *Config, opts ...ClientOption) *Client {
 	basePath := conf.BasePath
 
 	client = &Client{
-		Conf:              conf,
-		base:              internal.NewBaseClient(),
+		Conf: conf,
+		base: internal.NewBaseClient(),
 		//Market:            TanzaniaMarket,
 		//Platform:          SANDBOX,
 		encryptedApiKey:   enc,
