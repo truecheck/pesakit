@@ -82,7 +82,8 @@ func (c *Cmd) Action(ctx *clix.Context) error {
 	}
 
 	phone := ctx.String("phone")
-	operator, s, err := c.ApiClient.DetermineMNO(phone)
+	operator, s, err := c.ApiClient.mnoAutoCheck(phone)
+
 	if err != nil {
 		return err
 	}
