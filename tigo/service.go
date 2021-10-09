@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/xml"
 	"fmt"
-	"github.com/techcraftlabs/pesakit/internal"
+	"github.com/pesakit/pesakit/internal"
 	"net/http"
 	"net/url"
 	"time"

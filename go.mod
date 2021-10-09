@@ -1,4 +1,4 @@
-module github.com/techcraftlabs/pesakit
+module github.com/pesakit/pesakit
 
 go 1.16
 

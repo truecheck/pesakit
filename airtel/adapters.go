@@ -4,8 +4,8 @@ package airtel
 
 import (
 	"fmt"
-	"github.com/techcraftlabs/pesakit/pkg/countries"
-	"github.com/techcraftlabs/pesakit/pkg/crypto"
+	"github.com/pesakit/pesakit/pkg/countries"
+	"github.com/pesakit/pesakit/pkg/crypto"
 )
 
 var (

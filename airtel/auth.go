@@ -5,7 +5,7 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/pesakit/internal"
+	"github.com/pesakit/pesakit/internal"
 	"time"
 )
 

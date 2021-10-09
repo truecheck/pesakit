@@ -3,7 +3,7 @@
 package airtel
 
 import (
-	"github.com/techcraftlabs/pesakit/internal"
+	"github.com/pesakit/pesakit/internal"
 	"time"
 )
 

@@ -2,7 +2,7 @@ package mpesa
 
 import (
 	"fmt"
-	"github.com/techcraftlabs/pesakit/internal"
+	"github.com/pesakit/pesakit/internal"
 	"strings"
 )
 

@@ -5,8 +5,8 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/pesakit/internal"
-	"github.com/techcraftlabs/pesakit/pkg/countries"
+	"github.com/pesakit/pesakit/internal"
+	"github.com/pesakit/pesakit/pkg/countries"
 )
 
 type DisbursementService interface {

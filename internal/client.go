@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"github.com/techcraftlabs/pesakit/internal/io"
+	"github.com/pesakit/pesakit/internal/io"
 	stdio "io"
 	"net/http"
 	"net/http/httputil"

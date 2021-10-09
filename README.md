@@ -52,17 +52,17 @@ Look at the file [ENV.md](ENV.md) to see how to set env vars for pesakit
 pesakit can be used in go projects as a library
 
 ```bash
-go get github.com/techcraftlabs/pesakit
+go get github.com/pesakit/pesakit
 ```
 
 ```go
 package demo
 
 import (
-	"github.com/techcraftlabs/pesakit"
-	"github.com/techcraftlabs/pesakit/airtel"
-	"github.com/techcraftlabs/pesakit/mpesa"
-	"github.com/techcraftlabs/pesakit/tigo"
+	"github.com/pesakit/pesakit"
+	"github.com/pesakit/pesakit/airtel"
+	"github.com/pesakit/pesakit/mpesa"
+	"github.com/pesakit/pesakit/tigo"
 )
 
 func main() {

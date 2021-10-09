@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/techcraftlabs/pesakit/airtel"
-	"github.com/techcraftlabs/pesakit/mpesa"
-	"github.com/techcraftlabs/pesakit/pkg/countries"
-	"github.com/techcraftlabs/pesakit/pkg/mno"
-	"github.com/techcraftlabs/pesakit/tigo"
+	"github.com/pesakit/pesakit/airtel"
+	"github.com/pesakit/pesakit/mpesa"
+	"github.com/pesakit/pesakit/pkg/countries"
+	"github.com/pesakit/pesakit/pkg/mno"
+	"github.com/pesakit/pesakit/tigo"
 )
 
 var (

@@ -2,7 +2,7 @@ package tigo
 
 import (
 	"fmt"
-	"github.com/techcraftlabs/pesakit/internal"
+	"github.com/pesakit/pesakit/internal"
 	"net/http"
 )
 

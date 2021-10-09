@@ -3,7 +3,7 @@ package mpesa
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/pesakit/pkg/crypto"
+	"github.com/pesakit/pesakit/pkg/crypto"
 	"time"
 )
 

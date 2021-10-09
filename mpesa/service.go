@@ -3,8 +3,8 @@ package mpesa
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/pesakit/internal"
-	"github.com/techcraftlabs/pesakit/pkg/crypto"
+	"github.com/pesakit/pesakit/internal"
+	"github.com/pesakit/pesakit/pkg/crypto"
 	"net/http"
 	"time"
 )
