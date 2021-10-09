@@ -100,7 +100,7 @@ func (c *Cmd) Action(ctx *clix.Context) error {
 	}
 
 	phone := ctx.String("phone")
-	operator, s, err := c.ApiClient.MnoAutoCheck(phone)
+	operator, s, err := pesakit.MnoAutoCheck(phone)
 
 	if err != nil {
 		return err

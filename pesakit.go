@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/techcraftlabs/pesakit/airtel"
 	"github.com/techcraftlabs/pesakit/mpesa"
+	"github.com/techcraftlabs/pesakit/pkg/countries"
 	"github.com/techcraftlabs/pesakit/pkg/mno"
 	"github.com/techcraftlabs/pesakit/tigo"
 )
@@ -22,17 +23,20 @@ const (
 
 type (
 	Request struct {
-		ID                    string `json:"id"`
-		Amount                float64
-		MSISDN                string
-		Description           string
-		ThirdPartyReferenceID string
-		SubscriberCountry     string
-		TransactionCountry    string
+		ID                    string  `json:"id"`
+		Amount                float64 `json:"amount"`
+		MSISDN                string  `json:"msisdn"`
+		Description           string  `json:"description"`
+		thirdPartyReferenceID string
+		subscriberCountry     string
+		transactionCountry    string
 	}
+
+	RequestOption func(request *Request)
+
 	Action  int
 	Service interface {
-		Do(ctx context.Context, action Action, request Request) (interface{}, error)
+		Do(ctx context.Context,operator mno.Operator, action Action, request Request, opts... RequestOption) (interface{}, error)
 	}
 	Client struct {
 		AirtelMoney *airtel.Client
@@ -41,12 +45,45 @@ type (
 	}
 )
 
-func (c *Client) Do(ctx context.Context, action Action, request Request) (interface{}, error) {
+func WithThirdPartyReferenceID(ref string)RequestOption  {
+	return func(request *Request) {
+		request.thirdPartyReferenceID = ref
+	}
+}
+
+func WithSubscriberCountry(country string)RequestOption  {
+	return func(request *Request) {
+		request.subscriberCountry = country
+	}
+}
+
+func WithTransactionCountry(country string)RequestOption  {
+	return func(request *Request) {
+		request.transactionCountry = country
+	}
+}
+
+func (c *Client) Do(ctx context.Context,operator mno.Operator, action Action, req Request, opts...RequestOption) (interface{}, error) {
+
+	request := new(Request)
+	request = &Request{
+		ID:                    req.ID,
+		Amount:                req.Amount,
+		MSISDN:                req.MSISDN,
+		Description:           req.Description,
+		thirdPartyReferenceID: req.ID,
+		subscriberCountry:     countries.TANZANIA,
+		transactionCountry:    countries.TANZANIA,
+	}
+	for _, opt := range opts {
+		opt(request)
+	}
 	ac := c.AirtelMoney
 	tc := c.TigoPesa
 	mp := c.Mpesa
 
-	operator, fmtPhone, err := c.MnoAutoCheck(request.MSISDN)
+	_ ,fmtPhone, err :=  MnoAutoCheck(request.MSISDN)
+
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +112,7 @@ func (c *Client) Do(ctx context.Context, action Action, request Request) (interf
 
 		case mno.Vodacom:
 			req := mpesa.Request{
-				ThirdPartyID: request.ThirdPartyReferenceID,
+				ThirdPartyID: request.thirdPartyReferenceID,
 				Reference:    request.ID,
 				Amount:       request.Amount,
 				MSISDN:       request.MSISDN,
@@ -86,10 +123,10 @@ func (c *Client) Do(ctx context.Context, action Action, request Request) (interf
 		case mno.Airtel:
 			req := airtel.PushPayRequest{
 				Reference:          request.Description,
-				SubscriberCountry:  request.SubscriberCountry,
+				SubscriberCountry:  request.subscriberCountry,
 				SubscriberMsisdn:   request.MSISDN,
 				TransactionAmount:  int64(request.Amount),
-				TransactionCountry: request.TransactionCountry,
+				TransactionCountry: request.transactionCountry,
 				TransactionID:      request.ID,
 			}
 			return ac.Push(ctx, req)
@@ -102,7 +139,7 @@ func (c *Client) Do(ctx context.Context, action Action, request Request) (interf
 		switch operator {
 		case mno.Vodacom:
 			req := mpesa.Request{
-				ThirdPartyID: request.ThirdPartyReferenceID,
+				ThirdPartyID: request.thirdPartyReferenceID,
 				Reference:    request.ID,
 				Amount:       request.Amount,
 				MSISDN:       request.MSISDN,
@@ -115,7 +152,7 @@ func (c *Client) Do(ctx context.Context, action Action, request Request) (interf
 				MSISDN:               request.MSISDN,
 				Amount:               int64(request.Amount),
 				Reference:            request.Description,
-				CountryOfTransaction: request.TransactionCountry,
+				CountryOfTransaction: request.transactionCountry,
 			}
 			return ac.Disburse(ctx, req)
 		case mno.Tigo:
@@ -142,7 +179,7 @@ func NewClient(airtelMoney *airtel.Client, tigopesa *tigo.Client, vodaMpesa *mpe
 	}
 }
 
-func (c *Client) MnoAutoCheck(phone string) (mno.Operator, string, error) {
+func MnoAutoCheck(phone string) (mno.Operator, string, error) {
 	op, fmtPhone, err := mno.Get(phone)
 	if op == mno.Airtel {
 		return op, fmtPhone[3:], err
