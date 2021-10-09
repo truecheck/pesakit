@@ -45,19 +45,19 @@ type (
 	}
 )
 
-func WithThirdPartyReferenceID(ref string)RequestOption  {
+func RequestThirdPartyReferenceID(ref string)RequestOption  {
 	return func(request *Request) {
 		request.thirdPartyReferenceID = ref
 	}
 }
 
-func WithSubscriberCountry(country string)RequestOption  {
+func RequestSubscriberCountry(country string)RequestOption  {
 	return func(request *Request) {
 		request.subscriberCountry = country
 	}
 }
 
-func WithTransactionCountry(country string)RequestOption  {
+func RequestTransactionCountry(country string)RequestOption  {
 	return func(request *Request) {
 		request.transactionCountry = country
 	}
