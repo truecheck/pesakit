@@ -36,7 +36,7 @@ type (
 
 	Action  int
 	Service interface {
-		Do(ctx context.Context,operator mno.Operator, action Action, request Request, opts... RequestOption) (interface{}, error)
+		Do(ctx context.Context, operator mno.Operator, action Action, request Request, opts ...RequestOption) (interface{}, error)
 	}
 	Client struct {
 		AirtelMoney *airtel.Client
@@ -45,25 +45,25 @@ type (
 	}
 )
 
-func RequestThirdPartyReferenceID(ref string)RequestOption  {
+func RequestThirdPartyReferenceID(ref string) RequestOption {
 	return func(request *Request) {
 		request.thirdPartyReferenceID = ref
 	}
 }
 
-func RequestSubscriberCountry(country string)RequestOption  {
+func RequestSubscriberCountry(country string) RequestOption {
 	return func(request *Request) {
 		request.subscriberCountry = country
 	}
 }
 
-func RequestTransactionCountry(country string)RequestOption  {
+func RequestTransactionCountry(country string) RequestOption {
 	return func(request *Request) {
 		request.transactionCountry = country
 	}
 }
 
-func (c *Client) Do(ctx context.Context,operator mno.Operator, action Action, req Request, opts...RequestOption) (interface{}, error) {
+func (c *Client) Do(ctx context.Context, operator mno.Operator, action Action, req Request, opts ...RequestOption) (interface{}, error) {
 
 	request := new(Request)
 	request = &Request{
@@ -82,7 +82,7 @@ func (c *Client) Do(ctx context.Context,operator mno.Operator, action Action, re
 	tc := c.TigoPesa
 	mp := c.Mpesa
 
-	_ ,fmtPhone, err :=  MnoAutoCheck(request.MSISDN)
+	_, fmtPhone, err := MnoAutoCheck(request.MSISDN)
 
 	if err != nil {
 		return nil, err

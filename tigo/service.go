@@ -181,7 +181,7 @@ func (c *Client) Push(ctx context.Context, request PayRequest) (response PayResp
 		BillerMSISDN:   c.BillerMSISDN,
 		Amount:         request.Amount,
 		Remarks:        request.Remarks,
-		ReferenceID:    fmt.Sprintf("%s%s",c.PushConfig.BillerCode,request.ReferenceID),
+		ReferenceID:    fmt.Sprintf("%s%s", c.PushConfig.BillerCode, request.ReferenceID),
 	}
 
 	token, err := c.checkToken(ctx)
