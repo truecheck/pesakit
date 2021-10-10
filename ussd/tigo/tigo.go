@@ -217,6 +217,14 @@ func NewClient(config *Config, handler PaymentHandler, queryHandler NameQueryHan
 	return client
 }
 
+func (client *Client)SetNameQueryHandler(nameQueryHandler NameQueryHandler){
+	client.NameQueryHandler = nameQueryHandler
+}
+
+func (client *Client)SetPaymentHandler(paymentHandler PaymentHandler){
+	client.PaymentHandler = paymentHandler
+}
+
 func (handler PaymentHandleFunc) PaymentRequest(ctx context.Context, request PayRequest) (PayResponse, error) {
 	return handler(ctx, request)
 }
@@ -285,5 +293,4 @@ func (client *Client) PaymentServerHTTP(writer http.ResponseWriter, request *htt
 	res := internal.NewResponse(200, payload, opts...)
 
 	internal.Reply(res, writer)
-
 }
