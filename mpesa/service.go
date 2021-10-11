@@ -19,7 +19,7 @@ type (
 		SessionID(ctx context.Context) (response SessionResponse, err error)
 		PushAsync(ctx context.Context, request Request) (PushAsyncResponse, error)
 		Disburse(ctx context.Context, request Request) (DisburseResponse, error)
-		Callback(w http.ResponseWriter, r *http.Request)
+		CallbackServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	PushCallbackHandler interface {
@@ -233,7 +233,7 @@ func (c *Client) Disburse(ctx context.Context, request Request) (response Disbur
 	return response, nil
 }
 
-func (c *Client) Callback(writer http.ResponseWriter, request *http.Request) {
+func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	body := new(PushCallbackRequest)
 	err := internal.ReceivePayload(request, body)
 	if err != nil {
@@ -248,5 +248,5 @@ func (c *Client) Callback(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	response := internal.NewResponse(200, resp)
-	internal.Reply(response, writer)
+	internal.Reply(writer, response)
 }

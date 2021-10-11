@@ -43,7 +43,7 @@ var (
 type (
 	Service interface {
 		NameQueryServeHTTP(writer http.ResponseWriter, request *http.Request)
-		PaymentServerHTTP(writer http.ResponseWriter, request *http.Request)
+		PaymentServeHTTP(writer http.ResponseWriter, request *http.Request)
 	}
 
 	PaymentHandler interface {
@@ -260,11 +260,11 @@ func (client *Client) NameQueryServeHTTP(writer http.ResponseWriter, request *ht
 	payload := transformToXMLNameResponse(response)
 	res := internal.NewResponse(200, payload, opts...)
 
-	internal.Reply(res, writer)
+	internal.Reply(writer, res)
 
 }
 
-func (client *Client) PaymentServerHTTP(writer http.ResponseWriter, request *http.Request) {
+func (client *Client) PaymentServeHTTP(writer http.ResponseWriter, request *http.Request) {
 
 	ctx, cancel := context.WithTimeout(context.TODO(), 60*time.Second)
 	defer cancel()
@@ -292,5 +292,5 @@ func (client *Client) PaymentServerHTTP(writer http.ResponseWriter, request *htt
 	payload := transformToXMLPayResponse(response)
 	res := internal.NewResponse(200, payload, opts...)
 
-	internal.Reply(res, writer)
+	internal.Reply(writer, res)
 }

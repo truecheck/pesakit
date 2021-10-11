@@ -1,5 +1,7 @@
 package internal
 
+import "fmt"
+
 type (
 	// Response contains details to be sent as a response to tigo
 	// when tigo make callback request, name check request or payment
@@ -65,7 +67,38 @@ func WithDefaultXMLHeader() ResponseOption {
 }
 
 func WithResponseError(err error) ResponseOption {
+
 	return func(response *Response) {
 		response.Error = err
 	}
+}
+
+func ResponseFmt(response *Response) (string,error) {
+
+	var(
+		errMsg string
+	)
+	if response == nil{
+		return "",fmt.Errorf("response is nil")
+	}
+	hs := response.Headers
+	statusCode := response.StatusCode
+
+	if response.Error != nil{
+		errMsg = response.Error.Error()
+	}
+	if response.Error == nil{
+		errMsg = "nil"
+	}
+
+	contentType := response.Headers["Content-Type"]
+	payloadType := categorizeContentType(contentType)
+	buffer, err := MarshalPayload(payloadType,response.Payload)
+	if err != nil{
+		return "",err
+	}
+	payload := buffer.String()
+
+	fmtString := fmt.Sprintf("\nRESPONSE DUMP:\nstatus code: %d\nheaders: %v\nerror: %s\npayload: %s\n",statusCode,hs,errMsg,payload)
+	return fmtString, nil
 }

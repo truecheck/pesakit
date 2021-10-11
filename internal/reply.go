@@ -3,10 +3,40 @@ package internal
 import (
 	"encoding/json"
 	"encoding/xml"
+	"io"
 	"net/http"
 )
 
-func Reply(r *Response, writer http.ResponseWriter) {
+type (
+	replier struct {
+		Logger io.Writer
+		DebugMode bool
+	}
+
+	Replier interface {
+		Reply(writer http.ResponseWriter, r *Response)
+	}
+)
+
+func (r *replier)Reply(writer http.ResponseWriter, response *Response){
+	responseFmt, _ := ResponseFmt(response)
+	defer func(debug bool) {
+		if debug {
+			_, _ = r.Logger.Write([]byte(responseFmt))
+		}
+	}(r.DebugMode)
+
+	Reply(writer,response)
+}
+
+func NewReplier(writer io.Writer, debug bool)Replier{
+	return &replier{
+		Logger:    writer,
+		DebugMode: debug,
+	}
+}
+
+func Reply(writer http.ResponseWriter, r *Response) {
 	if r.Payload == nil {
 
 		for key, value := range r.Headers {

@@ -146,7 +146,7 @@ type (
 	Service interface {
 		Token(ctx context.Context) (TokenResponse, error)
 		Push(ctx context.Context, request PayRequest) (PayResponse, error)
-		Callback(writer http.ResponseWriter, r *http.Request)
+		CallbackServeHTTP(writer http.ResponseWriter, r *http.Request)
 		Disburse(ctx context.Context, request Request) (Response, error)
 	}
 )
@@ -211,7 +211,7 @@ func (c *Client) Push(ctx context.Context, request PayRequest) (response PayResp
 	return response, nil
 }
 
-func (c *Client) Callback(w http.ResponseWriter, r *http.Request) {
+func (c *Client) CallbackServeHTTP(w http.ResponseWriter, r *http.Request) {
 	callbackRequest := new(CallbackRequest)
 	statusCode := 200
 
@@ -239,7 +239,7 @@ func (c *Client) Callback(w http.ResponseWriter, r *http.Request) {
 
 	responseOpts = append(responseOpts, headersOpt, internal.WithResponseError(err))
 	response := internal.NewResponse(statusCode, callbackResponse, responseOpts...)
-	internal.Reply(response, w)
+	internal.Reply(w, response)
 
 }
 
