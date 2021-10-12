@@ -149,6 +149,8 @@ type (
 	}
 
 	Client struct {
+		rv internal.Receiver
+		rp internal.Replier
 		base *internal.BaseClient
 		*Config
 		PaymentHandler   PaymentHandler
@@ -203,7 +205,6 @@ func transformToXMLPayResponse(response PayResponse) payResponse {
 
 func NewClient(config *Config, handler PaymentHandler, queryHandler NameQueryHandler, opts ...ClientOption) *Client {
 	client := &Client{
-
 		Config:           config,
 		PaymentHandler:   handler,
 		NameQueryHandler: queryHandler,

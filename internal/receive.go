@@ -47,7 +47,9 @@ func (rc *receiver) Receive(ctx context.Context,rn string, r *http.Request, v in
 
 	defer func(debug bool) {
 		if debug{
+			r.Body = stdio.NopCloser(bytes.NewBuffer(body))
 			rc.logRequest(rn,r)
+			r.Body = stdio.NopCloser(bytes.NewBuffer(body))
 		}
 	}(rc.DebugMode)
 
@@ -73,7 +75,7 @@ func (rc *receiver) Receive(ctx context.Context,rn string, r *http.Request, v in
 
 type Receiver interface {
 	Receive(ctx context.Context, rn string,r *http.Request, v interface{})(*Receipt,error)
-	LogPayload(prefix string,response *Response)
+	//LogPayload(prefix string,response *Response)
 }
 
 type Receipt struct {
@@ -199,9 +201,9 @@ func (rc *receiver) logRequest(name string, request *http.Request) {
 	return
 }
 
-func (rc *receiver) LogPayload(prefix string,response *Response) {
-	contentType := response.Headers["Content-Type"]
-	payloadType := categorizeContentType(contentType)
-	buffer, _ := MarshalPayload(payloadType,response.Payload)
-	_, _ = rc.Logger.Write([]byte(fmt.Sprintf("%s response: %s\n\n", prefix, buffer.String())))
-}
+//func (rc *receiver) R(prefix string,response *Response) {
+//	contentType := response.Headers["Content-Type"]
+//	payloadType := categorizeContentType(contentType)
+//	buffer, _ := MarshalPayload(payloadType,response.Payload)
+//	_, _ = rc.Logger.Write([]byte(fmt.Sprintf("%s response: %s\n\n", prefix, buffer.String())))
+//}
