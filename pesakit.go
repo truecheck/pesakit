@@ -102,9 +102,9 @@ func (c *Client) Do(ctx context.Context, operator mno.Operator, action Action, r
 	case Push:
 		switch operator {
 		case mno.Tigo:
-			req := tigo.PayRequest{
-				CustomerMSISDN: fmtPhone,
-				Amount:         int64(request.Amount),
+			req := tigo.Request{
+				MSISDN: fmtPhone,
+				Amount:         request.Amount,
 				Remarks:        request.Description,
 				ReferenceID:    request.ID,
 			}
@@ -125,7 +125,7 @@ func (c *Client) Do(ctx context.Context, operator mno.Operator, action Action, r
 				Reference:          request.Description,
 				SubscriberCountry:  request.subscriberCountry,
 				SubscriberMsisdn:   request.MSISDN,
-				TransactionAmount:  int64(request.Amount),
+				TransactionAmount:  request.Amount,
 				TransactionCountry: request.transactionCountry,
 				TransactionID:      request.ID,
 			}
@@ -150,7 +150,7 @@ func (c *Client) Do(ctx context.Context, operator mno.Operator, action Action, r
 			req := airtel.DisburseRequest{
 				ID:                   request.ID,
 				MSISDN:               request.MSISDN,
-				Amount:               int64(request.Amount),
+				Amount:              request.Amount,
 				Reference:            request.Description,
 				CountryOfTransaction: request.transactionCountry,
 			}

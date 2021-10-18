@@ -9,7 +9,7 @@ import (
 
 type (
 	replier struct {
-		Logger io.Writer
+		Logger    io.Writer
 		DebugMode bool
 	}
 
@@ -18,7 +18,7 @@ type (
 	}
 )
 
-func (r *replier)Reply(writer http.ResponseWriter, response *Response){
+func (r *replier) Reply(writer http.ResponseWriter, response *Response) {
 	responseFmt, _ := ResponseFmt(response)
 	defer func(debug bool) {
 		if debug {
@@ -26,10 +26,10 @@ func (r *replier)Reply(writer http.ResponseWriter, response *Response){
 		}
 	}(r.DebugMode)
 
-	Reply(writer,response)
+	Reply(writer, response)
 }
 
-func NewReplier(writer io.Writer, debug bool)Replier{
+func NewReplier(writer io.Writer, debug bool) Replier {
 	return &replier{
 		Logger:    writer,
 		DebugMode: debug,

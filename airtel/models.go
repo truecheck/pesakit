@@ -14,7 +14,7 @@ type PushRequest struct {
 		Msisdn   string `json:"msisdn"`
 	} `json:"subscriber"`
 	Transaction struct {
-		Amount   int64  `json:"amount"`
+		Amount   float64  `json:"amount"`
 		Country  string `json:"country"`
 		Currency string `json:"currency"`
 		ID       string `json:"id"`
@@ -66,7 +66,7 @@ type iDisburseRequest struct {
 	Reference   string `json:"reference"`
 	Pin         string `json:"pin"`
 	Transaction struct {
-		Amount int64  `json:"amount"`
+		Amount float64  `json:"amount"`
 		ID     string `json:"id"`
 	} `json:"transaction"`
 }

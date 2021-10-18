@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/pesakit/pesakit/pkg/countries"
 	"github.com/pesakit/pesakit/pkg/crypto"
+	"math"
 )
 
 var (
@@ -34,6 +35,8 @@ type (
 
 func (r *adapter) ToPushPayRequest(request PushPayRequest) PushRequest {
 
+	amount := math.Floor(request.TransactionAmount*100/100)
+
 	subCountry, _ := countries.GetByName(request.SubscriberCountry)
 	transCountry, _ := countries.GetByName(request.TransactionCountry)
 	return PushRequest{
@@ -48,12 +51,12 @@ func (r *adapter) ToPushPayRequest(request PushPayRequest) PushRequest {
 			Msisdn:   request.SubscriberMsisdn,
 		},
 		Transaction: struct {
-			Amount   int64  `json:"amount"`
+			Amount   float64 `json:"amount"`
 			Country  string `json:"country"`
 			Currency string `json:"currency"`
 			ID       string `json:"id"`
 		}{
-			Amount:   request.TransactionAmount,
+			Amount:   amount,
 			Country:  transCountry.CodeName,
 			Currency: transCountry.CurrencyCode,
 			ID:       request.TransactionID,
@@ -62,6 +65,7 @@ func (r *adapter) ToPushPayRequest(request PushPayRequest) PushRequest {
 }
 
 func (r *adapter) ToDisburseRequest(request DisburseRequest) (iDisburseRequest, error) {
+	amount := math.Floor(request.Amount*100/100)
 	pin := r.Conf.DisbursePIN
 	pubKey := r.Conf.PublicKey
 	encryptedPin, err := crypto.EncryptKey(pin, pubKey)
@@ -78,10 +82,10 @@ func (r *adapter) ToDisburseRequest(request DisburseRequest) (iDisburseRequest, 
 		Reference: request.Reference,
 		Pin:       encryptedPin,
 		Transaction: struct {
-			Amount int64  `json:"amount"`
+			Amount float64  `json:"amount"`
 			ID     string `json:"id"`
 		}{
-			Amount: request.Amount,
+			Amount: amount,
 			ID:     request.ID,
 		},
 	}

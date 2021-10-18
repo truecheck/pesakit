@@ -1,6 +1,9 @@
 package mpesa
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 type (
 	requestAdapter struct {
@@ -11,9 +14,10 @@ type (
 )
 
 func (a *requestAdapter) Adapt(requestType RequestType, request Request) (interface{}, error) {
+	amount := math.Floor(request.Amount * 100 / 100)
 	if requestType == PushPay {
 		response := pushPayRequest{
-			Amount:                   fmt.Sprintf("%0.2f", request.Amount),
+			Amount:                   fmt.Sprintf("%0.2f", amount),
 			Country:                  a.market.Country(),
 			Currency:                 a.market.Currency(),
 			CustomerMSISDN:           request.MSISDN,
@@ -28,7 +32,7 @@ func (a *requestAdapter) Adapt(requestType RequestType, request Request) (interf
 	if requestType == Disburse {
 
 		response := disburseRequest{
-			Amount:                   fmt.Sprintf("%0.2f", request.Amount),
+			Amount:                   fmt.Sprintf("%0.2f", amount),
 			Country:                  a.market.Country(),
 			Currency:                 a.market.Currency(),
 			CustomerMSISDN:           request.MSISDN,

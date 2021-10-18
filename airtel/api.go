@@ -7,7 +7,7 @@ type (
 		Reference          string
 		SubscriberCountry  string
 		SubscriberMsisdn   string
-		TransactionAmount  int64
+		TransactionAmount  float64
 		TransactionCountry string
 		TransactionID      string
 	}
@@ -25,7 +25,7 @@ type (
 	DisburseRequest struct {
 		ID                   string
 		MSISDN               string
-		Amount               int64
+		Amount               float64
 		Reference            string
 		CountryOfTransaction string
 	}

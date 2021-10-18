@@ -149,8 +149,8 @@ type (
 	}
 
 	Client struct {
-		rv internal.Receiver
-		rp internal.Replier
+		rv   internal.Receiver
+		rp   internal.Replier
 		base *internal.BaseClient
 		*Config
 		PaymentHandler   PaymentHandler
@@ -218,11 +218,11 @@ func NewClient(config *Config, handler PaymentHandler, queryHandler NameQueryHan
 	return client
 }
 
-func (client *Client)SetNameQueryHandler(nameQueryHandler NameQueryHandler){
+func (client *Client) SetNameQueryHandler(nameQueryHandler NameQueryHandler) {
 	client.NameQueryHandler = nameQueryHandler
 }
 
-func (client *Client)SetPaymentHandler(paymentHandler PaymentHandler){
+func (client *Client) SetPaymentHandler(paymentHandler PaymentHandler) {
 	client.PaymentHandler = paymentHandler
 }
 

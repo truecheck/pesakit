@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"github.com/pesakit/pesakit/internal"
+	"math"
 	"net/http"
 	"net/url"
 	"time"
@@ -33,12 +34,6 @@ type (
 		Respond(ctx context.Context, request CallbackRequest) (CallbackResponse, error)
 	}
 	CallbackHandlerFunc func(context.Context, CallbackRequest) (CallbackResponse, error)
-
-	Request struct {
-		ReferenceID string  `json:"reference"`
-		MSISDN      string  `json:"msisdn"`
-		Amount      float64 `json:"amount"`
-	}
 
 	disburseRequest struct {
 		XMLName     xml.Name `xml:"COMMAND"`
@@ -70,22 +65,22 @@ type (
 		ExpiresIn   int64  `json:"expires_in"`
 	}
 
-	PayRequest struct {
-		CustomerMSISDN string `json:"CustomerMSISDN"`
-		Amount         int64  `json:"Amount"`
-		Remarks        string `json:"Remarks,omitempty"`
-		ReferenceID    string `json:"ReferenceID"`
+	Request struct {
+		MSISDN      string  `json:"msisdn"`
+		Amount      float64 `json:"amount"`
+		Remarks     string  `json:"remarks,omitempty"`
+		ReferenceID string  `json:"referenceID"`
 	}
 
 	// payRequest This is the request expected by tigo with BillerMSISDN hooked up
 	// from DisburseConfig
-	// PayRequest is used by DisburseClient without the need to specify BillerMSISDN
+	// Request is used by DisburseClient without the need to specify BillerMSISDN
 	payRequest struct {
-		CustomerMSISDN string `json:"CustomerMSISDN"`
-		BillerMSISDN   string `json:"BillerMSISDN"`
-		Amount         int64  `json:"Amount"`
-		Remarks        string `json:"Remarks,omitempty"`
-		ReferenceID    string `json:"ReferenceID"`
+		CustomerMSISDN string  `json:"CustomerMSISDN"`
+		BillerMSISDN   string  `json:"BillerMSISDN"`
+		Amount         float64 `json:"Amount"`
+		Remarks        string  `json:"Remarks,omitempty"`
+		ReferenceID    string  `json:"ReferenceID"`
 	}
 
 	PayResponse struct {
@@ -145,7 +140,7 @@ type (
 
 	Service interface {
 		Token(ctx context.Context) (TokenResponse, error)
-		Push(ctx context.Context, request PayRequest) (PayResponse, error)
+		Push(ctx context.Context, request Request) (PayResponse, error)
 		CallbackServeHTTP(writer http.ResponseWriter, r *http.Request)
 		Disburse(ctx context.Context, request Request) (Response, error)
 	}
@@ -175,11 +170,12 @@ func (handler CallbackHandlerFunc) Respond(ctx context.Context, request Callback
 	return handler(ctx, request)
 }
 
-func (c *Client) Push(ctx context.Context, request PayRequest) (response PayResponse, err error) {
+func (c *Client) Push(ctx context.Context, request Request) (response PayResponse, err error) {
+	amount := math.Floor(request.Amount * 100 / 100)
 	var billPayReq = payRequest{
-		CustomerMSISDN: request.CustomerMSISDN,
+		CustomerMSISDN: request.MSISDN,
 		BillerMSISDN:   c.BillerMSISDN,
-		Amount:         request.Amount,
+		Amount:         amount,
 		Remarks:        request.Remarks,
 		ReferenceID:    fmt.Sprintf("%s%s", c.PushConfig.BillerCode, request.ReferenceID),
 	}
@@ -244,6 +240,7 @@ func (c *Client) CallbackServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Client) Disburse(ctx context.Context, request Request) (response Response, err error) {
+	amount := math.Floor(request.Amount * 100 / 100)
 	var reqOpts []internal.RequestOption
 	headers := map[string]string{
 		"Content-Type": "application/xml",
@@ -256,7 +253,7 @@ func (c *Client) Disburse(ctx context.Context, request Request) (response Respon
 		Msisdn:      c.DisburseConfig.AccountMSISDN,
 		PIN:         c.DisburseConfig.PIN,
 		Msisdn1:     request.MSISDN,
-		Amount:      request.Amount,
+		Amount:      amount,
 		SenderName:  c.DisburseConfig.AccountName,
 		Language1:   senderLanguage,
 		BrandID:     c.DisburseConfig.BrandID,

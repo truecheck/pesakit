@@ -18,18 +18,18 @@ var (
 )
 
 type receiver struct {
-	Logger stdio.Writer
+	Logger    stdio.Writer
 	DebugMode bool
 }
 
-func NewReceiver(writer stdio.Writer, debug bool)Receiver {
+func NewReceiver(writer stdio.Writer, debug bool) Receiver {
 	return &receiver{
 		Logger:    writer,
 		DebugMode: debug,
 	}
 }
 
-func (rc *receiver) Receive(ctx context.Context,rn string, r *http.Request, v interface{}) (*Receipt, error) {
+func (rc *receiver) Receive(ctx context.Context, rn string, r *http.Request, v interface{}) (*Receipt, error) {
 	receipt := new(Receipt)
 	rClone := r.Clone(ctx)
 	receipt.Request = rClone
@@ -37,18 +37,18 @@ func (rc *receiver) Receive(ctx context.Context,rn string, r *http.Request, v in
 	payloadType := categorizeContentType(contentType)
 	body, err := stdio.ReadAll(r.Body)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	if v == nil {
-		return nil,fmt.Errorf("v can not be nil")
+		return nil, fmt.Errorf("v can not be nil")
 	}
 	// restore request body
 	r.Body = stdio.NopCloser(bytes.NewBuffer(body))
 
 	defer func(debug bool) {
-		if debug{
+		if debug {
 			r.Body = stdio.NopCloser(bytes.NewBuffer(body))
-			rc.logRequest(rn,r)
+			rc.logRequest(rn, r)
 			r.Body = stdio.NopCloser(bytes.NewBuffer(body))
 		}
 	}(rc.DebugMode)
@@ -63,18 +63,18 @@ func (rc *receiver) Receive(ctx context.Context,rn string, r *http.Request, v in
 			}
 		}(r.Body)
 		r.Body = stdio.NopCloser(bytes.NewBuffer(body))
-		return receipt,err
+		return receipt, err
 
 	case XmlPayload:
 		r.Body = stdio.NopCloser(bytes.NewBuffer(body))
-		return receipt,xml.Unmarshal(body, v)
+		return receipt, xml.Unmarshal(body, v)
 	}
 
-	return receipt,err
+	return receipt, err
 }
 
 type Receiver interface {
-	Receive(ctx context.Context, rn string,r *http.Request, v interface{})(*Receipt,error)
+	Receive(ctx context.Context, rn string, r *http.Request, v interface{}) (*Receipt, error)
 	//LogPayload(prefix string,response *Response)
 }
 
@@ -84,18 +84,18 @@ type Receipt struct {
 
 type ReceiveParams struct {
 	DebugMode bool
-	Logger stdio.Writer
+	Logger    stdio.Writer
 }
 
 type ReceiveOption func(params *ReceiveParams)
 
-func ReceiveDebugMode(mode bool) ReceiveOption{
+func ReceiveDebugMode(mode bool) ReceiveOption {
 	return func(params *ReceiveParams) {
 		params.DebugMode = mode
 	}
 }
 
-func ReceiveLogger(writer stdio.Writer) ReceiveOption{
+func ReceiveLogger(writer stdio.Writer) ReceiveOption {
 	return func(params *ReceiveParams) {
 		params.Logger = writer
 	}
@@ -105,7 +105,7 @@ func ReceiveLogger(writer stdio.Writer) ReceiveOption{
 // request into given interface v
 // The expected Content-Type should also be declared. If its cTypeJson or
 // application/xml
-func ReceivePayloadWithParams(r *http.Request, v interface{},opts...ReceiveOption) error {
+func ReceivePayloadWithParams(r *http.Request, v interface{}, opts ...ReceiveOption) error {
 
 	rp := &ReceiveParams{
 		DebugMode: true,

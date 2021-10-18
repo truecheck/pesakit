@@ -67,8 +67,8 @@ type (
 		sessionExpiration time.Time
 		pushCallbackFunc  PushCallbackHandler
 		requestAdapter    *requestAdapter
-		rp internal.Replier
-		rv internal.Receiver
+		rp                internal.Replier
+		rv                internal.Receiver
 	}
 )
 
@@ -106,8 +106,8 @@ func NewClient(conf *Config, opts ...ClientOption) *Client {
 		serviceProviderCode: conf.ServiceProvideCode,
 	}
 
-	rp := internal.NewReplier(client.base.Logger,client.base.DebugMode)
-	rv := internal.NewReceiver(client.base.Logger,client.base.DebugMode)
+	rp := internal.NewReplier(client.base.Logger, client.base.DebugMode)
+	rv := internal.NewReceiver(client.base.Logger, client.base.DebugMode)
 	client.rp = rp
 	client.rv = rv
 	return client
@@ -241,7 +241,7 @@ func (c *Client) Disburse(ctx context.Context, request Request) (response Disbur
 
 func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	body := new(PushCallbackRequest)
-	_, err := c.rv.Receive(context.TODO(),"mpesa push callback",request,body)
+	_, err := c.rv.Receive(context.TODO(), "mpesa push callback", request, body)
 
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
