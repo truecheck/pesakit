@@ -5,7 +5,7 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/pesakit/pesakit/internal"
+	"github.com/techcraftlabs/base"
 )
 
 type (
@@ -25,7 +25,7 @@ type (
 	}
 )
 
-func queryParamsOptions(params Params, m map[string]string) internal.RequestOption {
+func queryParamsOptions(params Params, m map[string]string) base.RequestOption {
 	from, to, limit, offset := params.From, params.To, params.Limit, params.Offset
 	if from > 0 {
 		m["from"] = fmt.Sprintf("%d", from)
@@ -40,7 +40,7 @@ func queryParamsOptions(params Params, m map[string]string) internal.RequestOpti
 		m["offset"] = fmt.Sprintf("%d", offset)
 	}
 
-	return internal.WithQueryParams(m)
+	return base.WithQueryParams(m)
 }
 
 func (c *Client) Summary(ctx context.Context, params Params) (ListTransactionsResponse, error) {
@@ -50,7 +50,7 @@ func (c *Client) Summary(ctx context.Context, params Params) (ListTransactionsRe
 		return ListTransactionsResponse{}, err
 	}
 
-	var opts []internal.RequestOption
+	var opts []base.RequestOption
 
 	hs := map[string]string{
 		"Content-Type":  "application/json",
@@ -59,7 +59,7 @@ func (c *Client) Summary(ctx context.Context, params Params) (ListTransactionsRe
 	}
 	queryMap := make(map[string]string, 4)
 	queryMapOpt := queryParamsOptions(params, queryMap)
-	headersOpt := internal.WithRequestHeaders(hs)
+	headersOpt := base.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt, queryMapOpt)
 	req := c.makeInternalRequest(TransactionSummary, nil, opts...)
 

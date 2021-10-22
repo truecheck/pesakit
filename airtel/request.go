@@ -4,12 +4,12 @@ package airtel
 
 import (
 	"fmt"
-	"github.com/pesakit/pesakit/internal"
+	"github.com/techcraftlabs/base"
 	"net/http"
 	"strings"
 )
 
-var _ internal.RequestInformer = (*RequestType)(nil)
+var _ base.RequestInformer = (*RequestType)(nil)
 
 const (
 	defaultGrantType     = "client_credentials"
@@ -140,13 +140,13 @@ type (
 	}
 )
 
-func (c *Client) makeInternalRequest(requestType RequestType, payload interface{}, opts ...internal.RequestOption) *internal.Request {
+func (c *Client) makeInternalRequest(requestType RequestType, payload interface{}, opts ...base.RequestOption) *base.Request {
 	baseURL := c.baseURL
 	endpoints := c.Conf.Endpoints
 	edps := *endpoints
 	url := appendEndpoint(baseURL, requestType.endpoint(edps))
 	method := requestType.Method()
-	return internal.NewRequest(method, url, payload, opts...)
+	return base.NewRequest(method, url, payload, opts...)
 }
 
 func appendEndpoint(url string, endpoint string) string {

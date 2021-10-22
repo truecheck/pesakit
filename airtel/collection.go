@@ -3,7 +3,7 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/pesakit/pesakit/internal"
+	"github.com/techcraftlabs/base"
 	"github.com/pesakit/pesakit/pkg/countries"
 	"net/http"
 )
@@ -36,7 +36,7 @@ func (c *Client) push(ctx context.Context, request PushRequest) (iPushResponse, 
 	countryCodeName := transaction.Country
 	currencyCodeName := transaction.Currency
 
-	var opts []internal.RequestOption
+	var opts []base.RequestOption
 
 	hs := map[string]string{
 		"Content-Type":  "application/json",
@@ -46,10 +46,10 @@ func (c *Client) push(ctx context.Context, request PushRequest) (iPushResponse, 
 		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
 
-	headersOpt := internal.WithRequestHeaders(hs)
+	headersOpt := base.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt)
 	pe := c.Conf.Endpoints.PushEndpoint
-	req := internal.MakeInternalRequest(c.baseURL, pe, UssdPush, request, opts...)
+	req := base.MakeInternalRequest(c.baseURL, pe, UssdPush, request, opts...)
 	res := new(iPushResponse)
 	_, err = c.base.Do(ctx, UssdPush.String(), req, res)
 	if err != nil {
@@ -67,7 +67,7 @@ func (c *Client) Refund(ctx context.Context, request RefundRequest) (RefundRespo
 	if err != nil {
 		return RefundResponse{}, err
 	}
-	var opts []internal.RequestOption
+	var opts []base.RequestOption
 	hs := map[string]string{
 		"Content-Type":  "application/json",
 		"Accept":        "*/*",
@@ -75,7 +75,7 @@ func (c *Client) Refund(ctx context.Context, request RefundRequest) (RefundRespo
 		"X-Currency":    country.CurrencyCode,
 		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
-	headersOpt := internal.WithRequestHeaders(hs)
+	headersOpt := base.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt)
 
 	req := c.makeInternalRequest(Refund, request, opts...)
@@ -105,7 +105,7 @@ func (c *Client) PushEnquiry(ctx context.Context, request PushEnquiryRequest) (P
 	if err != nil {
 		return PushEnquiryResponse{}, err
 	}
-	var opts []internal.RequestOption
+	var opts []base.RequestOption
 	hs := map[string]string{
 		"Content-Type":  "application/json",
 		"Accept":        "*/*",
@@ -113,8 +113,8 @@ func (c *Client) PushEnquiry(ctx context.Context, request PushEnquiryRequest) (P
 		"X-Currency":    country.CurrencyCode,
 		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
-	headersOpt := internal.WithRequestHeaders(hs)
-	endpointOpt := internal.WithEndpoint(request.ID)
+	headersOpt := base.WithRequestHeaders(hs)
+	endpointOpt := base.WithEndpoint(request.ID)
 	opts = append(opts, headersOpt, endpointOpt)
 	req := c.makeInternalRequest(PushEnquiry, request, opts...)
 	if err != nil {
@@ -131,7 +131,7 @@ func (c *Client) PushEnquiry(ctx context.Context, request PushEnquiryRequest) (P
 
 func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	body := new(CallbackRequest)
-	err := internal.ReceivePayload(request, body)
+	err := base.ReceivePayload(request, body)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return

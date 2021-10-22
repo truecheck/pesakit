@@ -2,7 +2,7 @@ package mpesa
 
 import (
 	"fmt"
-	"github.com/pesakit/pesakit/internal"
+	"github.com/techcraftlabs/base"
 	"strings"
 )
 
@@ -20,13 +20,13 @@ func (eps *Endpoints) Get(requestType RequestType) string {
 	return ""
 }
 
-func (c *Client) makeInternalRequest(requestType RequestType, payload interface{}, opts ...internal.RequestOption) *internal.Request {
+func (c *Client) makeInternalRequest(requestType RequestType, payload interface{}, opts ...base.RequestOption) *base.Request {
 	baseURL := c.Conf.BasePath
 	endpoints := c.Conf.Endpoints
 	edps := endpoints
 	url := appendEndpoint(baseURL, edps.Get(requestType))
 	method := requestType.Method()
-	return internal.NewRequest(method, url, payload, opts...)
+	return base.NewRequest(method, url, payload, opts...)
 }
 
 func appendEndpoint(url string, endpoint string) string {

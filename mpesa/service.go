@@ -3,8 +3,8 @@ package mpesa
 import (
 	"context"
 	"fmt"
-	"github.com/pesakit/pesakit/internal"
 	"github.com/pesakit/pesakit/pkg/crypto"
+	"github.com/techcraftlabs/base"
 	"net/http"
 	"time"
 )
@@ -59,7 +59,7 @@ type (
 
 	Client struct {
 		Conf *Config
-		base *internal.BaseClient
+		base *base.Client
 		//Market            Market
 		//Platform          Platform
 		encryptedApiKey   *string
@@ -67,8 +67,8 @@ type (
 		sessionExpiration time.Time
 		pushCallbackFunc  PushCallbackHandler
 		requestAdapter    *requestAdapter
-		rp                internal.Replier
-		rv                internal.Receiver
+		rp                base.Replier
+		rv                base.Receiver
 	}
 )
 
@@ -82,7 +82,7 @@ func NewClient(conf *Config, opts ...ClientOption) *Client {
 
 	client = &Client{
 		Conf: conf,
-		base: internal.NewBaseClient(),
+		base: base.NewClient(),
 		//Market:            TanzaniaMarket,
 		//Platform:          SANDBOX,
 		encryptedApiKey:   enc,
@@ -106,8 +106,8 @@ func NewClient(conf *Config, opts ...ClientOption) *Client {
 		serviceProviderCode: conf.ServiceProvideCode,
 	}
 
-	rp := internal.NewReplier(client.base.Logger, client.base.DebugMode)
-	rv := internal.NewReceiver(client.base.Logger, client.base.DebugMode)
+	rp := base.NewReplier(client.base.Logger, client.base.DebugMode)
+	rv := base.NewReceiver(client.base.Logger, client.base.DebugMode)
 	client.rp = rp
 	client.rv = rv
 	return client
@@ -129,8 +129,8 @@ func (c *Client) SessionID(ctx context.Context) (response SessionResponse, err e
 		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
 
-	var opts []internal.RequestOption
-	headersOpt := internal.WithRequestHeaders(headers)
+	var opts []base.RequestOption
+	headersOpt := base.WithRequestHeaders(headers)
 	opts = append(opts, headersOpt)
 	re := c.makeInternalRequest(SessionID, nil, opts...)
 	res, err := c.base.Do(ctx, SessionID.String(), re, &response)
@@ -180,8 +180,8 @@ func (c *Client) PushAsync(ctx context.Context, request Request) (response PushA
 		return PushAsyncResponse{}, err
 	}
 
-	var opts []internal.RequestOption
-	headersOpt := internal.WithRequestHeaders(headers)
+	var opts []base.RequestOption
+	headersOpt := base.WithRequestHeaders(headers)
 	opts = append(opts, headersOpt)
 	re := c.makeInternalRequest(PushPay, payload, opts...)
 	res, err := c.base.Do(ctx, PushPay.String(), re, &response)
@@ -220,8 +220,8 @@ func (c *Client) Disburse(ctx context.Context, request Request) (response Disbur
 		return DisburseResponse{}, err
 	}
 
-	var opts []internal.RequestOption
-	headersOpt := internal.WithRequestHeaders(headers)
+	var opts []base.RequestOption
+	headersOpt := base.WithRequestHeaders(headers)
 	opts = append(opts, headersOpt)
 	re := c.makeInternalRequest(Disburse, payload, opts...)
 	res, err := c.base.Do(ctx, Disburse.String(), re, &response)
@@ -254,6 +254,6 @@ func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Req
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	response := internal.NewResponse(200, resp)
+	response := base.NewResponse(200, resp)
 	c.rp.Reply(writer, response)
 }

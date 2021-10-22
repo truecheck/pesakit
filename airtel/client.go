@@ -3,7 +3,7 @@
 package airtel
 
 import (
-	"github.com/pesakit/pesakit/internal"
+	"github.com/techcraftlabs/base"
 	"time"
 )
 
@@ -32,7 +32,7 @@ type (
 		baseURL          string
 		environment      Environment
 		Conf             *Config
-		base             *internal.BaseClient
+		base             *base.Client
 		token            *string
 		tokenExpiresAt   time.Time
 		pushCallbackFunc PushCallbackHandler
@@ -84,12 +84,12 @@ func NewClient(config *Config, opts ...ClientOption) *Client {
 
 	}
 	token := new(string)
-	base := internal.NewBaseClient()
+	newClient := base.NewClient()
 
 	client = &Client{
 		environment:    STAGING,
 		Conf:           config,
-		base:           base,
+		base:           newClient,
 		token:          token,
 		tokenExpiresAt: time.Now(),
 		resAdapter:     &adapter{},

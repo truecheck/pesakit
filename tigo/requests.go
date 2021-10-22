@@ -2,11 +2,11 @@ package tigo
 
 import (
 	"fmt"
-	"github.com/pesakit/pesakit/internal"
+	"github.com/techcraftlabs/base"
 	"net/http"
 )
 
-var _ internal.RequestInformer = (*RequestType)(nil)
+var _ base.RequestInformer = (*RequestType)(nil)
 
 const (
 	GetToken RequestType = iota

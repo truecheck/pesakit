@@ -5,7 +5,7 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/pesakit/pesakit/internal"
+	"github.com/techcraftlabs/base"
 	"github.com/pesakit/pesakit/pkg/countries"
 )
 
@@ -41,7 +41,7 @@ func (c *Client) disburse(ctx context.Context, request iDisburseRequest) (iDisbu
 	if err != nil {
 		return iDisburseResponse{}, err
 	}
-	var opts []internal.RequestOption
+	var opts []base.RequestOption
 
 	hs := map[string]string{
 		"Content-Type":  "application/json",
@@ -51,7 +51,7 @@ func (c *Client) disburse(ctx context.Context, request iDisburseRequest) (iDisbu
 		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
 
-	headersOpt := internal.WithRequestHeaders(hs)
+	headersOpt := base.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt)
 
 	req := c.makeInternalRequest(Disbursement, request, opts...)
@@ -75,7 +75,7 @@ func (c *Client) DisburseEnquiry(ctx context.Context, request DisburseEnquiryReq
 	if err != nil {
 		return DisburseEnquiryResponse{}, err
 	}
-	var opts []internal.RequestOption
+	var opts []base.RequestOption
 
 	hs := map[string]string{
 		"Content-Type":  "application/json",
@@ -84,8 +84,8 @@ func (c *Client) DisburseEnquiry(ctx context.Context, request DisburseEnquiryReq
 		"X-Currency":    country.CurrencyCode,
 		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
-	headersOpt := internal.WithRequestHeaders(hs)
-	endpointOption := internal.WithEndpoint(request.ID)
+	headersOpt := base.WithRequestHeaders(hs)
+	endpointOption := base.WithEndpoint(request.ID)
 	opts = append(opts, headersOpt, endpointOption)
 	req := c.makeInternalRequest(DisbursementEnquiry, request, opts...)
 	res := new(DisburseEnquiryResponse)

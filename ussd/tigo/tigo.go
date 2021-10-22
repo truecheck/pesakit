@@ -3,7 +3,7 @@ package tigo
 import (
 	"context"
 	"encoding/xml"
-	"github.com/pesakit/pesakit/internal"
+	"github.com/techcraftlabs/base"
 	"net/http"
 	"time"
 )
@@ -149,9 +149,9 @@ type (
 	}
 
 	Client struct {
-		rv   internal.Receiver
-		rp   internal.Replier
-		base *internal.BaseClient
+		rv   base.Receiver
+		rp   base.Replier
+		base *base.Client
 		*Config
 		PaymentHandler   PaymentHandler
 		NameQueryHandler NameQueryHandler
@@ -208,12 +208,18 @@ func NewClient(config *Config, handler PaymentHandler, queryHandler NameQueryHan
 		Config:           config,
 		PaymentHandler:   handler,
 		NameQueryHandler: queryHandler,
-		base:             internal.NewBaseClient(),
+		base:             base.NewClient(),
 	}
 
 	for _, opt := range opts {
 		opt(client)
 	}
+
+	lg := client.base.Logger
+	dm := client.base.DebugMode
+
+	client.rp = base.NewReplier(lg, dm)
+	client.rv = base.NewReceiver(lg,dm)
 
 	return client
 }
@@ -240,7 +246,7 @@ func (client *Client) NameQueryServeHTTP(writer http.ResponseWriter, request *ht
 	defer cancel()
 	var req nameRequest
 
-	err := internal.ReceivePayload(request, &req)
+	err := base.ReceivePayload(request, &req)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 	}
@@ -251,17 +257,17 @@ func (client *Client) NameQueryServeHTTP(writer http.ResponseWriter, request *ht
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 	}
 
-	var opts []internal.ResponseOption
+	var opts []base.ResponseOption
 	headers := map[string]string{
 		"Content-Type": "application/xml",
 	}
-	headersOpts := internal.WithResponseHeaders(headers)
+	headersOpts := base.WithResponseHeaders(headers)
 	opts = append(opts, headersOpts)
 
 	payload := transformToXMLNameResponse(response)
-	res := internal.NewResponse(200, payload, opts...)
+	res := base.NewResponse(200, payload, opts...)
 
-	internal.Reply(writer, res)
+	client.rp.Reply(writer, res)
 
 }
 
@@ -272,7 +278,7 @@ func (client *Client) PaymentServeHTTP(writer http.ResponseWriter, request *http
 
 	var req payRequest
 
-	err := internal.ReceivePayload(request, &req)
+	err := base.ReceivePayload(request, &req)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
@@ -284,14 +290,13 @@ func (client *Client) PaymentServeHTTP(writer http.ResponseWriter, request *http
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 	}
 
-	var opts []internal.ResponseOption
+	var opts []base.ResponseOption
 	headers := map[string]string{
 		"Content-Type": "application/xml",
 	}
-	headersOpts := internal.WithResponseHeaders(headers)
+	headersOpts := base.WithResponseHeaders(headers)
 	opts = append(opts, headersOpts)
 	payload := transformToXMLPayResponse(response)
-	res := internal.NewResponse(200, payload, opts...)
-
-	internal.Reply(writer, res)
+	res := base.NewResponse(200, payload, opts...)
+	client.rp.Reply(writer, res)
 }

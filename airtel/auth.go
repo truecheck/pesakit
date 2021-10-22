@@ -5,7 +5,7 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/pesakit/pesakit/internal"
+	"github.com/techcraftlabs/base"
 	"time"
 )
 
@@ -42,13 +42,13 @@ func (c *Client) Token(ctx context.Context) (TokenResponse, error) {
 		GrantType:    defaultGrantType,
 	}
 
-	var opts []internal.RequestOption
+	var opts []base.RequestOption
 	hs := map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "*/*",
 	}
 
-	opts = append(opts, internal.WithRequestHeaders(hs))
+	opts = append(opts, base.WithRequestHeaders(hs))
 	req := c.makeInternalRequest(Authorization, body, opts...)
 
 	res := new(TokenResponse)

@@ -2,13 +2,13 @@ package mpesa
 
 import (
 	"fmt"
-	"github.com/pesakit/pesakit/internal"
+	"github.com/techcraftlabs/base"
 	"net/http"
 	"strings"
 )
 
 var (
-	_ internal.RequestInformer = (*RequestType)(nil)
+	_ base.RequestInformer = (*RequestType)(nil)
 	_ market                   = (*Market)(nil)
 )
 

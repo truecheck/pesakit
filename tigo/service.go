@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/xml"
 	"fmt"
-	"github.com/pesakit/pesakit/internal"
+	"github.com/techcraftlabs/base"
 	"math"
 	"net/http"
 	"net/url"
@@ -132,7 +132,9 @@ type (
 
 	Client struct {
 		*Config
-		base            *internal.BaseClient
+		rp base.Replier
+		rv base.Receiver
+		base            *base.Client
 		CallbackHandler CallbackHandler
 		token           *string
 		tokenExpires    time.Time
@@ -152,12 +154,18 @@ func NewClient(config *Config, opts ...ClientOption) *Client {
 		Config:       config,
 		token:        token,
 		tokenExpires: time.Now(),
-		base:         internal.NewBaseClient(),
+		base:         base.NewClient(),
 	}
 
 	for _, opt := range opts {
 		opt(client)
 	}
+
+	lg := client.base.Logger
+	dm := client.base.DebugMode
+
+	client.rp = base.NewReplier(lg, dm)
+	client.rv = base.NewReceiver(lg,dm)
 
 	return client
 }
@@ -190,12 +198,12 @@ func (c *Client) Push(ctx context.Context, request Request) (response PayRespons
 		"Username":      c.PushConfig.Username,
 		"Password":      c.PushConfig.Password,
 	}
-	var requestOpts []internal.RequestOption
-	moreHeaderOpt := internal.WithMoreHeaders(authHeader)
-	//basicAuth := internal.WithBasicAuth(c.PushConfig.Username, c.PushConfig.Password)
+	var requestOpts []base.RequestOption
+	moreHeaderOpt := base.WithMoreHeaders(authHeader)
+	//basicAuth := base.WithBasicAuth(c.PushConfig.Username, c.PushConfig.Password)
 	requestOpts = append(requestOpts, moreHeaderOpt)
 
-	req := internal.MakeInternalRequest(c.BaseURL, c.PushConfig.PushPayEndpoint, PushPay, billPayReq, requestOpts...)
+	req := base.MakeInternalRequest(c.BaseURL, c.PushConfig.PushPayEndpoint, PushPay, billPayReq, requestOpts...)
 
 	rn := PushPay.String()
 	_, err = c.base.Do(context.TODO(), rn, req, &response)
@@ -211,7 +219,7 @@ func (c *Client) CallbackServeHTTP(w http.ResponseWriter, r *http.Request) {
 	callbackRequest := new(CallbackRequest)
 	statusCode := 200
 
-	err := internal.ReceivePayload(r, callbackRequest)
+	err := base.ReceivePayload(r, callbackRequest)
 	if err != nil {
 		statusCode = http.StatusInternalServerError
 		http.Error(w, err.Error(), statusCode)
@@ -227,25 +235,25 @@ func (c *Client) CallbackServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var responseOpts []internal.ResponseOption
+	var responseOpts []base.ResponseOption
 	headers := map[string]string{
 		"Content-Type": "application/json",
 	}
-	headersOpt := internal.WithResponseHeaders(headers)
+	headersOpt := base.WithResponseHeaders(headers)
 
-	responseOpts = append(responseOpts, headersOpt, internal.WithResponseError(err))
-	response := internal.NewResponse(statusCode, callbackResponse, responseOpts...)
-	internal.Reply(w, response)
+	responseOpts = append(responseOpts, headersOpt, base.WithResponseError(err))
+	response := base.NewResponse(statusCode, callbackResponse, responseOpts...)
+	c.rp.Reply(w, response)
 
 }
 
 func (c *Client) Disburse(ctx context.Context, request Request) (response Response, err error) {
 	amount := math.Floor(request.Amount * 100 / 100)
-	var reqOpts []internal.RequestOption
+	var reqOpts []base.RequestOption
 	headers := map[string]string{
 		"Content-Type": "application/xml",
 	}
-	headersOpt := internal.WithRequestHeaders(headers)
+	headersOpt := base.WithRequestHeaders(headers)
 	reqOpts = append(reqOpts, headersOpt)
 	r := disburseRequest{
 		Type:        requestType,
@@ -259,7 +267,7 @@ func (c *Client) Disburse(ctx context.Context, request Request) (response Respon
 		BrandID:     c.DisburseConfig.BrandID,
 	}
 
-	req := internal.MakeInternalRequest(c.RequestURL, "", Disburse, r, reqOpts...)
+	req := base.MakeInternalRequest(c.RequestURL, "", Disburse, r, reqOpts...)
 
 	_, err = c.base.Do(ctx, Disburse.String(), req, &response)
 
@@ -306,11 +314,11 @@ func (c *Client) Token(ctx context.Context) (TokenResponse, error) {
 		"Cache-Control": "no-cache",
 	}
 
-	var requestOptions []internal.RequestOption
-	headersOption := internal.WithRequestHeaders(headers)
+	var requestOptions []base.RequestOption
+	headersOption := base.WithRequestHeaders(headers)
 	requestOptions = append(requestOptions, headersOption)
 
-	request := internal.MakeInternalRequest(c.PushConfig.BaseURL, c.PushConfig.TokenEndpoint, GetToken, form, requestOptions...)
+	request := base.MakeInternalRequest(c.PushConfig.BaseURL, c.PushConfig.TokenEndpoint, GetToken, form, requestOptions...)
 
 	var tokenResponse TokenResponse
 
