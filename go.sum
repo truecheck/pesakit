@@ -1,4 +1,8 @@
+github.com/techcraftlabs/airtel v0.0.1 h1:SW8mEt6y+Yf3EJ9UvK7iezSANDjlmYPqfVWRSaPbPuo=
+github.com/techcraftlabs/airtel v0.0.1/go.mod h1:/Hc7LRL1F8c5DnUX6ktl89eINX+DDZGacdnqH8J2f+0=
 github.com/techcraftlabs/base v0.0.2 h1:vaHW69K4n4OBAzzmce73QgOiO2jDqEOQlTVsbJOXDWY=
 github.com/techcraftlabs/base v0.0.2/go.mod h1:rOmjUkGfCp2vqa9O57htXSjzMEKxnYEEsrS0Pr/g4p0=
 github.com/techcraftlabs/mna v0.3.0 h1:a1tVYLkL3U6rVYofvkwVWH6ptYbTKhefKKSTShog7gc=
 github.com/techcraftlabs/mna v0.3.0/go.mod h1:kd+v3kT3b0qefSQXxZtrg9fWJPeClDtgVkdv/f3OMZU=
+github.com/techcraftlabs/mpesa v0.0.1 h1:FKzgGheZ0w6yCkKLTLfi3+PBfjnFBV/YbctIWoaAjZo=
+github.com/techcraftlabs/mpesa v0.0.1/go.mod h1:cx2i/GytE4jGJnf1l7R1jlNFoU9ic413OcWMKlnHCfI=

@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/pesakit/pesakit/airtel"
-	"github.com/pesakit/pesakit/mpesa"
 	"github.com/pesakit/pesakit/pkg/countries"
 	"github.com/pesakit/pesakit/pkg/mno"
 	"github.com/pesakit/pesakit/tigo"
+	"github.com/techcraftlabs/airtel"
+	"github.com/techcraftlabs/mpesa"
 )
 
 var (
@@ -116,7 +116,7 @@ func (c *Client) Do(ctx context.Context, operator mno.Operator, action Action, r
 				Reference:    request.ID,
 				Amount:       request.Amount,
 				MSISDN:       request.MSISDN,
-				Desc:         request.Description,
+				Description:         request.Description,
 			}
 			return mp.PushAsync(ctx, req)
 
@@ -125,7 +125,7 @@ func (c *Client) Do(ctx context.Context, operator mno.Operator, action Action, r
 				Reference:          request.Description,
 				SubscriberCountry:  request.subscriberCountry,
 				SubscriberMsisdn:   request.MSISDN,
-				TransactionAmount:  request.Amount,
+				TransactionAmount: int64(request.Amount),
 				TransactionCountry: request.transactionCountry,
 				TransactionID:      request.ID,
 			}
@@ -143,14 +143,14 @@ func (c *Client) Do(ctx context.Context, operator mno.Operator, action Action, r
 				Reference:    request.ID,
 				Amount:       request.Amount,
 				MSISDN:       request.MSISDN,
-				Desc:         request.Description,
+				Description:         request.Description,
 			}
 			return mp.Disburse(ctx, req)
 		case mno.Airtel:
 			req := airtel.DisburseRequest{
 				ID:                   request.ID,
 				MSISDN:               request.MSISDN,
-				Amount:              request.Amount,
+				Amount: int64(request.Amount),
 				Reference:            request.Description,
 				CountryOfTransaction: request.transactionCountry,
 			}
