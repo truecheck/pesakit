@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/julienschmidt/httprouter"
 	"github.com/pesakit/pesakit"
-	"github.com/pesakit/pesakit/tigo"
 	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/mpesa"
+	"github.com/techcraftlabs/tigopesa/push"
 	clix "github.com/urfave/cli/v2"
 	"net/http"
 )
@@ -33,10 +33,10 @@ func AirtelCallbackHandler() airtel.PushCallbackFunc {
 
 }
 
-func TigoCallbackHandler() tigopesa.CallbackHandlerFunc {
-	return func(ctx context.Context, request tigopesa.CallbackRequest) (tigopesa.CallbackResponse, error) {
-		response := tigopesa.CallbackResponse{
-			ResponseCode:        tigopesa.SuccessCode,
+func TigoCallbackHandler() push.CallbackHandlerFunc {
+	return func(ctx context.Context, request push.CallbackRequest) (push.CallbackResponse, error) {
+		response := push.CallbackResponse{
+			ResponseCode:        push.SuccessCode,
 			ResponseDescription: "successful",
 			ResponseStatus:      true,
 			ReferenceID:         request.ReferenceID,
