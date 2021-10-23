@@ -3,8 +3,8 @@ package cli
 import (
 	"fmt"
 	"github.com/pesakit/pesakit"
-	"github.com/pesakit/pesakit/airtel"
-	"github.com/pesakit/pesakit/mpesa"
+	"github.com/techcraftlabs/airtel"
+	"github.com/techcraftlabs/mpesa"
 	"github.com/pesakit/pesakit/tigo"
 	clix "github.com/urfave/cli/v2"
 	"os"

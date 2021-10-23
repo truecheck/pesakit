@@ -17,11 +17,11 @@ func get(key string, defaultValue interface{}) interface{} {
 }
 
 func Set(key string, defaultValue interface{})error{
-	return os.Setenv(key,String(key,defaultValue))
+	return os.Setenv(key, String(key,defaultValue))
 }
 
 func ReadSetString(key string, defaultValue string)(string,error){
-	err := Set(key,String(key,defaultValue))
+	err := Set(key, String(key,defaultValue))
 	if err != nil{
 		return "", fmt.Errorf("could not set the env %s, %w",key,err)
 	}
@@ -30,7 +30,7 @@ func ReadSetString(key string, defaultValue string)(string,error){
 
 
 func ReadSetInt64(key string, defaultValue int64)(int64,error){
-	err := Set(key,String(key,defaultValue))
+	err := Set(key, String(key,defaultValue))
 	if err != nil{
 		return -1, fmt.Errorf("could not set the env %s, %w",key,err)
 	}
@@ -38,7 +38,7 @@ func ReadSetInt64(key string, defaultValue int64)(int64,error){
 }
 
 func ReadSetBool(key string, defaultValue bool)(bool,error){
-	err := Set(key,String(key,defaultValue))
+	err := Set(key, String(key,defaultValue))
 	if err != nil{
 		return false, fmt.Errorf("could not set the env %s, %w",key,err)
 	}
@@ -46,7 +46,7 @@ func ReadSetBool(key string, defaultValue bool)(bool,error){
 }
 
 func ReadSetFloat64(key string, defaultValue float64)(float64,error){
-	err := Set(key,String(key,defaultValue))
+	err := Set(key, String(key,defaultValue))
 	if err != nil{
 		return -1, fmt.Errorf("could not set the env %s, %w",key,err)
 	}
