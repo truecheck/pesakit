@@ -22,6 +22,8 @@ github.com/techcraftlabs/mna v0.3.0 h1:a1tVYLkL3U6rVYofvkwVWH6ptYbTKhefKKSTShog7
 github.com/techcraftlabs/mna v0.3.0/go.mod h1:kd+v3kT3b0qefSQXxZtrg9fWJPeClDtgVkdv/f3OMZU=
 github.com/techcraftlabs/mpesa v0.0.1 h1:FKzgGheZ0w6yCkKLTLfi3+PBfjnFBV/YbctIWoaAjZo=
 github.com/techcraftlabs/mpesa v0.0.1/go.mod h1:cx2i/GytE4jGJnf1l7R1jlNFoU9ic413OcWMKlnHCfI=
+github.com/techcraftlabs/tigopesa v0.0.5 h1:uTteV8PW5Ka5LD1XY9+G6fI0vzz0R1MMAwDorYnTQIY=
+github.com/techcraftlabs/tigopesa v0.0.5/go.mod h1:sExtOTbWpH0Q4qEcLskG9XYV9wOjIRzJmTqDrni+290=
 github.com/urfave/cli/v2 v2.3.0 h1:qph92Y649prgesehzOrQjdWyxFOp/QVM+6imKHad91M=
 github.com/urfave/cli/v2 v2.3.0/go.mod h1:LJmUH05zAU44vOAcrfzZQKsZbVcdbOG8rtL3/XcUArI=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=

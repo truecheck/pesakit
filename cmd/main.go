@@ -8,8 +8,12 @@ import (
 	"github.com/pesakit/pesakit/cli"
 	"github.com/pesakit/pesakit/pkg/env"
 	"github.com/pesakit/pesakit/tigo"
+	tigopesa "github.com/techcraftlabs/tigopesa"
 	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/mpesa"
+	"github.com/techcraftlabs/tigopesa/disburse"
+	"github.com/techcraftlabs/tigopesa/push"
+	"github.com/techcraftlabs/tigopesa/ussd"
 	"log"
 	"os"
 	"path/filepath"
@@ -113,7 +117,7 @@ const (
 	defTigoPasswordGrantType             = "password"
 )
 
-func loadTigoEnv() *tigo.Config {
+func loadTigoEnv() *tigopesa.Config {
 
 	var (
 		disburseAccountName   = env.String(envTigoDisburseAccountName, defTigoDisburseAccountName)
@@ -131,23 +135,52 @@ func loadTigoEnv() *tigo.Config {
 		pwdGrantType          = env.String(envTigoPasswordGrantType, defTigoPasswordGrantType)
 	)
 
-	conf := &tigo.Config{
-		DisburseConfig: &tigo.DisburseConfig{
-			AccountName:   disburseAccountName,
-			AccountMSISDN: disburseAccountMSISDN,
-			BrandID:       disburseBrandID,
-			PIN:           disbursePIN,
-			RequestURL:    disburseURL,
+	//conf := &tigopesa.Config{
+		
+		
+		//DisburseConfig: &tigopesa.DisburseConfig{
+		//	AccountName:   disburseAccountName,
+		//	AccountMSISDN: disburseAccountMSISDN,
+		//	BrandID:       disburseBrandID,
+		//	PIN:           disbursePIN,
+		//	RequestURL:    disburseURL,
+		//},
+		//PushConfig: &tigopesa.PushConfig{
+		//	BaseURL:           pushBaseURL,
+		//	Username:          pushUsername,
+		//	Password:          pushPassword,
+		//	PasswordGrantType: pwdGrantType,
+		//	TokenEndpoint:     pushTokenURL,
+		//	PushPayEndpoint:   pushPayURL,
+		//	BillerMSISDN:      pushBillerMSISDN,
+		//	BillerCode:        pushBillerCode,
+		//},
+//	}
+	
+	conf := &tigopesa.Config{
+		Disburse: &disburse.Config{
+				AccountName:   disburseAccountName,
+				AccountMSISDN: disburseAccountMSISDN,
+				BrandID:       disburseBrandID,
+				PIN:           disbursePIN,
+				RequestURL:    disburseURL,
 		},
-		PushConfig: &tigo.PushConfig{
-			BaseURL:           pushBaseURL,
-			Username:          pushUsername,
-			Password:          pushPassword,
-			PasswordGrantType: pwdGrantType,
-			TokenEndpoint:     pushTokenURL,
-			PushPayEndpoint:   pushPayURL,
-			BillerMSISDN:      pushBillerMSISDN,
-			BillerCode:        pushBillerCode,
+		Push:     &push.Config{
+				BaseURL:           pushBaseURL,
+				Username:          pushUsername,
+				Password:          pushPassword,
+				PasswordGrantType: pwdGrantType,
+				TokenEndpoint:     pushTokenURL,
+				PushPayEndpoint:   pushPayURL,
+				BillerMSISDN:      pushBillerMSISDN,
+				BillerCode:        pushBillerCode,
+		},
+		Ussd:     &ussd.Config{
+			AccountName:   "",
+			AccountMSISDN: "",
+			BillerNumber:  "",
+			RequestURL:    "",
+			NamecheckURL:  "",
 		},
 	}
 
@@ -290,7 +323,7 @@ func main(){
 	mpesaOptions = append(mpesaOptions, debugOption,cbOption)
 	m := mpesa.NewClient(vConfig, mpesaOptions...)
 
-	t := tigo.NewClient(tConfig, tigo.WithDebugMode(debugMode))
+	t := tigopesa.NewClient(tConfig, tigopesa.WithDebugMode(debugMode))
 	t.SetCallbackHandler(cli.TigoCallbackHandler())
 	client := pesakit.NewClient(a, t, m)
 

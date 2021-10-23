@@ -102,7 +102,7 @@ func printAirtelConf(w *tabwriter.Writer, a *airtel.Config) {
 	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envAirtelDisbursementEnquiryEndpoint, a.Endpoints.DisbursementEnquiryEndpoint)
 }
 
-func printTigoConf(w *tabwriter.Writer, tc *tigo.Config) {
+func printTigoConf(w *tabwriter.Writer, tc *tigopesa.Config) {
 	p := tc.PushConfig
 	d := tc.DisburseConfig
 
@@ -125,7 +125,7 @@ func printTigoConf(w *tabwriter.Writer, tc *tigo.Config) {
 
 }
 
-func printConfigs(w *tabwriter.Writer, a *airtel.Config, v *mpesa.Config, t *tigo.Config) {
+func printConfigs(w *tabwriter.Writer, a *airtel.Config, v *mpesa.Config, t *tigopesa.Config) {
 	printMpesaConf(w, v)
 	printAirtelConf(w, a)
 	printTigoConf(w, t)
