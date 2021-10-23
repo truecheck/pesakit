@@ -5,7 +5,7 @@ import (
 	"github.com/pesakit/pesakit"
 	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/mpesa"
-	"github.com/pesakit/pesakit/tigo"
+	"github.com/techcraftlabs/tigopesa"
 	clix "github.com/urfave/cli/v2"
 	"os"
 	"text/tabwriter"
@@ -103,15 +103,14 @@ func printAirtelConf(w *tabwriter.Writer, a *airtel.Config) {
 }
 
 func printTigoConf(w *tabwriter.Writer, tc *tigopesa.Config) {
-	p := tc.PushConfig
-	d := tc.DisburseConfig
+	p := tc.Push
+	d := tc.Disburse
 
 	_, _ = fmt.Fprintf(w, "\n %s\t", "-------------------------")
 	_, _ = fmt.Fprintf(w, "\n %s\t", "TIGO CONFIGURATIONS")
 	_, _ = fmt.Fprintf(w, "\n %s\t", "-------------------------")
 	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoPushUsername, p.Username)
 	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoPushPassword, p.Password)
-	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoPushBaseURL, tc.BaseURL)
 	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoPushTokenURL, p.TokenEndpoint)
 	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoPushPayURL, p.PushPayEndpoint)
 	_, _ = fmt.Fprintf(w, "\n %s: \t%s\t", envTigoPushBillerCode, p.BillerCode)

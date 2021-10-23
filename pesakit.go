@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"github.com/pesakit/pesakit/pkg/countries"
 	"github.com/pesakit/pesakit/pkg/mno"
-	"github.com/pesakit/pesakit/tigo"
 	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/mpesa"
+	tigo "github.com/techcraftlabs/tigopesa"
+	"github.com/techcraftlabs/tigopesa/disburse"
+	"github.com/techcraftlabs/tigopesa/push"
 )
 
 var (
@@ -40,7 +42,7 @@ type (
 	}
 	Client struct {
 		AirtelMoney *airtel.Client
-		TigoPesa    *tigopesa.Client
+		TigoPesa    *tigo.Client
 		Mpesa       *mpesa.Client
 	}
 )
@@ -102,7 +104,7 @@ func (c *Client) Do(ctx context.Context, operator mno.Operator, action Action, r
 	case Push:
 		switch operator {
 		case mno.Tigo:
-			req := tigopesa.Request{
+			req := push.Request{
 				MSISDN: fmtPhone,
 				Amount:         request.Amount,
 				Remarks:        request.Description,
@@ -156,7 +158,7 @@ func (c *Client) Do(ctx context.Context, operator mno.Operator, action Action, r
 			}
 			return ac.Disburse(ctx, req)
 		case mno.Tigo:
-			req := tigopesa.Request{
+			req := disburse.Request{
 				ReferenceID: request.ID,
 				MSISDN:      request.MSISDN,
 				Amount:      request.Amount,
@@ -171,7 +173,7 @@ func (c *Client) Do(ctx context.Context, operator mno.Operator, action Action, r
 	}
 }
 
-func NewClient(airtelMoney *airtel.Client, tigopesa *tigopesa.Client, vodaMpesa *mpesa.Client) *Client {
+func NewClient(airtelMoney *airtel.Client, tigopesa *tigo.Client, vodaMpesa *mpesa.Client) *Client {
 	return &Client{
 		AirtelMoney: airtelMoney,
 		TigoPesa:    tigopesa,

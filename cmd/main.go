@@ -301,19 +301,19 @@ func main(){
 	f1 := fmt.Sprintf(filepath.Join(wd, ".env"))
 	f2 := fmt.Sprintf(filepath.Join(wd, "pesakit.env"))
 	_ = godotenv.Load(f1, f2)
-	airtelDeployEnv := strings.ToLower(env.String(envAirtelDeploymentEnv, defAirtelDeploymentEnv))
+	//airtelDeployEnv := strings.ToLower(env.String(envAirtelDeploymentEnv, defAirtelDeploymentEnv))
 
 	debugMode := env.Bool(envDebugMode, defDebugMode)
 	aConfig := loadAirtelEnv()
 	vConfig := loadMpesaEnv()
 	tConfig := loadTigoEnv()
 
-	var airtelOptions []airtel.ClientOption
-	airtelDebugOption := airtel.WithDebugMode(debugMode)
-	airtelCbOption := airtel.WithCallbackHandler(cli.AirtelCallbackHandler())
-	deployEnvOption := airtel.WithEnvironment(airtelDeployEnv)
-	airtelOptions = append(airtelOptions, airtelDebugOption, deployEnvOption,airtelCbOption)
-	a := airtel.NewClient(aConfig, airtelOptions...)
+	//var airtelOptions []airtel.ClientOption
+	//airtelDebugOption := airtel.WithDebugMode(debugMode)
+	//airtelCbOption := airtel.WithCallbackHandler(cli.AirtelCallbackHandler())
+	//deployEnvOption := airtel.WithEnvironment(airtelDeployEnv)
+	//airtelOptions = append(airtelOptions, airtelDebugOption, deployEnvOption,airtelCbOption)
+	a := airtel.NewClient(aConfig, cli.AirtelCallbackHandler(),debugMode)
 
 	// create mpesa client
 	var mpesaOptions []mpesa.ClientOption
@@ -323,8 +323,7 @@ func main(){
 	mpesaOptions = append(mpesaOptions, debugOption,cbOption)
 	m := mpesa.NewClient(vConfig, mpesaOptions...)
 
-	t := tigopesa.NewClient(tConfig, tigopesa.WithDebugMode(debugMode))
-	t.SetCallbackHandler(cli.TigoCallbackHandler())
+	t := tigopesa.NewClient(tConfig, cli.TigoCallbackHandler(),nil,nil)
 	client := pesakit.NewClient(a, t, m)
 
 	app := cli.New(client)
