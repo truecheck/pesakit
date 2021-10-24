@@ -173,10 +173,11 @@ func (c *Client) Do(ctx context.Context, operator mno.Operator, action Action, r
 	}
 }
 
-func NewClient(airtelMoney *airtel.Client, tigopesa *tigo.Client, vodaMpesa *mpesa.Client) *Client {
+func NewClient(airtelMoney *airtel.Client, tc *tigo.Client, vodaMpesa *mpesa.Client) *Client {
+
 	return &Client{
 		AirtelMoney: airtelMoney,
-		TigoPesa:    tigopesa,
+		TigoPesa:    tc,
 		Mpesa:       vodaMpesa,
 	}
 }

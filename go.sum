@@ -16,6 +16,8 @@ github.com/shurcooL/sanitized_anchor_name v1.0.0 h1:PdmoCO6wvbs+7yrJyMORt4/BmY5I
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
 github.com/techcraftlabs/airtel v0.0.1 h1:SW8mEt6y+Yf3EJ9UvK7iezSANDjlmYPqfVWRSaPbPuo=
 github.com/techcraftlabs/airtel v0.0.1/go.mod h1:/Hc7LRL1F8c5DnUX6ktl89eINX+DDZGacdnqH8J2f+0=
+github.com/techcraftlabs/airtel v0.0.3 h1:6PvIHBDSvic3JnLM2yKy7jwOzsPW097UamngrIxIpII=
+github.com/techcraftlabs/airtel v0.0.3/go.mod h1:/Hc7LRL1F8c5DnUX6ktl89eINX+DDZGacdnqH8J2f+0=
 github.com/techcraftlabs/base v0.0.2 h1:vaHW69K4n4OBAzzmce73QgOiO2jDqEOQlTVsbJOXDWY=
 github.com/techcraftlabs/base v0.0.2/go.mod h1:rOmjUkGfCp2vqa9O57htXSjzMEKxnYEEsrS0Pr/g4p0=
 github.com/techcraftlabs/mna v0.3.0 h1:a1tVYLkL3U6rVYofvkwVWH6ptYbTKhefKKSTShog7gc=
@@ -24,6 +26,8 @@ github.com/techcraftlabs/mpesa v0.0.1 h1:FKzgGheZ0w6yCkKLTLfi3+PBfjnFBV/YbctIWoa
 github.com/techcraftlabs/mpesa v0.0.1/go.mod h1:cx2i/GytE4jGJnf1l7R1jlNFoU9ic413OcWMKlnHCfI=
 github.com/techcraftlabs/tigopesa v0.0.5 h1:uTteV8PW5Ka5LD1XY9+G6fI0vzz0R1MMAwDorYnTQIY=
 github.com/techcraftlabs/tigopesa v0.0.5/go.mod h1:sExtOTbWpH0Q4qEcLskG9XYV9wOjIRzJmTqDrni+290=
+github.com/techcraftlabs/tigopesa v0.0.6 h1:rwMGhAPvpi4IYTvy5jqbgaVpYBjzF/eBHKedRjrty5Q=
+github.com/techcraftlabs/tigopesa v0.0.6/go.mod h1:sExtOTbWpH0Q4qEcLskG9XYV9wOjIRzJmTqDrni+290=
 github.com/urfave/cli/v2 v2.3.0 h1:qph92Y649prgesehzOrQjdWyxFOp/QVM+6imKHad91M=
 github.com/urfave/cli/v2 v2.3.0/go.mod h1:LJmUH05zAU44vOAcrfzZQKsZbVcdbOG8rtL3/XcUArI=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
