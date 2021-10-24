@@ -1,6 +1,6 @@
 FROM golang:1.16-alpine as builder
 WORKDIR /pesakit
-COPY cli .
+COPY pesakit .
 RUN go clean -modcache
 RUN go mod tidy
 RUN go mod download
