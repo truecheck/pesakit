@@ -32,13 +32,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenResponse'
         '400':
-          description: Bad Request.
+          $ref: '#/components/responses/BadRequest'
         '401':
-            description: Unauthorized.
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: Not Found.
+          $ref: '#/components/responses/NotFound'
         '5XX':
-          description: Server Error.
+          $ref: '#/components/responses/ServerError'
 
   /push:
     post:
@@ -57,6 +57,9 @@ paths:
         pushPayCallback:
           '{$request.body#/callback}':
             post:
+              operationId: pushPayCallback
+              description: callback to client listener
+              summary: callback from beanpay server to client http listener invoked when mno has returned results of a pushpay request
               requestBody:
                 required: true
                 content:
@@ -77,10 +80,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PushResponse'
-        400:
-          description: Error
-        500:
-          description: internal error
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '5XX':
+          $ref: '#/components/responses/ServerError'
   /disburse:
     post:
       description: disbursement request
@@ -101,13 +108,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DisburseResponse'
-        400:
-          description: Error
-        500:
-          description: internal error
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '5XX':
+          $ref: '#/components/responses/ServerError'
 
 components:
+  responses:
+    BadRequest:
+      description: the request format is bad
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/responses/BadRequest'
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerError:
+      description: internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
+    Error:
+      title: Error Message
+      description: returned when there is an error while proceesing the request
+      type: object
+      properties:
+        code:
+          description: error code
+          title: code
+          default: BP001
+          type: string
+          example: BP100
+        message:
+          title: error message
+          example: unauthorized
+          description: length description of the error message
+          type: string
+      required:
+        - code
+        - message
     TokenResponse:
       title: Token Response
       description: response returned after a user has requested token and supplied correct credentials
@@ -257,6 +312,7 @@ components:
           example: 22nd Jan 2021
   securitySchemes:
     basicAuth:
+      description: use the key as username and secret as password
       type: http
       scheme: basic
     bearerAuth:
