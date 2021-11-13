@@ -13,6 +13,19 @@ const (
 
 type Operator int
 
+func FromString(s string) Operator {
+	switch s {
+	case "Airtel", "airtel", "airtel money", "AIRTEL", "AIRTEL MONEY":
+		return Airtel
+	case "Tigo", "TIGO", "tigopesa", "TIGO PESA", "tigo pesa":
+		return Tigo
+	case "Vodacom", "VODA", "MPESA", "M-PESA", "VODACOM", "VODACOM M-PESA", "mpesa", "m-pesa":
+		return Vodacom
+	default:
+		panic(fmt.Sprintf("Unknown operator: %s", s))
+	}
+}
+
 // Get takes a phone number figure out the operator and then formats the
 // number if the operator is in the list.
 func Get(phone string) (Operator, string, error) {

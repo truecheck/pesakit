@@ -1,11 +1,10 @@
-package cli
+package pesakit
 
 import (
-	"github.com/pesakit/pesakit"
 	"github.com/urfave/cli/v2"
 )
 
-func pushCommand(apiClient *pesakit.Client) *cli.Command {
+func (c *Client)pushCommand() *cli.Command {
 	flags := []cli.Flag{
 		&cli.StringFlag{
 			Name:    "phone",
@@ -34,6 +33,7 @@ func pushCommand(apiClient *pesakit.Client) *cli.Command {
 		Usage:       "send push requests to msisdn",
 		Description: "send push pay request by specifying  msisdn(phone number), amount, description and reference id",
 		Flags:       flags,
-		Action:      action(apiClient, pesakit.Push),
+		Action:      c.doActionFunc(pushAction),
 	}
 }
+

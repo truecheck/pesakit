@@ -1,11 +1,12 @@
-package cli
+package pesakit
 
 import (
 	"context"
 	"github.com/julienschmidt/httprouter"
-	"github.com/pesakit/pesakit"
 	"github.com/techcraftlabs/airtel"
-	"github.com/techcraftlabs/airtel/models"
+
+	//"github.com/techcraftlabs/airtel"
+	//	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/mpesa"
 	"github.com/techcraftlabs/tigopesa/push"
 	clix "github.com/urfave/cli/v2"
@@ -25,12 +26,10 @@ func MpesaCallbackHandler() mpesa.PushCallbackFunc {
 	}
 }
 
-func AirtelCallbackHandler() airtel.PushCallbackFunc {
-
-	return func(request models.CallbackRequest) error {
+func AirtelCallbackHandler()airtel.PushCallbackFunc{
+	return func(request airtel.CallbackRequest) error {
 		return nil
 	}
-
 }
 
 func TigoCallbackHandler() push.CallbackHandlerFunc {
@@ -47,14 +46,14 @@ func TigoCallbackHandler() push.CallbackHandlerFunc {
 }
 
 type (
-	CallbackServer struct {
+	callbackServer struct {
 		server  *http.Server
 		Port    string
 		Handler http.HandlerFunc
 	}
 )
 
-func NewCallbackServer(port, path string, handler http.HandlerFunc) *CallbackServer {
+func newCallbackServer(port, path string, handler http.HandlerFunc) *callbackServer {
 
 	handle := func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 		handler(writer, request)
@@ -67,13 +66,13 @@ func NewCallbackServer(port, path string, handler http.HandlerFunc) *CallbackSer
 		Addr:    port,
 		Handler: router,
 	}
-	return &CallbackServer{
+	return &callbackServer{
 		server: server,
 		Port:   port,
 	}
 }
 
-func run(client *pesakit.Client) clix.ActionFunc {
+func run(client *Client) clix.ActionFunc {
 	return func(ctx *clix.Context) error {
 		var (
 			handlerFunc http.HandlerFunc
@@ -81,22 +80,22 @@ func run(client *pesakit.Client) clix.ActionFunc {
 		port, path := ctx.String("port"), ctx.String("path")
 		mno := ctx.String("mno")
 		if mno == "tigo" {
-			handlerFunc = client.TigoPesa.CallbackServeHTTP
+			handlerFunc = client.tigo.CallbackServeHTTP
 		}
 		if mno == "airtel" {
-			handlerFunc = client.AirtelMoney.CallbackServeHTTP
+			handlerFunc = client.airtel.CallbackServeHTTP
 		}
 
 		if mno == "vodacom" || mno == "mpesa" {
-			handlerFunc = client.Mpesa.CallbackServeHTTP
+			handlerFunc = client.mpesa.CallbackServeHTTP
 		}
-		cs := NewCallbackServer(port, path, handlerFunc)
+		cs := newCallbackServer(port, path, handlerFunc)
 		return cs.server.ListenAndServe()
 	}
 
 }
 
-func callbackCommand(apiClient *pesakit.Client) *clix.Command {
+func (c *Client)callbackCommand() *clix.Command {
 	flags := []clix.Flag{
 		&clix.StringFlag{
 			Name:  "mno",
@@ -117,6 +116,6 @@ func callbackCommand(apiClient *pesakit.Client) *clix.Command {
 		Aliases: []string{"cb"},
 		Usage:   "monitor callbacks from mno",
 		Flags:   flags,
-		Action:  run(apiClient),
+		Action:  run(c),
 	}
 }

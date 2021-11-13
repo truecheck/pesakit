@@ -1,21 +1,13 @@
-package cli
+package pesakit
 
 import (
 	"fmt"
 	"github.com/pesakit/cli/io"
-	"github.com/pesakit/pesakit"
 	clix "github.com/urfave/cli/v2"
 	"os"
 )
 
-type (
-	App struct {
-		app *clix.App
-		pk  *pesakit.Client
-	}
-)
-
-func New(httpApiClient *pesakit.Client) *App {
+func cliApp(c *Client) *clix.App {
 
 	desc :=
 		`pesakit is a highly configurable commandline tool that comes on handy during testing and
@@ -33,14 +25,35 @@ tested for Tanzania only.`
 		Email: "me.pius1102@gmail.com",
 	}
 
+	verbose := &clix.BoolFlag{
+		Name:        "verbose",
+		Usage:       "Enable verbose mode",
+		Destination: &c.verbose,
+	}
+	debug := &clix.BoolFlag{
+		Name:        "debug",
+		Usage:       "Enable debug mode",
+		Destination: &c.debug,
+	}
+
+	format := &clix.StringFlag{
+		Name:  "format",
+		Usage: "print format (text, json, yaml)",
+	}
+
+	conf := &clix.StringFlag{
+		Name:        "conf",
+		Usage:       "configuration file path",
+		Destination: &c.configFile,
+	}
+
 	app := &clix.App{
-		Name:  "pesakit",
-		Usage: "commandline tool to test/interact with Mobile Money API",
-		//	UsageText:            "pesakit push|disburse --amount=1000 --reference=\"sending school fees\" --phone=07XXXX9921",
+		Name:                 "pesakit",
+		Usage:                "commandline tool to test/interact with Mobile Money API",
 		Version:              "1.0.0",
 		Description:          desc,
-		Commands:             commands(httpApiClient),
-		Flags:                flags(),
+		Commands:             commands(c),
+		Flags:                flags(verbose, conf, debug, format),
 		EnableBashCompletion: true,
 		Before:               beforeActionFunc,
 		After:                afterActionFunc,
@@ -51,10 +64,7 @@ tested for Tanzania only.`
 		ErrWriter:            os.Stderr,
 	}
 
-	return &App{
-		pk:  httpApiClient,
-		app: app,
-	}
+	return app
 }
 
 func beforeActionFunc(context *clix.Context) error {
@@ -74,11 +84,12 @@ func onErrFunc(context *clix.Context, err error, subcommand bool) error {
 	return nil
 }
 
-func commands(client *pesakit.Client) []*clix.Command {
-	return appendCommands(pushCommand(client),
-		disburseCommand(client),
-		configCommand(client),
-		callbackCommand(client),
+func commands(c *Client) []*clix.Command {
+	return appendCommands(
+		c.configCommand(),
+		c.callbackCommand(),
+		c.pushCommand(),
+		c.disburseCommand(),
 	)
 }
 
@@ -106,24 +117,16 @@ func authors(auth ...*clix.Author) []*clix.Author {
 	return authors
 }
 
-func action(client *pesakit.Client, action pesakit.Action) clix.ActionFunc {
+func (c *Client) doActionFunc(actionType action) clix.ActionFunc {
 	return func(ctx *clix.Context) error {
 		phone := ctx.String("phone")
 		amount := ctx.Float64("amount")
 		desc := ctx.String("description")
 		id := ctx.String("reference")
-		operator, s, err := pesakit.MnoAutoCheck(phone)
-		if err != nil {
-			return err
-		}
 
-		pushRequest := pesakit.Request{
-			ID:          id,
-			Amount:      amount,
-			MSISDN:      s,
-			Description: desc,
-		}
-		doResponse, err := client.Do(ctx.Context, operator, action, pushRequest)
+		request := makeRequest(id, amount, phone, desc)
+
+		doResponse, err := c.do(ctx.Context, actionType, request)
 		if err != nil {
 			return err
 		}
@@ -131,8 +134,4 @@ func action(client *pesakit.Client, action pesakit.Action) clix.ActionFunc {
 		fmt.Printf("response: %v\n", doResponse)
 		return nil
 	}
-}
-
-func (app *App) Run(args []string) error {
-	return app.app.Run(args)
 }

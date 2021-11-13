@@ -16,41 +16,40 @@ func get(key string, defaultValue interface{}) interface{} {
 
 }
 
-func Set(key string, defaultValue interface{})error{
-	return os.Setenv(key, String(key,defaultValue))
+func Set(key string, defaultValue interface{}) error {
+	return os.Setenv(key, String(key, defaultValue))
 }
 
-func ReadSetString(key string, defaultValue string)(string,error){
-	err := Set(key, String(key,defaultValue))
-	if err != nil{
-		return "", fmt.Errorf("could not set the env %s, %w",key,err)
+func ReadSetString(key string, defaultValue string) (string, error) {
+	err := Set(key, String(key, defaultValue))
+	if err != nil {
+		return "", fmt.Errorf("could not set the env %s, %w", key, err)
 	}
-	return String(key,defaultValue),nil
+	return String(key, defaultValue), nil
 }
 
-
-func ReadSetInt64(key string, defaultValue int64)(int64,error){
-	err := Set(key, String(key,defaultValue))
-	if err != nil{
-		return -1, fmt.Errorf("could not set the env %s, %w",key,err)
+func ReadSetInt64(key string, defaultValue int64) (int64, error) {
+	err := Set(key, String(key, defaultValue))
+	if err != nil {
+		return -1, fmt.Errorf("could not set the env %s, %w", key, err)
 	}
-	return Int64(key,defaultValue),nil
+	return Int64(key, defaultValue), nil
 }
 
-func ReadSetBool(key string, defaultValue bool)(bool,error){
-	err := Set(key, String(key,defaultValue))
-	if err != nil{
-		return false, fmt.Errorf("could not set the env %s, %w",key,err)
+func ReadSetBool(key string, defaultValue bool) (bool, error) {
+	err := Set(key, String(key, defaultValue))
+	if err != nil {
+		return false, fmt.Errorf("could not set the env %s, %w", key, err)
 	}
-	return Bool(key,defaultValue),nil
+	return Bool(key, defaultValue), nil
 }
 
-func ReadSetFloat64(key string, defaultValue float64)(float64,error){
-	err := Set(key, String(key,defaultValue))
-	if err != nil{
-		return -1, fmt.Errorf("could not set the env %s, %w",key,err)
+func ReadSetFloat64(key string, defaultValue float64) (float64, error) {
+	err := Set(key, String(key, defaultValue))
+	if err != nil {
+		return -1, fmt.Errorf("could not set the env %s, %w", key, err)
 	}
-	return Float64(key,defaultValue),nil
+	return Float64(key, defaultValue), nil
 }
 
 func String(key string, defaultValue interface{}) string {

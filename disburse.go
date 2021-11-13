@@ -1,11 +1,10 @@
-package cli
+package pesakit
 
 import (
-	"github.com/pesakit/pesakit"
 	cli "github.com/urfave/cli/v2"
 )
 
-func disburseCommand(apiClient *pesakit.Client) *cli.Command {
+func (c *Client)disburseCommand() *cli.Command {
 	flags := []cli.Flag{
 		&cli.StringFlag{
 			Name:    "phone",
@@ -34,6 +33,6 @@ func disburseCommand(apiClient *pesakit.Client) *cli.Command {
 		Usage:       "send money to phone number from your account",
 		Description: "send money to specified msisdn, pesakit automatically detect the mno",
 		Flags:       flags,
-		Action:      action(apiClient, pesakit.Disburse),
+		Action:     c.doActionFunc(disburseAction),
 	}
 }
