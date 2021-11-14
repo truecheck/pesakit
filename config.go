@@ -12,6 +12,9 @@ func (c *Client) configCommand() *clix.Command {
 		Usage: "configurations management",
 		Subcommands: []*clix.Command{
 			c.printConfigCommand(),
+			c.whereConfigCommand(),
+			c.resetConfigCommand(),
+			c.initConfigCommand(),
 		},
 	}
 }
@@ -25,7 +28,8 @@ func (c *Client) printConfigAction() clix.ActionFunc {
 		isVoda := mno.FromString(mnoChoice) == mno.Vodacom
 		isTigo := mno.FromString(mnoChoice) == mno.Tigo
 		isAirtel := mno.FromString(mnoChoice) == mno.Airtel
-		if mnoChoice == "" || mnoChoice == "all" {
+		isUnknown := mno.FromString(mnoChoice) == mno.Unknown
+		if mnoChoice == "" || mnoChoice == "all" || isUnknown{
 
 			err := print.Out(ctx.Context,"Airtel Config", c.logger, pt, c.airtel.Conf)
 			if err != nil {
@@ -96,6 +100,60 @@ func (c *Client) printConfigCommand() *clix.Command {
 		Name:  "print",
 		Usage: "print configuration set",
 		Flags: flags,
+		Action: func(ctx *clix.Context) error {
+			return c.printConfigAction()(ctx)
+		},
+	}
+}
+
+func (c *Client) whereConfigCommand() *clix.Command {
+	//flags := []clix.Flag{
+	//	&clix.StringFlag{
+	//		Name:  "mno",
+	//		Usage: "mobile money provider (tigo, airtel, vodacom)",
+	//	},
+	//}
+
+	return &clix.Command{
+		Name:  "where",
+		Usage: "print the absolute path of config file",
+		//Flags: flags,
+		Action: func(ctx *clix.Context) error {
+			return c.printConfigAction()(ctx)
+		},
+	}
+}
+
+func (c *Client) resetConfigCommand() *clix.Command {
+	//flags := []clix.Flag{
+	//	&clix.StringFlag{
+	//		Name:  "mno",
+	//		Usage: "mobile money provider (tigo, airtel, vodacom)",
+	//	},
+	//}
+
+	return &clix.Command{
+		Name:  "reset",
+		Usage: "deletes all the present config back to default",
+		//Flags: flags,
+		Action: func(ctx *clix.Context) error {
+			return c.printConfigAction()(ctx)
+		},
+	}
+}
+
+func (c *Client) initConfigCommand() *clix.Command {
+	//flags := []clix.Flag{
+	//	&clix.StringFlag{
+	//		Name:  "mno",
+	//		Usage: "mobile money provider (tigo, airtel, vodacom)",
+	//	},
+	//}
+
+	return &clix.Command{
+		Name:  "init",
+		Usage: "initialize configuration",
+		//Flags: flags,
 		Action: func(ctx *clix.Context) error {
 			return c.printConfigAction()(ctx)
 		},

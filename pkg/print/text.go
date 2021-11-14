@@ -97,7 +97,7 @@ func printText(writer io.Writer, u interface{}) error {
 // if the format chosen is print do pass a struct not a pointer
 // pass a pointer if the format chosen is either json or yaml
 func Out(ctx context.Context,prefix string, writer io.Writer, pt PayloadType, v interface{}) error {
-	_, _ = writer.Write([]byte(fmt.Sprintf("%s\n----------------------------------------------",
+	_, _ = writer.Write([]byte(fmt.Sprintf("\n%s\n-------------------------------\n",
 		strings.ToUpper(prefix))))
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()

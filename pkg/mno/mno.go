@@ -9,6 +9,7 @@ const (
 	Airtel Operator = iota
 	Tigo
 	Vodacom
+	Unknown
 )
 
 type Operator int
@@ -22,7 +23,7 @@ func FromString(s string) Operator {
 	case "Vodacom", "VODA", "MPESA", "M-PESA", "VODACOM", "VODACOM M-PESA", "mpesa", "m-pesa":
 		return Vodacom
 	default:
-		panic(fmt.Sprintf("Unknown operator: %s", s))
+		return Unknown
 	}
 }
 

@@ -11,7 +11,7 @@ require (
 	github.com/techcraftlabs/base v0.0.3
 	github.com/techcraftlabs/mna v0.3.1
 	github.com/techcraftlabs/mpesa v0.0.3
-	github.com/techcraftlabs/tigopesa v0.0.9
+	github.com/techcraftlabs/tigopesa v0.0.91
 	github.com/urfave/cli/v2 v2.3.0
 )
 
