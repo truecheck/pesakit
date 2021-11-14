@@ -232,6 +232,8 @@ func (c *Client)Run(args []string)error{
 	return c.cli.Run(args)
 }
 
+
+
 func mnoAutoCheck(phone string) (mno.Operator, string, error) {
 	op, fmtPhone, err := mno.Get(phone)
 	if op == mno.Airtel {

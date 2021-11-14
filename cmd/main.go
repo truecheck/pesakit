@@ -9,7 +9,7 @@ import (
 	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/base/io"
 	"github.com/techcraftlabs/mpesa"
-	tigopesa "github.com/techcraftlabs/tigopesa"
+	"github.com/techcraftlabs/tigopesa"
 	"github.com/techcraftlabs/tigopesa/disburse"
 	"github.com/techcraftlabs/tigopesa/push"
 	"github.com/techcraftlabs/tigopesa/ussd"

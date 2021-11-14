@@ -1,6 +1,8 @@
 package pesakit
 
 import (
+	"fmt"
+	"github.com/manifoldco/promptui"
 	"github.com/pesakit/pesakit/pkg/mno"
 	"github.com/pesakit/pesakit/pkg/print"
 	clix "github.com/urfave/cli/v2"
@@ -155,7 +157,26 @@ func (c *Client) initConfigCommand() *clix.Command {
 		Usage: "initialize configuration",
 		//Flags: flags,
 		Action: func(ctx *clix.Context) error {
-			return c.printConfigAction()(ctx)
+			return c.initConfigAction()(ctx)
 		},
+	}
+}
+
+func (c *Client) initConfigAction() clix.ActionFunc{
+	return func(ctx *clix.Context) error {
+		prompt := promptui.Select{
+			Label:             "select target",
+			Items:             []string{"pesakit", "tigopesa", "mpesa", "airtel"},
+		}
+
+		_, result, err := prompt.Run()
+
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+			return err
+		}
+
+		fmt.Printf("You choose %q\n", result)
+		return nil
 	}
 }
