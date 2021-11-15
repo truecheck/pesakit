@@ -93,6 +93,7 @@ func commands(c *Client) []*clix.Command {
 		c.callbackCommand(),
 		c.pushCommand(),
 		c.disburseCommand(),
+		c.docsCommand(),
 	)
 }
 
