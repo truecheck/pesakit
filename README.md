@@ -1,5 +1,5 @@
 # pesakit
-pesakit command line tool
+mobile money dev kit written in golang supporting among other things collection and disbursement for tigo,airtel and mpesa
 
 ```bash
 

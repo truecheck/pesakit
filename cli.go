@@ -1,10 +1,13 @@
 package pesakit
 
 import (
+	"errors"
 	"fmt"
+	"github.com/manifoldco/promptui"
 	"github.com/pesakit/cli/io"
 	clix "github.com/urfave/cli/v2"
 	"os"
+	"strconv"
 )
 
 func cliApp(c *Client) *clix.App {
@@ -117,14 +120,64 @@ func authors(auth ...*clix.Author) []*clix.Author {
 	return authors
 }
 
+
 func (c *Client) doActionFunc(actionType action) clix.ActionFunc {
 	return func(ctx *clix.Context) error {
-		phone := ctx.String("phone")
-		amount := ctx.Float64("amount")
-		desc := ctx.String("description")
-		id := ctx.String("reference")
+		ctx.Args().Present()
 
-		request := makeRequest(id, amount, phone, desc)
+		validateAmount := validateAmountInput
+		validatePhone := validatePhoneNumber
+		promptId:= promptui.Prompt{
+			Label:       "id",
+			Validate: validateNil,
+
+		}
+
+		promptAmount := promptui.Prompt{
+			Label:       "amount",
+			Validate:    validateAmount,
+		}
+
+		promptPhone := promptui.Prompt{
+			Label:       "phone",
+			Validate:    validatePhone,
+		}
+
+		promptDesc := promptui.Prompt{
+			Label:       "description",
+			Validate:    validateNil,
+		}
+
+		id, err := promptId.Run()
+		if err != nil {
+            return fmt.Errorf("could not capture request id: %w",err)
+        }
+
+		amount,err := promptAmount.Run()
+
+		if err != nil {
+			return fmt.Errorf("could not capture amount: %w\n", err)
+		}
+
+		phone ,err := promptPhone.Run()
+
+		if err != nil {
+			return fmt.Errorf("could not capture phone number: %w\n", err)
+		}
+
+		desc ,err := promptDesc.Run()
+
+		if err != nil {
+			return fmt.Errorf("could not capture request description: %w\n", err)
+		}
+
+		// convert string to float64
+		amountFloat, err := strconv.ParseFloat(amount, 64)
+		if err != nil {
+			return err
+		}
+
+		request := makeRequest(id, amountFloat, phone, desc)
 
 		doResponse, err := c.do(ctx.Context, actionType, request)
 		if err != nil {
@@ -134,4 +187,24 @@ func (c *Client) doActionFunc(actionType action) clix.ActionFunc {
 		fmt.Printf("response: %v\n", doResponse)
 		return nil
 	}
+}
+
+func validateAmountInput(input string) error {
+	_, err := strconv.ParseFloat(input, 64)
+	if err != nil {
+		return errors.New("invalid number")
+	}
+	return nil
+}
+
+func validateNil(input string) error {
+    return nil
+}
+
+func validatePhoneNumber(input string) error {
+	_, _, err := mnoAutoCheck(input)
+	if err != nil {
+		return err
+	}
+	return nil
 }

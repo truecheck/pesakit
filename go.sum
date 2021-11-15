@@ -27,8 +27,9 @@ github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeV
 github.com/techcraftlabs/airtel v0.0.4 h1:Q2yt0Qi20DLH59QvI2o0alJzskx13v3vC3vzOHT8rUw=
 github.com/techcraftlabs/airtel v0.0.4/go.mod h1:LpSUOcZ5U+JW5YxeTa3KZPzetM4vgRGcYoyMmGmk8Xc=
 github.com/techcraftlabs/base v0.0.2/go.mod h1:rOmjUkGfCp2vqa9O57htXSjzMEKxnYEEsrS0Pr/g4p0=
-github.com/techcraftlabs/base v0.0.3 h1:J408Lr8018INgsWLN/auDmbc3S+XaSNby3QNYVNAXVg=
 github.com/techcraftlabs/base v0.0.3/go.mod h1:rOmjUkGfCp2vqa9O57htXSjzMEKxnYEEsrS0Pr/g4p0=
+github.com/techcraftlabs/base v0.0.4 h1:Jgrbd7q6n+XF+hYBAWNgPzJqEpTzjMLtjle9zrnm6tw=
+github.com/techcraftlabs/base v0.0.4/go.mod h1:rOmjUkGfCp2vqa9O57htXSjzMEKxnYEEsrS0Pr/g4p0=
 github.com/techcraftlabs/mna v0.3.0/go.mod h1:kd+v3kT3b0qefSQXxZtrg9fWJPeClDtgVkdv/f3OMZU=
 github.com/techcraftlabs/mna v0.3.1 h1:hiTfUXTVYsHFqcjyQLoRGD4IdxTl8ywUWJuXaaBuM+c=
 github.com/techcraftlabs/mna v0.3.1/go.mod h1:kd+v3kT3b0qefSQXxZtrg9fWJPeClDtgVkdv/f3OMZU=

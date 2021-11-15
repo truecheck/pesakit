@@ -172,11 +172,11 @@ func (c *Client) initConfigAction() clix.ActionFunc{
 		_, result, err := prompt.Run()
 
 		if err != nil {
-			fmt.Printf("Prompt failed %v\n", err)
+			fmt.Printf("prompt failed %v\n", err)
 			return err
 		}
 
-		fmt.Printf("You choose %q\n", result)
+		fmt.Printf("you choose %q\n", result)
 		return nil
 	}
 }
