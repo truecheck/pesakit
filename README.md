@@ -42,6 +42,8 @@ GLOBAL OPTIONS:
 
 COPYRIGHT:
    MIT Licence, Creative Commons
+   
+   
 
 ```
 
@@ -59,6 +61,15 @@ run
 ```bash
 
 docker run -it --env-file=.env pesakit
+
+```
+
+
+## use a pre-built container
+
+```bash
+
+docker run -it --env-file=.env ghcr.io/pesakit/pesakit:latest --format=json config print 
 
 ```
 
