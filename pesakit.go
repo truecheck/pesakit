@@ -94,6 +94,7 @@ func makeRequest(id string, amount float64, msisdn string, desc string, opts ...
 		opt(r)
 	}
 
+
 	return r
 }
 
@@ -220,6 +221,7 @@ func NewClient(airtelMoney *airtel.Client, tc *tigo.Client, vodaMpesa *mpesa.Cli
 	for _, opt := range opts {
 		opt(c)
 	}
+
 
 	c.rv = base.NewReceiver(c.logger, c.debug)
 

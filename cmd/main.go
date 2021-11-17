@@ -33,7 +33,7 @@ const (
 	defAirtelDisbursePin           = ""
 	defAirtelClientId              = ""
 	defAirtelClientSecret          = ""
-	defDebugMode                   = true
+	defDebugMode                   = false
 	defAirtelDeploymentEnv         = "staging"
 	defAirtelCallbackAuth          = false
 	defAirtelCallbackPrivKey       = "zITVAAGYSlzl1WkUQJn81kbpT5drH3koffT8jCkcJJA="
@@ -276,7 +276,7 @@ func main() {
 
 	t := tigopesa.NewClient(tConfig, pesakit.TigoCallbackHandler(), nil, nil)
 
-	app := pesakit.NewClient(a,t,m,pesakit.Debug(true),pesakit.Logger(io.Stderr),pesakit.Verbose(true))
+	app := pesakit.NewClient(a,t,m,pesakit.Debug(debugMode),pesakit.Logger(io.Stderr),pesakit.Verbose(false))
 
 	if err := app.Run(os.Args); err != nil {
 		log.Printf("error: %v\n", err)

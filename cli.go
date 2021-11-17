@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/manifoldco/promptui"
 	"github.com/pesakit/cli/io"
+	libprint "github.com/pesakit/pesakit/pkg/print"
 	clix "github.com/urfave/cli/v2"
 	"os"
 	"strconv"
@@ -124,7 +125,14 @@ func authors(auth ...*clix.Author) []*clix.Author {
 
 func (c *Client) doActionFunc(actionType action) clix.ActionFunc {
 	return func(ctx *clix.Context) error {
-		ctx.Args().Present()
+
+		var (
+			amount float64
+			desc string
+			id string
+			phone string
+			err error
+		)
 
 		validateAmount := validateAmountInput
 		validatePhone := validatePhoneNumber
@@ -149,43 +157,68 @@ func (c *Client) doActionFunc(actionType action) clix.ActionFunc {
 			Validate:    validateNil,
 		}
 
-		id, err := promptId.Run()
-		if err != nil {
-            return fmt.Errorf("could not capture request id: %w",err)
-        }
+		idIsset := ctx.IsSet("id")
+		amountIsSet := ctx.IsSet("amount")
+		descIsSet := ctx.IsSet("description")
+		phoneIsSet := ctx.IsSet("phone")
 
-		amount,err := promptAmount.Run()
-
-		if err != nil {
-			return fmt.Errorf("could not capture amount: %w\n", err)
+		allIsSet := idIsset && amountIsSet && descIsSet && phoneIsSet
+		if allIsSet {
+			id = ctx.String("id")
+            amount = ctx.Float64("amount")
+            desc = ctx.String("description")
+            phone = ctx.String("phone")
+        } else {
+			if idIsset{
+				id = ctx.String("id")
+            } else {
+				id, err = promptId.Run()
+				if err != nil {
+					return fmt.Errorf("could not capture request id: %w",err)
+				}
+            }
+            if amountIsSet{
+				amount = ctx.Float64("amount")
+			}else{
+				amountStr,err := promptAmount.Run()
+				if err != nil {
+					return fmt.Errorf("could not capture amount: %w\n", err)
+				}
+				// convert string to float64
+				amount, err = strconv.ParseFloat(amountStr, 64)
+				if err != nil {
+					return err
+				}
+            }
+            if descIsSet{
+				desc = ctx.String("description")
+			}else{
+				desc ,err = promptDesc.Run()
+				if err != nil {
+					return fmt.Errorf("could not capture request description: %w\n", err)
+				}
+            }
+            if phoneIsSet{
+				phone = ctx.String("phone")
+			}else {
+				phone ,err = promptPhone.Run()
+				if err != nil {
+					return fmt.Errorf("could not capture phone number: %w\n", err)
+				}
+            }
 		}
 
-		phone ,err := promptPhone.Run()
-
-		if err != nil {
-			return fmt.Errorf("could not capture phone number: %w\n", err)
-		}
-
-		desc ,err := promptDesc.Run()
-
-		if err != nil {
-			return fmt.Errorf("could not capture request description: %w\n", err)
-		}
-
-		// convert string to float64
-		amountFloat, err := strconv.ParseFloat(amount, 64)
-		if err != nil {
-			return err
-		}
-
-		request := makeRequest(id, amountFloat, phone, desc)
+		request := makeRequest(id, amount, phone, desc)
 
 		doResponse, err := c.do(ctx.Context, actionType, request)
 		if err != nil {
 			return err
 		}
 
-		fmt.Printf("response: %v\n", doResponse)
+		err = libprint.Out(ctx.Context, "RESPONSE", io.Stderr, libprint.JSON, doResponse)
+		if err != nil {
+			return fmt.Errorf("could not print response %w",err)
+		}
 		return nil
 	}
 }
