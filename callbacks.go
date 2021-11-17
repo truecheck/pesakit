@@ -2,8 +2,12 @@ package pesakit
 
 import (
 	"context"
+	"fmt"
 	"github.com/julienschmidt/httprouter"
+	"github.com/manifoldco/promptui"
 	"github.com/techcraftlabs/airtel"
+	"strconv"
+	"strings"
 
 	//"github.com/techcraftlabs/airtel"
 	//	"github.com/techcraftlabs/airtel/models"
@@ -63,7 +67,7 @@ func newCallbackServer(port, path string, handler http.HandlerFunc) *callbackSer
 
 	router.POST(path, handle)
 	server := &http.Server{
-		Addr:    port,
+		Addr:    fmt.Sprintf(":%s",port),
 		Handler: router,
 	}
 	return &callbackServer{
@@ -72,14 +76,99 @@ func newCallbackServer(port, path string, handler http.HandlerFunc) *callbackSer
 	}
 }
 
+func validateMno(input string)error{
+	names := [...]string{
+		"airtel",
+        "tigo",
+        "vodacom",
+        "tigopesa",
+        "mpesa",
+	}
+
+	// check if input matches any string in the names
+	for _, name := range names {
+        if input == name {
+            return nil
+        }
+    }
+
+
+	//concatenate all values in the names slice into msg string
+	msg := strings.Join(names[:], ", ")
+	return fmt.Errorf("%s is not a valid mno. Valid mnos are %s", input, msg)
+}
+
+func validatePort(input string)error{
+	// check if input is int64
+	_, err := strconv.ParseInt(input, 10, 64)
+	if err != nil{
+		return err
+	}
+	return nil
+}
+
 func run(client *Client) clix.ActionFunc {
+	promptMno:= promptui.Prompt{
+		Label:       "mno",
+		Validate: validateMno,
+	}
+
+	promptPort:= promptui.Prompt{
+		Label:       "port",
+		Validate: validatePort,
+	}
+
+	promptPath:= promptui.Prompt{
+		Label:       "path",
+		Validate: validateNil,
+	}
 	return func(ctx *clix.Context) error {
 		var (
+			mno string
+			port string
+			path string
+			err error
 			handlerFunc http.HandlerFunc
 		)
-		port, path := ctx.String("port"), ctx.String("path")
-		mno := ctx.String("mno")
-		if mno == "tigo" {
+
+		mnoIsSet := ctx.IsSet("mno")
+		portIsSet := ctx.IsSet("port")
+		pathIsSet := ctx.IsSet("path")
+
+		allIsSet := mnoIsSet && portIsSet && pathIsSet
+
+		if allIsSet {
+			mno, port, path =ctx.String("mno"), ctx.String("port"), ctx.String("path")
+        }else {
+			if mnoIsSet {
+                mno = ctx.String("mno")
+            }else {
+				mno, err = promptMno.Run()
+				if err != nil{
+					return err
+				}
+			}
+
+			if portIsSet {
+                port = ctx.String("port")
+            }else {
+                port, err = promptPort.Run()
+                if err != nil{
+                    return err
+                }
+            }
+
+			if pathIsSet {
+				path = ctx.String("path")
+            }else {
+                path, err = promptPath.Run()
+                if err != nil{
+                    return err
+                }
+			}
+		}
+
+		if mno == "tigo" || mno == "tigopesa" {
 			handlerFunc = client.tigo.CallbackServeHTTP
 		}
 		if mno == "airtel" {
