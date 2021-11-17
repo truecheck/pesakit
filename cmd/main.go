@@ -60,7 +60,7 @@ const (
 	defMpesaPushEndpoint           = ""
 	defMpesaDisburseEndpoint       = ""
 	defMpesaBaseURL                = "openapi.m-pesa.com"
-	defMpesaAppName                = "beanpay"
+	defMpesaAppName                = "mpesa-app"
 	defMpesaAppVersion             = "1.0"
 	defMpesaAppDesc                = "unified payment as a service"
 	defMpesaSandboxApiKey          = ""
