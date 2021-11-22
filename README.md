@@ -1,6 +1,12 @@
 # pesakit
 mobile money dev kit written in golang supporting among other things collection and disbursement for tigo,airtel and mpesa
 
+
+## configuration
+
+See how .env file should look like here [configuration file](ENV.md)
+
+
 ```text
 NAME:
    pesakit - commandline tool to test/interact with Mobile Money API

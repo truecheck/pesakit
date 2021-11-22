@@ -108,6 +108,10 @@ func validatePort(input string)error{
 }
 
 func run(client *Client) clix.ActionFunc {
+	_, err := client.logger.Write([]byte("setting up the callback server"))
+	if err != nil {
+		fmt.Printf("error writing to client logger: %v", err)
+	}
 	promptMno:= promptui.Prompt{
 		Label:       "mno",
 		Validate: validateMno,
@@ -179,6 +183,7 @@ func run(client *Client) clix.ActionFunc {
 			handlerFunc = client.mpesa.CallbackServeHTTP
 		}
 		cs := newCallbackServer(port, path, handlerFunc)
+		_, _ = client.logger.Write([]byte(fmt.Sprintf("starting callback server for \"%s\" on port \"%s\" listening for all POST %s\n",mno, port,path)))
 		return cs.server.ListenAndServe()
 	}
 
