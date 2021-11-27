@@ -15,4 +15,5 @@
 # vendor/
 *.env
 *.idea
+playground.idea
 playground
