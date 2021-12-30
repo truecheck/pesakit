@@ -16,23 +16,34 @@ import (
 // directory of the current user.
 func At(rootPath string) error {
 	pesakit := ".pesakit"
-	if rootPath == "." {
-		// use the current working directory
+	switch {
+	case rootPath == ".":
 		cwd, err := os.Getwd()
 		if err != nil {
 			return fmt.Errorf("could not get the current working directory, %w", err)
 		}
 		pesakitHome := filepath.Join(cwd, pesakit)
+
 		return At(pesakitHome)
-	} else if strings.TrimSpace(rootPath) == "" {
-		homePath, err := home.Dir()
+	case strings.TrimSpace(rootPath) == "":
+
+		homePath, err := Get()
 		if err != nil {
-			return fmt.Errorf("could not get the home directory, %w", err)
+			return fmt.Errorf("error: %w", err)
 		}
+
 		return At(homePath)
-	} else {
+	default:
 		pesakitHome := filepath.Join(rootPath, pesakit)
 		return os.MkdirAll(pesakitHome, 0755)
 	}
 
+}
+
+func Get() (string, error) {
+	dir, err := home.Dir()
+	if err != nil {
+		return "", fmt.Errorf("could not get the home directory, %w", err)
+	}
+	return dir, nil
 }

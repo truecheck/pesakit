@@ -39,6 +39,7 @@ func PhoneNumberInfo(phone string) (Mno, string, error) {
 	if strings.EqualFold(commonName, vodacom) {
 		return Vodacom, formattedNumber, nil
 	}
+
 	return Unknown, formattedNumber, nil
 }
 

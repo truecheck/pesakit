@@ -53,6 +53,7 @@ type (
 func (app *App) getLogger() io.Writer {
 	app.mu.RLock()
 	defer app.mu.RUnlock()
+
 	return app.logger
 }
 

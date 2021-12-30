@@ -2,6 +2,8 @@ package pesakit
 
 import (
 	"fmt"
+	"github.com/pesakit/pesakit/home"
+	"path/filepath"
 
 	"github.com/pesakit/pesakit/env"
 	"github.com/spf13/cobra"
@@ -167,29 +169,87 @@ func loadCommands(fns ...func()) {
 	}
 }
 func (app *App) persistentPreRun(cmd *cobra.Command, args []string) {
-	// todo: check if config file has been provided
-	// todo: check if config file exists (default is $HOME/.pesakit/.pesakit.env)
-	// todo: if not check in the current directory if files ".env" and "pesakit.env" exist
 	var (
-		configMpesa  = new(mpesa.Config)
-		configAirtel = new(airtel.Config)
-		configTigo   = new(tigopesa.Config)
-		err          error
+		configFile          string
+		configFileFlagGiven bool
+		homeDirFlagGiven    bool
+		configMpesa         = new(mpesa.Config)
+		configAirtel        = new(airtel.Config)
+		configTigo          = new(tigopesa.Config)
+		err                 error
 	)
+
+	configFileFlagGiven = cmd.PersistentFlags().Changed(flagConfigFile)
+	homeDirFlagGiven = cmd.PersistentFlags().Changed(flagHomeDirectory)
+	// check if config file has been specified in the command line
+	if configFileFlagGiven {
+		specifiedConfigFile, err := cmd.PersistentFlags().GetString(flagConfigFile)
+		if err != nil {
+			logger := app.getLogger()
+			_, _ = fmt.Fprintf(logger, "error: %v\n", err)
+			return
+		}
+		configFile = specifiedConfigFile
+	} else {
+		// check if flagHomeDirectory is set
+		if homeDirFlagGiven {
+			homeDirectory, err := app.root.PersistentFlags().GetString(flagHomeDirectory)
+			if err != nil {
+				logger := app.getLogger()
+				_, _ = fmt.Fprintf(logger, "error: %v\n", err)
+				return
+			}
+			err = home.At(homeDirectory)
+			if err != nil {
+				logger := app.getLogger()
+				_, _ = fmt.Fprintf(logger, "error: %v\n", err)
+				return
+			}
+			appHomePath := filepath.Join(homeDirectory, ".pesakit")
+			app.setHomeDir(appHomePath)
+			configFile = filepath.Join(appHomePath, ".pesakit.env")
+		} else {
+			err := home.At("")
+			if err != nil {
+				logger := app.getLogger()
+				_, _ = fmt.Fprintf(logger, "error: %v\n", err)
+				return
+			}
+			homeDir, err := home.Get()
+			if err != nil {
+				logger := app.getLogger()
+				_, _ = fmt.Fprintf(logger, "error: %v\n", err)
+				return
+			}
+			appHomePath := filepath.Join(homeDir, ".pesakit")
+			app.setHomeDir(appHomePath)
+			configFile = filepath.Join(appHomePath, ".pesakit.env")
+		}
+	}
+
+	if homeDirFlagGiven && !configFileFlagGiven {
+		_ = env.LoadConfigFrom(filepath.Join(app.getHome(), ".env"))
+	}
+	err = env.LoadConfigFrom(configFile)
+	if err != nil {
+		logger := app.getLogger()
+		_, _ = fmt.Fprintf(logger, "error: %v\n", err)
+		return
+	}
 
 	loadConfigs := func(command *cobra.Command) error {
 		// loads all configurations there is
-		configMpesa, err = loadMpesaConfig(cmd)
+		configMpesa, err = loadMpesaConfig(command)
 		if err != nil {
 			return err
 		}
 
-		configAirtel, err = loadAirtelConfig(cmd)
+		configAirtel, err = loadAirtelConfig(command)
 		if err != nil {
 			return err
 		}
 
-		configTigo, err = loadTigoConfig(cmd)
+		configTigo, err = loadTigoConfig(command)
 		if err != nil {
 			return err
 		}

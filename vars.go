@@ -6,7 +6,7 @@ const (
 	flagHomeDirectory                   = "home"
 	usageHomeDirectory                  = "the home directory of the pesakit application"
 	envConfigFile                       = "PK_CONFIG_FILE"
-	defConfigFile                       = "$HOME/.pesakit/pesakit.env"
+	defConfigFile                       = ""
 	flagConfigFile                      = "config"
 	usageConfigFile                     = "config file"
 	envDebugMode                        = "PK_DEBUG_MODE"
