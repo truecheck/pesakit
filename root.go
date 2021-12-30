@@ -1,6 +1,8 @@
 package pesakit
 
 import (
+	"fmt"
+
 	"github.com/pesakit/pesakit/env"
 	"github.com/spf13/cobra"
 	"github.com/techcraftlabs/airtel"
@@ -161,6 +163,9 @@ func loadCommands(fns ...func()) {
 	}
 }
 func (app *App) persistentPreRun(cmd *cobra.Command, args []string) {
+	// todo: check if config file has been provided
+	// todo: check if config file exists (default is $HOME/.pesakit/.pesakit.env)
+	// todo: if not check in the current directory if files ".env" and "pesakit.env" exist
 	var (
 		configMpesa  = new(mpesa.Config)
 		configAirtel = new(airtel.Config)
@@ -191,7 +196,8 @@ func (app *App) persistentPreRun(cmd *cobra.Command, args []string) {
 	go func() {
 		err := loadConfigs(cmd)
 		if err != nil {
-
+			logger := app.getLogger()
+			_, _ = fmt.Fprintf(logger, "Error loading configs: %s\n", err.Error())
 		}
 	}()
 

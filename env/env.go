@@ -4,7 +4,13 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	dotenv "github.com/joho/godotenv"
 )
+
+func LoadConfigFrom(paths ...string) error {
+	return dotenv.Load(paths...)
+}
 
 func get(key string, defaultValue interface{}) interface{} {
 	var strValue string

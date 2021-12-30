@@ -2,7 +2,7 @@ package pesakit
 
 const (
 	envConfigFile                       = "PK_CONFIG_FILE"
-	defConfigFile                       = ""
+	defConfigFile                       = "$HOME/.pesakit/pesakit.env"
 	flagConfigFile                      = "config"
 	usageConfigFile                     = "config file"
 	envDebugMode                        = "PK_DEBUG_MODE"
