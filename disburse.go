@@ -1,38 +1,29 @@
+/*
+Copyright © 2021 NAME HERE <EMAIL ADDRESS>
+
+*/
 package pesakit
 
 import (
-	cli "github.com/urfave/cli/v2"
+	"fmt"
+
+	"github.com/spf13/cobra"
 )
 
-func (c *Client)disburseCommand() *cli.Command {
-	flags := []cli.Flag{
-		&cli.StringFlag{
-			Name:    "phone",
-			Aliases: []string{"p"},
-			Usage:   "phone number to send push request",
-		},
+func (app *App) disburseCommand() {
+	// disburseCmd represents the disburse command
+	var disburseCmd = &cobra.Command{
+		Use:   "disburse",
+		Short: "Send money to a mobile money wallet",
+		Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
 
-		&cli.Int64Flag{
-			Name:    "amount",
-			Aliases: []string{"a"},
-			Usage:   "amount for push pay",
-		},
-		&cli.StringFlag{
-			Name:    "description",
-			Aliases: []string{"d", "desc"},
-			Usage:   "transaction message/description",
-		},
-		&cli.StringFlag{
-			Name:    "reference",
-			Aliases: []string{"ref", "id"},
-			Usage:   "reference id of the transaction",
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("disburse called")
 		},
 	}
-	return &cli.Command{
-		Name:        "disburse",
-		Usage:       "send money to phone number from your account",
-		Description: "send money to specified msisdn, pesakit automatically detect the mno",
-		Flags:       flags,
-		Action:     c.doActionFunc(disburseAction),
-	}
+	app.root.AddCommand(disburseCmd)
 }

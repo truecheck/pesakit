@@ -1,39 +1,49 @@
 package pesakit
 
 import (
-	"github.com/techcraftlabs/base/io"
-	"github.com/urfave/cli/v2"
+	"fmt"
+	"github.com/spf13/cobra"
+	"github.com/spf13/cobra/doc"
+	"io"
 )
-import libprint "github.com/pesakit/pesakit/pkg/print"
 
-type docsDetails struct {
-	Pesakit  string `json:"pesakit" yaml:"pesakit" text:"pesakit"`
-	Airtel   string `json:"airtel" yaml:"airtel" text:"airtel"`
-	TigoPesa string `json:"tigopesa" yaml:"tigopesa" text:"tigopesa"`
-	Mpesa    string `json:"mpesa" yaml:"mpesa" text:"mpesa"`
-}
-
-func (c *Client)docsCommand()*cli.Command{
-	dd := &docsDetails{
-		Pesakit:  "https://github.com/pesakit/pesakit",
-		Airtel:   "https://developers.airtel.africa",
-		TigoPesa: "https://www.tigo.co.tz/tigo-pesa-for-developers",
-		Mpesa:    "https://openapiportal.m-pesa.com/getting-started/dev",
-	}
-    return &cli.Command{
-        Name: "docs",
-        Usage: "show documentation details",
-        Action: func(ctx *cli.Context) error {
-			format := ctx.String("format")
-			pt := libprint.PayloadTypeFromString(format)
-			if pt == libprint.TEXT{
-				pt = libprint.YAML
-			}
-			err := libprint.Out(ctx.Context, "DOCUMENTATION SITES",io.Stderr, pt,dd)
+func (app *App) docsCommand() {
+	// docsCmd represents the docs command
+	var docsCmd = &cobra.Command{
+		Use:   "docs",
+		Short: "docs generates documentation for pesakit",
+		Long: `docs generates documentation for pesakit and saves the documentation
+to the specified directory. If no directory is specified the markdown
+files will be saved in a /docs path  relative to the current working
+directory.`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			dir, err := cmd.Flags().GetString("dir")
 			if err != nil {
 				return err
 			}
-			return nil
+
+			// get current working directory and append docs directory
+			if dir == "" {
+				dir = "docs"
+			}
+			logger := app.getLogger()
+			return docsAction(app.root, logger, dir)
 		},
-    }
+	}
+
+	docsCmd.Flags().StringP("dir", "d", "", "Directory to write the docs to")
+	docsCmd.SetHelpFunc(func(command *cobra.Command, strings []string) {
+		markHiddenExcept(app.root.PersistentFlags(), flagDebugMode, flagConfigFile)
+		command.Parent().HelpFunc()(command, strings)
+	})
+
+	app.root.AddCommand(docsCmd)
+}
+
+func docsAction(parentCommand *cobra.Command, out io.Writer, dir string) error {
+	if err := doc.GenMarkdownTree(parentCommand, dir); err != nil {
+		return err
+	}
+	_, err := fmt.Fprintf(out, "documentation successfully created in %s\n", dir)
+	return err
 }

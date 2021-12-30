@@ -2,181 +2,374 @@ package pesakit
 
 import (
 	"fmt"
-	"github.com/manifoldco/promptui"
-	"github.com/pesakit/pesakit/pkg/mno"
-	"github.com/pesakit/pesakit/pkg/print"
-	clix "github.com/urfave/cli/v2"
+	"github.com/spf13/cobra"
+	"github.com/techcraftlabs/airtel"
+	"github.com/techcraftlabs/mpesa"
+	"github.com/techcraftlabs/tigopesa"
+	"io"
+	"strings"
 )
 
-func (c *Client) configCommand() *clix.Command {
-	return &clix.Command{
-		Name:  "config",
-		Usage: "configurations management",
-		Subcommands: []*clix.Command{
-			c.printConfigCommand(),
-			c.whereConfigCommand(),
-			c.resetConfigCommand(),
-			c.initConfigCommand(),
+const (
+	flagConfigMpesa  = "mpesa"
+	flagConfigAirtel = "airtel"
+	flagConfigTigo   = "tigo"
+	defConfigValue   = false
+)
+
+func (app *App) configCommand() {
+	rootCommand := app.root
+	out := app.getLogger()
+	var (
+		airtelConfig bool
+		mpesaConfig  bool
+		tigoConfig   bool
+	)
+
+	configCommand := &cobra.Command{
+		Use:   "config",
+		Short: "manages clients configuration",
+		Long: `manages clients configuration. This command is used to create, view,update and delete
+clients configurations`,
+		Run: func(cmd *cobra.Command, args []string) {
+			_ = cmd.Help()
 		},
 	}
+	configCommand.PersistentFlags().BoolVar(&airtelConfig, flagConfigAirtel, defConfigValue, "configure airtel client")
+	configCommand.PersistentFlags().BoolVar(&mpesaConfig, flagConfigMpesa, defConfigValue, "configure mpesa client")
+	configCommand.PersistentFlags().BoolVar(&tigoConfig, flagConfigTigo, defConfigValue, "configure tigo client")
+
+	initConfigPrintCommand(configCommand, out)
+	rootCommand.AddCommand(configCommand)
 }
 
-func (c *Client) printConfigAction() clix.ActionFunc {
-	return func(ctx *clix.Context) error {
-		printFormat := ctx.String("format")
-		mnoChoice := ctx.String("mno")
-
-		pt := print.PayloadTypeFromString(printFormat)
-		isVoda := mno.FromString(mnoChoice) == mno.Vodacom
-		isTigo := mno.FromString(mnoChoice) == mno.Tigo
-		isAirtel := mno.FromString(mnoChoice) == mno.Airtel
-		isUnknown := mno.FromString(mnoChoice) == mno.Unknown
-		if mnoChoice == "" || mnoChoice == "all" || isUnknown{
-
-			err := print.Out(ctx.Context,"Airtel Config", c.logger, pt, c.airtel.Conf)
+func initConfigPrintCommand(parentCommand *cobra.Command, out io.Writer) {
+	configPrintCommand := &cobra.Command{
+		Use:   "print",
+		Short: "prints the configuration",
+		Long:  `prints the configuration if not any is specified all configurations are printed`,
+		Run: func(cmd *cobra.Command, args []string) {
+			airtelConfigBool, err := cmd.Flags().GetBool(flagConfigAirtel)
 			if err != nil {
-				return err
+				return
 			}
-
-			err = print.Out(ctx.Context, "mpesa Config", c.logger, pt, c.mpesa.Conf)
+			mpesaConfigBool, err := cmd.Flags().GetBool(flagConfigMpesa)
 			if err != nil {
-				return err
+				return
 			}
-
-			err = print.Out(ctx.Context,"Tigo Disburse Config",  c.logger, pt, c.tigo.Config.Disburse)
+			tigoConfigBool, err := cmd.Flags().GetBool(flagConfigTigo)
 			if err != nil {
-				return err
+				return
 			}
 
-			err = print.Out(ctx.Context,"Tigo pushAction Config",  c.logger, pt, c.tigo.Config.Push)
-			if err != nil {
-				return err
-			}
-
-			return nil
-		} else {
-			if isVoda {
-				err := print.Out(ctx.Context, "mpesa Config", c.logger, pt, c.mpesa.Conf)
+			notAnySpecified := !(airtelConfigBool || mpesaConfigBool || tigoConfigBool)
+			if notAnySpecified {
+				mpesaConfig, err := loadMpesaConfig(cmd)
 				if err != nil {
-					return err
+					return
 				}
-				return nil
+				_, _ = fmt.Fprintf(out, "Mpesa Config: %v\n", mpesaConfig)
+				airtelConfig, err := loadAirtelConfig(cmd)
+				if err != nil {
+					return
+				}
+				_, _ = fmt.Fprintf(out, "Airtel Config: %v\n", airtelConfig)
+				tigoConfig, err := loadTigoConfig(cmd)
+				if err != nil {
+					return
+				}
+				_, _ = fmt.Fprintf(out, "Tigo Config: %v\n", tigoConfig)
 			}
 
-			if isTigo {
-				err := print.Out(ctx.Context,"Tigo pushAction Config",  c.logger, pt, c.tigo.Config.Push)
-				if err != nil {
-					return err
-				}
-
-				err = print.Out(ctx.Context,"Tigo Disburse Config",  c.logger, pt, c.tigo.Config.Disburse)
-				if err != nil {
-					return err
-				}
-				return nil
-			}
-
-			if isAirtel {
-				err := print.Out(ctx.Context,"Airtel Config",  c.logger, pt, c.airtel.Conf)
-				if err != nil {
-					return err
-				}
-				return nil
-			}
-
-		}
-
-		return nil
-	}
-}
-
-func (c *Client) printConfigCommand() *clix.Command {
-	flags := []clix.Flag{
-		&clix.StringFlag{
-			Name:  "mno",
-			Usage: "mobile money provider (tigo, airtel, vodacom)",
 		},
 	}
 
-	return &clix.Command{
-		Name:  "print",
-		Usage: "print configuration set",
-		Flags: flags,
-		Action: func(ctx *clix.Context) error {
-			return c.printConfigAction()(ctx)
-		},
-	}
+	configPrintCommand.SetHelpFunc(func(command *cobra.Command, strings []string) {
+		set := parentCommand.Parent().PersistentFlags()
+		markHiddenExcept(set, flagDebugMode, flagConfigAirtel, flagConfigMpesa, flagConfigTigo)
+		command.Parent().HelpFunc()(command, strings)
+	})
+
+	parentCommand.AddCommand(configPrintCommand)
 }
 
-func (c *Client) whereConfigCommand() *clix.Command {
-	//flags := []clix.Flag{
-	//	&clix.StringFlag{
-	//		Name:  "mno",
-	//		Usage: "mobile money provider (tigo, airtel, vodacom)",
-	//	},
-	//}
-
-	return &clix.Command{
-		Name:  "where",
-		Usage: "print the absolute path of config file",
-		//Flags: flags,
-		Action: func(ctx *clix.Context) error {
-			return c.printConfigAction()(ctx)
-		},
+// loadMpesaConfig loads all the mpesa configurations after a command
+func loadMpesaConfig(command *cobra.Command) (*mpesa.Config, error) {
+	authEndpoint, err := command.Flags().GetString(flagMpesaAuthEndpoint)
+	if err != nil {
+		return nil, err
 	}
-}
-
-func (c *Client) resetConfigCommand() *clix.Command {
-	//flags := []clix.Flag{
-	//	&clix.StringFlag{
-	//		Name:  "mno",
-	//		Usage: "mobile money provider (tigo, airtel, vodacom)",
-	//	},
-	//}
-
-	return &clix.Command{
-		Name:  "reset",
-		Usage: "deletes all the present config back to default",
-		//Flags: flags,
-		Action: func(ctx *clix.Context) error {
-			return c.printConfigAction()(ctx)
-		},
+	pushEndpoint, err := command.Flags().GetString(flagMpesaPushEndpoint)
+	if err != nil {
+		return nil, err
 	}
-}
-
-func (c *Client) initConfigCommand() *clix.Command {
-	//flags := []clix.Flag{
-	//	&clix.StringFlag{
-	//		Name:  "mno",
-	//		Usage: "mobile money provider (tigo, airtel, vodacom)",
-	//	},
-	//}
-
-	return &clix.Command{
-		Name:  "init",
-		Usage: "initialize configuration",
-		//Flags: flags,
-		Action: func(ctx *clix.Context) error {
-			return c.initConfigAction()(ctx)
-		},
+	disburseEndpoint, err := command.Flags().GetString(flagMpesaDisburseEndpoint)
+	if err != nil {
+		return nil, err
 	}
-}
+	queryEndpoint, err := command.Flags().GetString(flagMpesaTransactionStatusEndpoint)
+	if err != nil {
+		return nil, err
+	}
+	directCreateEndpoint, err := command.Flags().GetString(flagMpesaDirectDebitCreateEndpoint)
+	if err != nil {
+		return nil, err
+	}
+	directPayEndpoint, err := command.Flags().GetString(flagMpesaDirectDebitPayEndpoint)
+	if err != nil {
+		return nil, err
+	}
+	reversalEndpoint, err := command.Flags().GetString(flagMpesaReversalEndpoint)
+	if err != nil {
+		return nil, err
+	}
+	b2bEndpoint, err := command.Flags().GetString(flagMpesaB2BEndpoint)
+	if err != nil {
+		return nil, err
+	}
+	trustedSourcesStr, err := command.Flags().GetString(flagMpesaTrustedSources)
+	if err != nil {
+		return nil, err
+	}
+	trustedSources := strings.Split(trustedSourcesStr, " ")
+	providerCode, err := command.Flags().GetString(flagMpesaServiceProviderCode)
+	if err != nil {
+		return nil, err
+	}
+	sessionLifetime, err := command.Flags().GetInt64(flagMpesaSessionLifetimeMinutes)
+	if err != nil {
+		return nil, err
+	}
+	name, err := command.Flags().GetString(flagMpesaAppName)
+	if err != nil {
+		return nil, err
+	}
+	version, err := command.Flags().GetString(flagMpesaAppVersion)
+	if err != nil {
+		return nil, err
+	}
+	desc, err := command.Flags().GetString(flagMpesaAppDesc)
+	if err != nil {
+		return nil, err
+	}
+	basePath, err := command.Flags().GetString(flagMpesaAppDesc)
+	if err != nil {
+		return nil, err
+	}
+	marketString, err := command.Flags().GetString(flagMpesaMarket)
+	if err != nil {
+		return nil, err
+	}
+	market := mpesa.MarketFmt(marketString)
+	platformStr, err := command.Flags().GetString(flagMpesaPlatform)
+	if err != nil {
+		return nil, err
+	}
+	platform := mpesa.PlatformFmt(platformStr)
 
-func (c *Client) initConfigAction() clix.ActionFunc{
-	return func(ctx *clix.Context) error {
-		prompt := promptui.Select{
-			Label:             "select target",
-			Items:             []string{"pesakit", "tigopesa", "mpesa", "airtel"},
-		}
+	endpoints := &mpesa.Endpoints{
+		AuthEndpoint:               authEndpoint,
+		PushEndpoint:               pushEndpoint,
+		DisburseEndpoint:           disburseEndpoint,
+		QueryEndpoint:              queryEndpoint,
+		DirectDebitCreateEndpoint:  directCreateEndpoint,
+		DirectDebitPayEndpoint:     directPayEndpoint,
+		TransactionReverseEndpoint: reversalEndpoint,
+		B2BEndpoint:                b2bEndpoint,
+	}
+	config := &mpesa.Config{
+		Endpoints:              endpoints,
+		Name:                   name,
+		Version:                version,
+		Description:            desc,
+		BasePath:               basePath,
+		Market:                 market,
+		Platform:               platform,
+		APIKey:                 "",
+		PublicKey:              "",
+		SessionLifetimeMinutes: sessionLifetime,
+		ServiceProvideCode:     providerCode,
+		TrustedSources:         trustedSources,
+	}
 
-		_, result, err := prompt.Run()
-
+	if platform == mpesa.OPENAPI {
+		// get production public key and api-key
+		apiKey, err := command.Flags().GetString(flagMpesaOpenApiKey)
 		if err != nil {
-			fmt.Printf("prompt failed %v\n", err)
-			return err
+			return nil, err
 		}
+		config.APIKey = apiKey
 
-		fmt.Printf("you choose %q\n", result)
-		return nil
+		pubKey, err := command.Flags().GetString(flagMpesaOpenAPIPubKey)
+		if err != nil {
+			return nil, err
+		}
+		config.PublicKey = pubKey
+	} else {
+		// get sandbox public key and api-key
+		apiKey, err := command.Flags().GetString(flagMpesaSandboxApiKey)
+		if err != nil {
+			return nil, err
+		}
+		config.APIKey = apiKey
+
+		pubKey, err := command.Flags().GetString(flagMpesaSandboxPubKey)
+		if err != nil {
+			return nil, err
+		}
+		config.PublicKey = pubKey
+	}
+
+	return config, nil
+}
+
+func loadAirtelConfig(command *cobra.Command) (*airtel.Config, error) {
+	countriesStr, err := command.Flags().GetString(flagAirtelCountries)
+	if err != nil {
+		return nil, err
+	}
+	countries := strings.Split(countriesStr, " ")
+	disbursePin, err := command.Flags().GetString(flagAirtelDisbursePin)
+	if err != nil {
+		return nil, err
+	}
+
+	callbackPrivateKey, err := command.Flags().GetString(flagAirtelCallbackPrivKey)
+	if err != nil {
+		return nil, err
+	}
+
+	callbackAuth, err := command.Flags().GetBool(flagAirtelCallbackAuth)
+	if err != nil {
+		return nil, err
+	}
+
+	clientID, err := command.Flags().GetString(flagAirtelClientId)
+	if err != nil {
+		return nil, err
+	}
+
+	clientSecret, err := command.Flags().GetString(flagAirtelClientSecret)
+	if err != nil {
+		return nil, err
+	}
+
+	environmentStr, err := command.Flags().GetString(flagAirtelDeploymentEnv)
+	if err != nil {
+		return nil, err
+	}
+
+	environment := airtelEnv(environmentStr)
+
+	publicKey, err := command.Flags().GetString(flagAirtelPublicKey)
+	if err != nil {
+		return nil, err
+	}
+
+	config := &airtel.Config{
+		AllowedCountries: map[airtel.ApiGroup][]string{
+			airtel.Transaction: countries,
+			airtel.Collection:  countries,
+			airtel.Disburse:    countries,
+			airtel.Account:     countries,
+			airtel.KYC:         countries,
+		},
+		DisbursePIN:        disbursePin,
+		CallbackPrivateKey: callbackPrivateKey,
+		CallbackAuth:       callbackAuth,
+		PublicKey:          publicKey,
+		Environment:        environment,
+		ClientID:           clientID,
+		Secret:             clientSecret,
+	}
+
+	return config, nil
+}
+
+func loadTigoConfig(command *cobra.Command) (*tigopesa.Config, error) {
+	disburseAccountName, err := command.Flags().GetString(flagTigoDisburseAccountName)
+	if err != nil {
+		return nil, err
+	}
+	disburseAccountMSISDN, err := command.Flags().GetString(flagTigoDisburseAccountMSISDN)
+	if err != nil {
+		return nil, err
+	}
+	disburseBrandID, err := command.Flags().GetString(flagTigoDisburseBrandID)
+	if err != nil {
+		return nil, err
+	}
+	disbursePIN, err := command.Flags().GetString(flagTigoDisbursePIN)
+	if err != nil {
+		return nil, err
+	}
+	disburseRequestURL, err := command.Flags().GetString(flagTigoDisburseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	pushUsername, err := command.Flags().GetString(flagTigoPushUsername)
+	if err != nil {
+		return nil, err
+	}
+	pushPassword, err := command.Flags().GetString(flagTigoPushPassword)
+	if err != nil {
+		return nil, err
+	}
+	pushPasswordGrantType, err := command.Flags().GetString(flagTigoPasswordGrantType)
+	if err != nil {
+		return nil, err
+	}
+	pushBillerCode, err := command.Flags().GetString(flagTigoPushBillerCode)
+	if err != nil {
+		return nil, err
+	}
+	pushBillerMSISDN, err := command.Flags().GetString(flagTigoPushBillerMSISDN)
+	if err != nil {
+		return nil, err
+	}
+	pushBaseURl, err := command.Flags().GetString(flagTigoPushBaseURL)
+	if err != nil {
+		return nil, err
+	}
+	pushTokenEndpoint, err := command.Flags().GetString(flagTigoPushTokenURL)
+	if err != nil {
+		return nil, err
+	}
+
+	pushPayEndpoint, err := command.Flags().GetString(flagTigoPushPayURL)
+	if err != nil {
+		return nil, err
+	}
+
+	config := &tigopesa.Config{
+		Disburse: &tigopesa.DisburseConfig{
+			AccountName:   disburseAccountName,
+			AccountMSISDN: disburseAccountMSISDN,
+			BrandID:       disburseBrandID,
+			PIN:           disbursePIN,
+			RequestURL:    disburseRequestURL,
+		},
+		Push: &tigopesa.PushConfig{
+			Username:          pushUsername,
+			Password:          pushPassword,
+			PasswordGrantType: pushPasswordGrantType,
+			BaseURL:           pushBaseURl,
+			TokenEndpoint:     pushTokenEndpoint,
+			BillerMSISDN:      pushBillerMSISDN,
+			BillerCode:        pushBillerCode,
+			PushPayEndpoint:   pushPayEndpoint,
+		},
+	}
+	return config, nil
+}
+
+func airtelEnv(value string) airtel.Environment {
+	if value == "production" || value == "prod" {
+		return airtel.PRODUCTION
+	} else if value == "sandbox" || value == "staging" {
+		return airtel.STAGING
+	} else {
+		return airtel.STAGING
 	}
 }
