@@ -2,13 +2,14 @@ package pesakit
 
 import (
 	"fmt"
+	"io"
+	"sync"
+
 	"github.com/spf13/cobra"
 	"github.com/techcraftlabs/airtel"
 	xio "github.com/techcraftlabs/base/io"
 	"github.com/techcraftlabs/mpesa"
 	"github.com/techcraftlabs/tigopesa"
-	"io"
-	"sync"
 )
 
 const (
@@ -41,6 +42,7 @@ type (
 		mu        *sync.RWMutex
 		logger    io.Writer
 		debugMode bool
+		home      *string
 		root      *cobra.Command
 		mpesa     *mpesa.Client
 		airtel    *airtel.Client
@@ -77,6 +79,7 @@ func New() *App { //nolint:ireturn
 		mu:        &sync.RWMutex{},
 		logger:    xio.StdErr,
 		debugMode: false,
+		home:      new(string),
 		root:      nil,
 		mpesa:     nil,
 		airtel:    nil,
@@ -93,6 +96,18 @@ func (app *App) Execute() error {
 	}
 
 	return nil
+}
+
+func (app *App) setHomeDir(homeDir string) {
+	app.mu.Lock()
+	defer app.mu.Unlock()
+	*app.home = homeDir
+}
+
+func (app *App) getHome() string {
+	app.mu.RLock()
+	defer app.mu.RUnlock()
+	return *app.home
 }
 
 func (app *App) setMpesaClient(client *mpesa.Client) {
