@@ -1,6 +1,10 @@
 package pesakit
 
 const (
+	envHomeDirectory                    = "PK_HOME"
+	defHomeDirectory                    = "."
+	flagHomeDirectory                   = "home"
+	usageHomeDirectory                  = "the home directory of the pesakit application"
 	envConfigFile                       = "PK_CONFIG_FILE"
 	defConfigFile                       = "$HOME/.pesakit/pesakit.env"
 	flagConfigFile                      = "config"

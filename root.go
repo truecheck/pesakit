@@ -56,6 +56,7 @@ func (app *App) createRootCommand() {
 		varTigoPushPayURL                 = env.String(envTigoPushPayURL, defTigoPushPayURL)
 		varTigoPasswordGrantType          = env.String(envTigoPasswordGrantType, defTigoPasswordGrantType)
 		varConfigFile                     = env.String(envConfigFile, defConfigFile)
+		varHomeDirectory                  = env.String(envHomeDirectory, defHomeDirectory)
 	)
 
 	var rootCommand = &cobra.Command{
@@ -64,6 +65,8 @@ func (app *App) createRootCommand() {
 		Long:             appLongDescription,
 		PersistentPreRun: app.persistentPreRun,
 	}
+
+	rootCommand.PersistentFlags().StringVar(&varHomeDirectory, envHomeDirectory, defHomeDirectory, usageHomeDirectory)
 	rootCommand.PersistentFlags().BoolVar(&varDebugMode, flagDebugMode, varDebugMode, usageDebugMode)
 	rootCommand.PersistentFlags().StringVar(&varAirtelPublicKey, flagAirtelPublicKey, varAirtelPublicKey, usageAirtelPublicKey)
 	rootCommand.PersistentFlags().StringVar(&varAirtelDisbursePin, flagAirtelDisbursePin,
