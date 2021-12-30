@@ -66,7 +66,7 @@ func (app *App) createRootCommand() {
 		PersistentPreRun: app.persistentPreRun,
 	}
 
-	rootCommand.PersistentFlags().StringVar(&varHomeDirectory, envHomeDirectory, defHomeDirectory, usageHomeDirectory)
+	rootCommand.PersistentFlags().StringVar(&varHomeDirectory, flagHomeDirectory, defHomeDirectory, usageHomeDirectory)
 	rootCommand.PersistentFlags().BoolVar(&varDebugMode, flagDebugMode, varDebugMode, usageDebugMode)
 	rootCommand.PersistentFlags().StringVar(&varAirtelPublicKey, flagAirtelPublicKey, varAirtelPublicKey, usageAirtelPublicKey)
 	rootCommand.PersistentFlags().StringVar(&varAirtelDisbursePin, flagAirtelDisbursePin,
@@ -144,7 +144,7 @@ func (app *App) createRootCommand() {
 		"config file (default is $HOME/.pesakit.yaml)")
 	versionTemplate := `{{printf "%s: %s - version %s\n" .Name .Short .Version}}`
 	rootCommand.SetVersionTemplate(versionTemplate)
-	markHiddenExcept(rootCommand.Flags())
+	markHiddenExcept(rootCommand.PersistentFlags(), "help")
 	app.root = rootCommand
 	loadCommands(
 		app.b2bCommand,
@@ -158,6 +158,7 @@ func (app *App) createRootCommand() {
 		app.docsCommand,
 		app.disburseCommand,
 	)
+
 }
 
 func loadCommands(fns ...func()) {
