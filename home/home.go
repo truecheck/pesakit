@@ -4,18 +4,19 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	home "github.com/mitchellh/go-homedir"
 )
 
 // At creates home directory named .pesakit at the specified root path.
-// If the root path is "", the home directory will be created at the current
+// If the root path is ".", the home directory will be created at the current
 // working directory.
-// If the root path is ".", the home directory will be created at the home
+// If the root path is "", the home directory will be created at the home
 // directory of the current user.
 func At(rootPath string) error {
 	pesakit := ".pesakit"
-	if rootPath == "" {
+	if rootPath == "." {
 		// use the current working directory
 		cwd, err := os.Getwd()
 		if err != nil {
@@ -23,7 +24,7 @@ func At(rootPath string) error {
 		}
 		pesakitHome := filepath.Join(cwd, pesakit)
 		return At(pesakitHome)
-	} else if rootPath == "." {
+	} else if strings.TrimSpace(rootPath) == "" {
 		homePath, err := home.Dir()
 		if err != nil {
 			return fmt.Errorf("could not get the home directory, %w", err)
