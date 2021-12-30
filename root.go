@@ -9,7 +9,6 @@ import (
 )
 
 func (app *App) createRootCommand() {
-
 	var (
 		varDebugMode                      = env.Bool(envDebugMode, defDebugMode)
 		varAirtelPublicKey                = env.String(envAirtelPublicKey, defAirtelPublicKey)

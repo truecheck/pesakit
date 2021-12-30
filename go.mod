@@ -18,7 +18,9 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/joho/godotenv v1.4.0
 	github.com/magiconair/properties v1.8.5 // indirect
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
