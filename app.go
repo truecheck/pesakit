@@ -117,14 +117,32 @@ func (app *App) setMpesaClient(client *mpesa.Client) {
 	app.mpesa = client
 }
 
+func (app *App) MpesaClient() *mpesa.Client {
+	app.mu.RLock()
+	defer app.mu.RUnlock()
+	return app.mpesa
+}
+
 func (app *App) setAirtelClient(client *airtel.Client) {
 	app.mu.Lock()
 	defer app.mu.Unlock()
 	app.airtel = client
 }
 
+func (app *App) AirtelClient() *airtel.Client {
+	app.mu.RLock()
+	defer app.mu.RUnlock()
+	return app.airtel
+}
+
 func (app *App) setTigoClient(client *tigopesa.Client) {
 	app.mu.Lock()
 	defer app.mu.Unlock()
 	app.tigo = client
+}
+
+func (app *App) TigoClient() *tigopesa.Client {
+	app.mu.RLock()
+	defer app.mu.RUnlock()
+	return app.tigo
 }

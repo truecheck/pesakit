@@ -161,6 +161,8 @@ func (app *App) createRootCommand() {
 		app.disburseCommand,
 	)
 
+	app.setDebugMode(varDebugMode)
+
 }
 
 func loadCommands(fns ...func()) {
@@ -173,9 +175,6 @@ func (app *App) persistentPreRun(cmd *cobra.Command, args []string) {
 		configFile          string
 		configFileFlagGiven bool
 		homeDirFlagGiven    bool
-		configMpesa         = new(mpesa.Config)
-		configAirtel        = new(airtel.Config)
-		configTigo          = new(tigopesa.Config)
 		err                 error
 	)
 
@@ -237,40 +236,40 @@ func (app *App) persistentPreRun(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	loadConfigs := func(command *cobra.Command) error {
-		// loads all configurations there is
-		configMpesa, err = loadMpesaConfig(command)
-		if err != nil {
-			return err
-		}
+	err = app.loadConfigAndSetClients(cmd)
+	if err != nil {
+		logger := app.getLogger()
+		_, _ = fmt.Fprintf(logger, "error: %v\n", err)
+		return
+	}
+}
 
-		configAirtel, err = loadAirtelConfig(command)
-		if err != nil {
-			return err
-		}
+func (app *App) loadConfigAndSetClients(cmd *cobra.Command) error {
 
-		configTigo, err = loadTigoConfig(command)
-		if err != nil {
-			return err
-		}
+	logger := app.getLogger()
+	debugMode := app.getDebugMode()
 
-		return nil
+	// loads all configurations there is
+	configMpesa, err := loadMpesaConfig(cmd)
+	if err != nil {
+		return err
 	}
 
-	go func() {
-		err := loadConfigs(cmd)
-		if err != nil {
-			logger := app.getLogger()
-			_, _ = fmt.Fprintf(logger, "Error loading configs: %s\n", err.Error())
-		}
-	}()
+	configAirtel, err := loadAirtelConfig(cmd)
+	if err != nil {
+		return err
+	}
 
-	clientMpesa := mpesa.NewClient(configMpesa)
-	clientTigo := tigopesa.NewClient(configTigo)
+	configTigo, err := loadTigoConfig(cmd)
+	if err != nil {
+		return err
+	}
+	clientMpesa := mpesa.NewClient(configMpesa, mpesa.WithLogger(logger), mpesa.WithDebugMode(debugMode))
+	clientTigo := tigopesa.NewClient(configTigo, tigopesa.WithDebugMode(debugMode), tigopesa.WithLogger(logger))
 	clientAirtel := airtel.NewClient(configAirtel, nil, true)
-
 	app.setMpesaClient(clientMpesa)
 	app.setTigoClient(clientTigo)
 	app.setAirtelClient(clientAirtel)
 
+	return nil
 }
