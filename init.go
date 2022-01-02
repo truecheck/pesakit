@@ -12,6 +12,7 @@ import (
 	"io"
 	"io/fs"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -25,7 +26,7 @@ func (app *App) persistentPreRun(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	_, _ = fmt.Fprintf(logger, "app home dir: %s, config file %s\n", appHomeDir, appConfigFile)
+	_, _ = fmt.Fprintf(logger, "PERSISTENT PRE RUN: app home dir: %s, config file %s\n", appHomeDir, appConfigFile)
 
 	app.setHomeDir(appHomeDir)
 	err = env.LoadConfigFrom(appConfigFile)
@@ -120,9 +121,11 @@ func initConfig(cmd *cobra.Command, args []string, logger io.Writer,
 		}
 	}(debugMode)
 
+	rootCommand := getParentCommand(cmd)
+
 	var (
-		configFileFlagGiven = cmd.Flags().Changed(flagConfigFile)
-		homeDirFlagGiven    = cmd.Flags().Changed(flagHomeDirectory)
+		configFileFlagGiven = rootCommand.PersistentFlags().Changed(flagConfigFile)
+		homeDirFlagGiven    = rootCommand.PersistentFlags().Changed(flagHomeDirectory)
 	)
 
 	// possible scenarios:
@@ -140,39 +143,19 @@ func initConfig(cmd *cobra.Command, args []string, logger io.Writer,
 	// switch on the possible scenarios
 	switch {
 	case configGivenHomeDirNotGiven:
-		_, _ = fmt.Fprintf(logger, ""+
-			"config file is given, home dir is not given\n"+
-			"config file is %s\n"+
-			"home dir is %s\n",
-			cmd.Flag(flagConfigFile).Value.String(),
-			cmd.Flag(flagHomeDirectory).Value.String())
-		return onlyConfigFileSpecified(cmd)
+
+		return onlyConfigFileSpecified(rootCommand)
 
 	case homeDirGivenConfigFileNotGiven:
-		_, _ = fmt.Fprintf(logger, ""+
-			"config file is not given, home dir is given\n"+
-			"config file is %s\n"+
-			"home dir is %s\n",
-			cmd.Flag(flagConfigFile).Value.String(),
-			cmd.Flag(flagHomeDirectory).Value.String())
-		return onlyHomeGiven(cmd)
+
+		return onlyHomeGiven(rootCommand)
 
 	case bothConfigFileAndHomeDirGiven:
-		_, _ = fmt.Fprintf(logger, ""+
-			"both config file and home dir are given\n"+
-			"config file is %s\n"+
-			"home dir is %s\n",
-			cmd.Flag(flagConfigFile).Value.String(),
-			cmd.Flag(flagHomeDirectory).Value.String())
-		return bothHomeAndConfig(cmd)
+
+		return bothHomeAndConfig(rootCommand)
 
 	case neitherConfigFileNorHomeDirGiven:
-		_, _ = fmt.Fprintf(logger, ""+
-			"neither config file nor home dir are given\n"+
-			"config file is %s\n"+
-			"home dir is %s\n",
-			cmd.Flag(flagConfigFile).Value.String(),
-			cmd.Flag(flagHomeDirectory).Value.String())
+
 		return neitherHomeNorConfig()
 
 	default:
@@ -234,8 +217,11 @@ func createsDefaultConfigFile(homeDir string) (string, string, error) {
 	// check if the file named .pesakit.env exists in the homeDir if not
 	// create it
 	// if it exists, return it as the config file path
+
+	log.Printf("confFilePath: %s", confFilePath)
 	info, err := os.Stat(confFilePath)
 	if os.IsNotExist(err) {
+		log.Printf("file does not exist, we are going to create it")
 		// create the file
 		err1 := ioutil.WriteFile(confFilePath, []byte(defaultConfigFileData), defaultConfigFilePerm)
 		if err1 != nil {
@@ -243,6 +229,8 @@ func createsDefaultConfigFile(homeDir string) (string, string, error) {
 
 			return "", "", err2
 		}
+
+		log.Printf("created config file: %s", confFilePath)
 		return homeDir, confFilePath, nil
 	}
 	// if the file exists check if its regular file. If its regular return it.
@@ -266,7 +254,7 @@ func createsDefaultConfigFile(homeDir string) (string, string, error) {
 		return homeDir, confFilePath, nil
 	}
 
-	return "", "", err
+	return homeDir, confFilePath, err
 }
 
 func bothHomeAndConfig(cmd *cobra.Command) (string, string, error) {
@@ -308,6 +296,7 @@ func bothHomeAndConfig(cmd *cobra.Command) (string, string, error) {
 }
 
 func neitherHomeNorConfig() (string, string, error) {
+	log.Printf("Neither home nor config file specified. Using default values\n")
 	homeDir, err := home.At(defaultAppHomeDirectory)
 	if err != nil {
 		err1 := fmt.Errorf("could not create home directory: %w", err)

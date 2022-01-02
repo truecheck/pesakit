@@ -20,6 +20,6 @@ func (app *App) callbacksCommand() {
 			fmt.Println("callbacks called")
 		},
 	}
-
+	markHiddenExcept(app.root.PersistentFlags(), "help")
 	app.root.AddCommand(callbacksCmd)
 }
