@@ -16,7 +16,23 @@ func IsDirExist(path string) bool {
 	if err != nil {
 		return false
 	}
+
 	return fi.IsDir()
+}
+
+// IsFileExist checks if a file exists. It returns true if the file exists,
+// and it is not a directory as well as the file is regular file.
+func IsFileExist(path string) bool {
+	fi, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false
+	}
+	if err != nil {
+		return false
+	}
+	// return true if file is regular and not directory
+	return !fi.IsDir() && fi.Mode().IsRegular()
+
 }
 
 // At creates home directory named .pesakit at the specified root path.
