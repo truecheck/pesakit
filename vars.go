@@ -2,7 +2,7 @@ package pesakit
 
 const (
 	envHomeDirectory                    = "PK_HOME"
-	defHomeDirectory                    = "."
+	defHomeDirectory                    = ""
 	flagHomeDirectory                   = "home"
 	usageHomeDirectory                  = "the home directory of the pesakit application"
 	envConfigFile                       = "PK_CONFIG_FILE"

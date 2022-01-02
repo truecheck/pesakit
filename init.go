@@ -24,6 +24,9 @@ func (app *App) persistentPreRun(cmd *cobra.Command, args []string) error {
 
 		return err
 	}
+
+	_, _ = fmt.Fprintf(logger, "app home dir: %s, config file %s\n", appHomeDir, appConfigFile)
+
 	app.setHomeDir(appHomeDir)
 	err = env.LoadConfigFrom(appConfigFile)
 	if err != nil {
@@ -37,7 +40,7 @@ func (app *App) persistentPreRun(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	_, _ = fmt.Fprintf(logger, "app home is %s and config loaded from %s\n", appHomeDir, appConfigFile)
-	
+
 	return nil
 }
 
@@ -109,9 +112,11 @@ func (app *App) persistentPreRunE(cmd *cobra.Command, args []string) error {
 func initConfig(cmd *cobra.Command, args []string, logger io.Writer,
 	debugMode bool) (string, string, error) {
 
+	_, _ = fmt.Fprintf(logger, "here at the initConfig %v\n", args)
+
 	defer func(debug bool) {
 		if debug {
-			_, _ = fmt.Fprintf(logger, "Debug mode is on: args %v", args)
+			_, _ = fmt.Fprintf(logger, "debug mode is on: args %v", args)
 		}
 	}(debugMode)
 
@@ -135,18 +140,43 @@ func initConfig(cmd *cobra.Command, args []string, logger io.Writer,
 	// switch on the possible scenarios
 	switch {
 	case configGivenHomeDirNotGiven:
+		_, _ = fmt.Fprintf(logger, ""+
+			"config file is given, home dir is not given\n"+
+			"config file is %s\n"+
+			"home dir is %s\n",
+			cmd.Flag(flagConfigFile).Value.String(),
+			cmd.Flag(flagHomeDirectory).Value.String())
 		return onlyConfigFileSpecified(cmd)
 
 	case homeDirGivenConfigFileNotGiven:
+		_, _ = fmt.Fprintf(logger, ""+
+			"config file is not given, home dir is given\n"+
+			"config file is %s\n"+
+			"home dir is %s\n",
+			cmd.Flag(flagConfigFile).Value.String(),
+			cmd.Flag(flagHomeDirectory).Value.String())
 		return onlyHomeGiven(cmd)
 
 	case bothConfigFileAndHomeDirGiven:
+		_, _ = fmt.Fprintf(logger, ""+
+			"both config file and home dir are given\n"+
+			"config file is %s\n"+
+			"home dir is %s\n",
+			cmd.Flag(flagConfigFile).Value.String(),
+			cmd.Flag(flagHomeDirectory).Value.String())
 		return bothHomeAndConfig(cmd)
 
 	case neitherConfigFileNorHomeDirGiven:
+		_, _ = fmt.Fprintf(logger, ""+
+			"neither config file nor home dir are given\n"+
+			"config file is %s\n"+
+			"home dir is %s\n",
+			cmd.Flag(flagConfigFile).Value.String(),
+			cmd.Flag(flagHomeDirectory).Value.String())
 		return neitherHomeNorConfig()
 
 	default:
+		_, _ = fmt.Fprintf(logger, "default case\n")
 		return "", "", fmt.Errorf("unexpected error")
 	}
 
