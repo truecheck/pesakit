@@ -5,7 +5,9 @@ import (
 	"github.com/pesakit/pesakit/home"
 	"github.com/spf13/cobra"
 	"io"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 //
@@ -77,40 +79,89 @@ func setConfig(cmd *cobra.Command, args []string, logger io.Writer,
 		return "", "", err
 
 	case bothConfigFileAndHomeDirGiven:
-		// scenario 3
-		specifiedConfigFile, err := cmd.Flags().GetString(flagConfigFile)
-		if err != nil {
-			err1 := fmt.Errorf("could not read specified config file: %w", err)
-			return "", "", err1
-		}
-		// check if the specified config file exists
-		if _, err := os.Stat(specifiedConfigFile); os.IsNotExist(err) {
-			err1 := fmt.Errorf("specified config file does not exist: %w", err)
-			return "", "", err1
-		}
-		configFile = specifiedConfigFile
-		specifiedHomeDir, err := cmd.Flags().GetString(flagHomeDirectory)
-		if err != nil {
-			err1 := fmt.Errorf("could not read specified home directory: %w", err)
-			return "", "", err1
-		}
-		// check if specified home directory is a directory and check if available
-		if !home.IsDirExist(specifiedHomeDir) {
-			err1 := fmt.Errorf("specified home directory is not a directory/does not exist: %s", specifiedHomeDir)
-			return "", "", err1
-		}
-		homeDir = specifiedHomeDir
-
-		//copy the config file to the home directory
-		err = copyToDir(configFile, homeDir)
-
-		return "", "", nil
+		return bothHomeAndConfig(cmd)
 
 	case neitherConfigFileNorHomeDirGiven:
-		return "", "", err
+		return neitherHomeNorConfig(homeDir)
 
 	default:
-		return "", "", nil
+		return "", "", fmt.Errorf("unexpected error")
 	}
 
+}
+
+func bothHomeAndConfig(cmd *cobra.Command) (string, string, error) {
+	// scenario 3
+	configFile, err := cmd.Flags().GetString(flagConfigFile)
+	if err != nil {
+		err1 := fmt.Errorf("could not read specified config file: %w", err)
+
+		return "", "", err1
+	}
+	// check if the specified config file exists
+	if _, err := os.Stat(configFile); os.IsNotExist(err) {
+		err1 := fmt.Errorf("specified config file does not exist: %w", err)
+
+		return "", "", err1
+	}
+
+	homeDir, err := cmd.Flags().GetString(flagHomeDirectory)
+	if err != nil {
+		err1 := fmt.Errorf("could not read specified home directory: %w", err)
+
+		return "", "", err1
+	}
+	// check if specified home directory is a directory and check if available
+	if !home.IsDirExist(homeDir) {
+		err1 := fmt.Errorf("specified home directory is not a directory/does not exist: %s", homeDir)
+
+		return "", "", err1
+	}
+	// copy the config file to the home directory
+	dstFile, err := copyToDir(configFile, homeDir)
+	if err != nil {
+		err2 := fmt.Errorf("could not copy config file to home directory: %w", err)
+
+		return "", "", err2
+	}
+
+	return homeDir, dstFile, nil
+}
+
+func neitherHomeNorConfig(homeDir string) (string, string, error) {
+	homeDir, err := home.At("")
+	if err != nil {
+		err1 := fmt.Errorf("could not create home directory: %w", err)
+
+		return "", "", err1
+	}
+	confFilePath := filepath.Join(homeDir, ".pesakit.env")
+	// check if the file named .pesakit.env exists in the homeDir if not
+	// create it
+	// if it exists, return it as the config file path
+	info, err := os.Stat(confFilePath)
+	if os.IsNotExist(err) {
+		// create the file
+		err1 := os.MkdirAll(homeDir, 0755)
+		if err1 != nil {
+			err2 := fmt.Errorf("could not create home directory: %w", err1)
+
+			return "", "", err2
+		}
+		err1 = ioutil.WriteFile(confFilePath, []byte(""), 0644)
+		if err1 != nil {
+			err2 := fmt.Errorf("could not create config file: %w", err1)
+
+			return "", "", err2
+		}
+		return homeDir, confFilePath, nil
+	} else if info.IsDir() {
+		err1 := fmt.Errorf("config file is a directory: %s", confFilePath)
+
+		return "", "", err1
+	} else if info.Mode().IsRegular() {
+		return homeDir, confFilePath, nil
+	}
+
+	return "", "", err
 }

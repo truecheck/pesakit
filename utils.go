@@ -61,37 +61,38 @@ func markFlagsRequired(command *cobra.Command, flagType flagType, required ...st
 // copyFile copies a file from src to dst. If src or dst files do not exist
 // it returns an error. src is expected to be a regular file and dst is expected
 // to be a directory or else error is returned.
-func copyToDir(src, dst string) error {
+// copyFile if successful returns the new path of the file in dst.
+func copyToDir(src, dst string) (string, error) {
 	srcFileStat, err := os.Stat(src)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if !srcFileStat.Mode().IsRegular() {
-		return fmt.Errorf("%s is not a regular file", src)
+		return "", fmt.Errorf("%s is not a regular file", src)
 	}
 
 	dstDirStat, err := os.Stat(dst)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if !dstDirStat.Mode().IsDir() {
-		return fmt.Errorf("%s is not a directory", dst)
+		return "", fmt.Errorf("%s is not a directory", dst)
 	}
 
 	dstFile := filepath.Join(dst, srcFileStat.Name())
 	srcFile, err := os.Open(src)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer srcFile.Close()
 	destination, err := os.Create(dstFile)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer destination.Close()
 	_, err = io.Copy(destination, srcFile)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return dstFile, nil
 }

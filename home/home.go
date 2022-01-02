@@ -24,13 +24,14 @@ func IsDirExist(path string) bool {
 // working directory.
 // If the root path is "", the home directory will be created at the home
 // directory of the current user.
-func At(rootPath string) error {
+// At returns the path of the created home directory.
+func At(rootPath string) (string, error) {
 	pesakit := ".pesakit"
 	switch {
 	case rootPath == ".":
 		cwd, err := os.Getwd()
 		if err != nil {
-			return fmt.Errorf("could not get the current working directory, %w", err)
+			return "", fmt.Errorf("could not get the current working directory, %w", err)
 		}
 		pesakitHome := filepath.Join(cwd, pesakit)
 
@@ -39,13 +40,19 @@ func At(rootPath string) error {
 
 		homePath, err := Get()
 		if err != nil {
-			return fmt.Errorf("error: %w", err)
+			return "", fmt.Errorf("error: %w", err)
 		}
 
 		return At(homePath)
 	default:
 		pesakitHome := filepath.Join(rootPath, pesakit)
-		return os.MkdirAll(pesakitHome, fs.ModePerm)
+		err := os.MkdirAll(pesakitHome, fs.ModePerm)
+		if err != nil {
+			return "", err
+		}
+
+		return pesakitHome, nil
+
 	}
 
 }
