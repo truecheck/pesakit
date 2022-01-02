@@ -146,7 +146,7 @@ func (app *App) createRootCommand() {
 		"config file (default is $HOME/.pesakit.yaml)")
 	versionTemplate := `{{printf "%s: %s - version %s\n" .Name .Short .Version}}`
 	rootCommand.SetVersionTemplate(versionTemplate)
-	markHiddenExcept(rootCommand.PersistentFlags(), "help")
+	markHiddenExcept(rootCommand.Flags(), "help")
 	app.root = rootCommand
 	loadCommands(
 		app.b2bCommand,
@@ -178,8 +178,8 @@ func (app *App) persistentPreRun(cmd *cobra.Command, args []string) {
 		err                 error
 	)
 
-	configFileFlagGiven = cmd.PersistentFlags().Changed(flagConfigFile)
-	homeDirFlagGiven = cmd.PersistentFlags().Changed(flagHomeDirectory)
+	configFileFlagGiven = cmd.Flags().Changed(flagConfigFile)
+	homeDirFlagGiven = cmd.Flags().Changed(flagHomeDirectory)
 	// check if config file has been specified in the command line
 	if configFileFlagGiven {
 		specifiedConfigFile, err := cmd.PersistentFlags().GetString(flagConfigFile)

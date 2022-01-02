@@ -8,8 +8,20 @@ import (
 	dotenv "github.com/joho/godotenv"
 )
 
+// LoadConfigFrom will read your env file(s) and load them into ENV for this process.
+// Call this function as close as possible to the start of your program (ideally in main)
+// If you call Load without any args it will default to loading .env in the current path
+// You can otherwise tell it which files to load (there can be more than one) like
+//
+//		env.LoadConfigFrom("fileone", "filetwo")
+//
+// It's important to note that it WILL NOT OVERRIDE an env variable that already exists
+//- consider the .env file to set dev vars or sensible defaults
 func LoadConfigFrom(paths ...string) error {
-	return dotenv.Load(paths...)
+	if err := dotenv.Load(paths...); err != nil {
+		return fmt.Errorf("failed to load config files from %v .env file: %w", paths, err)
+	}
+	return nil
 }
 
 func get(key string, defaultValue interface{}) interface{} {
