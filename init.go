@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/pesakit/pesakit/env"
+	"github.com/pesakit/pesakit/flags"
 	"github.com/pesakit/pesakit/home"
 	"github.com/spf13/cobra"
 	"github.com/techcraftlabs/airtel"
@@ -18,7 +19,11 @@ import (
 )
 
 func (app *App) persistentPreRun(cmd *cobra.Command, args []string) error {
-	logger, debugMode := app.getLogger(), app.getDebugMode()
+	appConfig, err := flags.LoadAppConfig(cmd)
+	if err != nil {
+		return err
+	}
+	logger, debugMode := app.getWriter(), appConfig.Debug
 	appHomeDir, appConfigFile, err := initConfig(cmd, args, logger, debugMode)
 	if err != nil {
 		_, _ = fmt.Fprintf(logger, "error: %v\n", err)
@@ -124,8 +129,8 @@ func initConfig(cmd *cobra.Command, args []string, logger io.Writer,
 	rootCommand := getParentCommand(cmd)
 
 	var (
-		configFileFlagGiven = rootCommand.PersistentFlags().Changed(flagConfigFile)
-		homeDirFlagGiven    = rootCommand.PersistentFlags().Changed(flagHomeDirectory)
+		configFileFlagGiven = rootCommand.PersistentFlags().Changed(flags.ConfigName)
+		homeDirFlagGiven    = rootCommand.PersistentFlags().Changed(flags.HomeDirectoryName)
 	)
 
 	// possible scenarios:
@@ -168,7 +173,7 @@ func initConfig(cmd *cobra.Command, args []string, logger io.Writer,
 func onlyConfigFileSpecified(cmd *cobra.Command) (string, string, error) {
 	// retrieve specified config file path
 	// scenario 3
-	configFile, err := cmd.Flags().GetString(flagConfigFile)
+	configFile, err := cmd.Flags().GetString(flags.ConfigName)
 	if err != nil {
 		err1 := fmt.Errorf("could not read specified config file: %w", err)
 
@@ -195,7 +200,7 @@ func onlyConfigFileSpecified(cmd *cobra.Command) (string, string, error) {
 }
 
 func onlyHomeGiven(cmd *cobra.Command) (string, string, error) {
-	homeDir, err := cmd.Flags().GetString(flagHomeDirectory)
+	homeDir, err := cmd.Flags().GetString(flags.HomeDirectoryName)
 	if err != nil {
 		err1 := fmt.Errorf("could not read specified home directory: %w", err)
 
@@ -259,7 +264,7 @@ func createsDefaultConfigFile(homeDir string) (string, string, error) {
 
 func bothHomeAndConfig(cmd *cobra.Command) (string, string, error) {
 	// scenario 3
-	configFile, err := cmd.Flags().GetString(flagConfigFile)
+	configFile, err := cmd.Flags().GetString(flags.ConfigName)
 	if err != nil {
 		err1 := fmt.Errorf("could not read specified config file: %w", err)
 
@@ -272,7 +277,7 @@ func bothHomeAndConfig(cmd *cobra.Command) (string, string, error) {
 		return "", "", err1
 	}
 
-	homeDir, err := cmd.Flags().GetString(flagHomeDirectory)
+	homeDir, err := cmd.Flags().GetString(flags.HomeDirectoryName)
 	if err != nil {
 		err1 := fmt.Errorf("could not read specified home directory: %w", err)
 

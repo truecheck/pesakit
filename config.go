@@ -19,7 +19,7 @@ const (
 
 func (app *App) configCommand() {
 	rootCommand := app.root
-	out := app.getLogger()
+	out := app.getWriter()
 	var (
 		airtelConfig bool
 		mpesaConfig  bool
@@ -84,11 +84,11 @@ func initConfigPrintCommand(parentCommand *cobra.Command, out io.Writer) {
 		},
 	}
 
-	configPrintCommand.SetHelpFunc(func(command *cobra.Command, strings []string) {
-		set := parentCommand.Parent().PersistentFlags()
-		markHiddenExcept(set, flagDebugMode, flagConfigAirtel, flagConfigMpesa, flagConfigTigo)
-		command.Parent().HelpFunc()(command, strings)
-	})
+	//configPrintCommand.SetHelpFunc(func(command *cobra.Command, strings []string) {
+	//	set := parentCommand.Parent().PersistentFlags()
+	//	markHiddenExcept(set, flagDebugMode, flagConfigAirtel, flagConfigMpesa, flagConfigTigo)
+	//	command.Parent().HelpFunc()(command, strings)
+	//})
 
 	parentCommand.AddCommand(configPrintCommand)
 }

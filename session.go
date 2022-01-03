@@ -26,18 +26,18 @@ You need to specify the mno if not specified, the default mno is mpesa.
 		Run: func(cmd *cobra.Command, args []string) {
 			varSessionMno, err := cmd.Flags().GetString(flagSessionMno)
 			if err != nil {
-				_, _ = fmt.Fprintf(app.getLogger(), "error loading the mno: %v\n", err)
+				_, _ = fmt.Fprintf(app.getWriter(), "error loading the mno: %v\n", err)
 			}
 			if varSessionMno == "" {
 				varSessionMno = defSessionValue
 			} else if varSessionMno == "mpesa" || varSessionMno == "vodacom" {
-				_, _ = fmt.Fprintln(app.getLogger(), "mpesa session id")
+				_, _ = fmt.Fprintln(app.getWriter(), "mpesa session id")
 			} else if varSessionMno == "airtel" {
-				_, _ = fmt.Fprintln(app.getLogger(), "airtel session id")
+				_, _ = fmt.Fprintln(app.getWriter(), "airtel session id")
 			} else if varSessionMno == "tigo" {
-				_, _ = fmt.Fprintln(app.getLogger(), "tigo session id")
+				_, _ = fmt.Fprintln(app.getWriter(), "tigo session id")
 			} else {
-				_, _ = fmt.Fprintf(app.getLogger(), "unknown mno: %v\n", varSessionMno)
+				_, _ = fmt.Fprintf(app.getWriter(), "unknown mno: %v\n", varSessionMno)
 				_ = cmd.Help()
 
 				return

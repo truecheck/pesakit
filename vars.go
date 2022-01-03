@@ -1,18 +1,6 @@
 package pesakit
 
 const (
-	envHomeDirectory                    = "PK_HOME"
-	defHomeDirectory                    = ""
-	flagHomeDirectory                   = "home"
-	usageHomeDirectory                  = "the home directory of the pesakit application"
-	envConfigFile                       = "PK_CONFIG_FILE"
-	defConfigFile                       = ""
-	flagConfigFile                      = "config"
-	usageConfigFile                     = "config file"
-	envDebugMode                        = "PK_DEBUG_MODE"
-	flagDebugMode                       = "debug"
-	usageDebugMode                      = "debug mode"
-	defDebugMode                        = false
 	envAirtelPublicKey                  = "PK_AIRTEL_PUBLIC_KEY"
 	flagAirtelPublicKey                 = "airtel-public-key"
 	usageAirtelPublicKey                = "Airtel public key"

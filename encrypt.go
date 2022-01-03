@@ -32,7 +32,7 @@ const (
 
 func (app *App) encryptCommand() {
 	// encryptCmd represents the encrypt command
-	out := app.getLogger()
+	out := app.getWriter()
 	rootCommand := app.root
 	var encryptCmd = &cobra.Command{
 		Use:   "encrypt",

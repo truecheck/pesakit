@@ -5,7 +5,6 @@ Copyright © 2021 NAME HERE <EMAIL ADDRESS>
 package pesakit
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 )
 
@@ -17,7 +16,11 @@ func (app *App) callbacksCommand() {
 		Short: "Monitor http callbacks from mobile money providers",
 		Long:  `Monitor http callbacks from mobile money providers.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("callbacks called")
+			if app.getDebugMode() {
+				app.Logger().Printf("debug mode is ON\n")
+				app.Logger().Printf("callbacks called\n")
+			}
+
 		},
 	}
 	markHiddenExcept(app.root.PersistentFlags(), "help")

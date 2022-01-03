@@ -24,7 +24,7 @@ func (app *App) pushCommand() {
 		Long: `send a push pay request to the payer mobile money wallet
 and collect money from the payee mobile money wallet`,
 		Run: func(cmd *cobra.Command, args []string) {
-			out := app.getLogger()
+			out := app.getWriter()
 			// get amount and phone number
 			amount, err := cmd.Flags().GetFloat64(flagCollectAmount)
 			if err != nil {
@@ -54,7 +54,7 @@ and collect money from the payee mobile money wallet`,
 	pushCommand.PersistentFlags().StringP(flagCollectPhoneNo, pFlagCollectPhoneNo, defCollectPhoneNo, usageCollectPhoneNo)
 	_ = markFlagsRequired(pushCommand, globalFlagType, flagCollectAmount, flagCollectPhoneNo)
 	pushCommand.SetHelpFunc(func(command *cobra.Command, strings []string) {
-		markHiddenExcept(app.root.PersistentFlags(), flagDebugMode,
+		markHiddenExcept(app.root.PersistentFlags(),
 			flagMpesaSandboxPubKey,
 			flagMpesaSandboxApiKey,
 			flagMpesaOpenApiKey,

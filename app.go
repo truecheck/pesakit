@@ -3,11 +3,12 @@ package pesakit
 import (
 	"fmt"
 	"io"
+	"log"
 	"sync"
 
+	xlog "github.com/pesakit/pesakit/log"
 	"github.com/spf13/cobra"
 	"github.com/techcraftlabs/airtel"
-	xio "github.com/techcraftlabs/base/io"
 	"github.com/techcraftlabs/mpesa"
 	"github.com/techcraftlabs/tigopesa"
 )
@@ -40,27 +41,34 @@ Author:
 type (
 	App struct {
 		mu        *sync.RWMutex
-		logger    io.Writer
+		writer    io.Writer
 		debugMode bool
 		home      *string
 		root      *cobra.Command
 		mpesa     *mpesa.Client
 		airtel    *airtel.Client
 		tigo      *tigopesa.Client
+		logger    *log.Logger
 	}
 )
 
-func (app *App) getLogger() io.Writer {
+func (app *App) Logger() *log.Logger {
 	app.mu.RLock()
 	defer app.mu.RUnlock()
-
 	return app.logger
 }
 
-func (app *App) setLogger(logger io.Writer) {
+func (app *App) getWriter() io.Writer {
+	app.mu.RLock()
+	defer app.mu.RUnlock()
+
+	return app.writer
+}
+
+func (app *App) setWriter(logger io.Writer) {
 	app.mu.Lock()
 	defer app.mu.Unlock()
-	app.logger = logger
+	app.writer = logger
 }
 
 func (app *App) setDebugMode(debugMode bool) {
@@ -78,7 +86,7 @@ func (app *App) getDebugMode() bool {
 func New() *App { //nolint:ireturn
 	app := &App{
 		mu:        &sync.RWMutex{},
-		logger:    xio.StdErr,
+		writer:    xlog.StdErr,
 		debugMode: false,
 		home:      new(string),
 		root:      nil,
@@ -86,7 +94,7 @@ func New() *App { //nolint:ireturn
 		airtel:    nil,
 		tigo:      nil,
 	}
-
+	app.logger = xlog.New()
 	app.createRootCommand()
 	return app
 }
