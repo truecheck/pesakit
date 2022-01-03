@@ -23,9 +23,6 @@ type (
 		Debug  bool
 	}
 
-	Mpesa struct {
-	}
-
 	TigoPesa struct {
 		App
 		TigoPesaKey    string

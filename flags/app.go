@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	DebugName          = "debug"
-	debugModeUsage     = "debug mode"
+	flagDebugName      = "debug"
+	usageDebug         = "debug mode"
 	HomeDirectoryName  = "home"
 	homeDirectoryUsage = "application home directory"
 	ConfigName         = "config"
@@ -18,13 +18,13 @@ func SetAppFlags(cmd *cobra.Command) {
 	app := config.DefaultAppConf()
 	cmd.PersistentFlags().StringVarP(&app.Home, HomeDirectoryName, "H", app.Home, homeDirectoryUsage)
 	cmd.PersistentFlags().StringVarP(&app.Config, ConfigName, "C", app.Config, configFileUsage)
-	cmd.PersistentFlags().BoolVarP(&app.Debug, DebugName, "D", app.Debug, debugModeUsage)
+	cmd.PersistentFlags().BoolVarP(&app.Debug, flagDebugName, "D", app.Debug, usageDebug)
 }
 
 func LoadAppConfig(cmd *cobra.Command) (*config.App, error) {
 	app := &config.App{}
 	cmd = getParentCommand(cmd)
-	debug, err := cmd.PersistentFlags().GetBool(DebugName)
+	debug, err := cmd.PersistentFlags().GetBool(flagDebugName)
 	if err != nil {
 		return nil, err
 	}
