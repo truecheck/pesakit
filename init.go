@@ -32,9 +32,7 @@ import (
 	"github.com/pesakit/pesakit/flags"
 	"github.com/pesakit/pesakit/home"
 	"github.com/spf13/cobra"
-	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/mpesa"
-	"github.com/techcraftlabs/tigopesa"
 	"io"
 	"io/fs"
 	"io/ioutil"
@@ -44,7 +42,8 @@ import (
 )
 
 func (app *App) persistentPreRun(cmd *cobra.Command, args []string) error {
-	appConfig, err := flags.LoadAppConfig(cmd)
+	cmd = parentCommand(cmd)
+	appConfig, err := flags.GetAppConfig(cmd)
 	if err != nil {
 		return err
 	}
@@ -83,21 +82,21 @@ func (app *App) loadConfigAndSetClients(cmd *cobra.Command, logger io.Writer, de
 		return err
 	}
 
-	configAirtel, err := loadAirtelConfig(cmd)
-	if err != nil {
-		return err
-	}
-
-	configTigo, err := loadTigoConfig(cmd)
-	if err != nil {
-		return err
-	}
+	//configAirtel, err := loadAirtelConfig(cmd)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//configTigo, err := loadTigoConfig(cmd)
+	//if err != nil {
+	//	return err
+	//}
 	clientMpesa := mpesa.NewClient(configMpesa, mpesa.WithLogger(logger), mpesa.WithDebugMode(debugMode))
-	clientTigo := tigopesa.NewClient(configTigo, tigopesa.WithDebugMode(debugMode), tigopesa.WithLogger(logger))
-	clientAirtel := airtel.NewClient(configAirtel, nil, true)
+	//clientTigo := tigopesa.NewClient(configTigo, tigopesa.WithDebugMode(debugMode), tigopesa.WithLogger(logger))
+	//clientAirtel := airtel.NewClient(configAirtel, nil, true)
 	app.setMpesaClient(clientMpesa)
-	app.setTigoClient(clientTigo)
-	app.setAirtelClient(clientAirtel)
+	//app.setTigoClient(clientTigo)
+	//app.setAirtelClient(clientAirtel)
 
 	return nil
 }
@@ -108,11 +107,6 @@ const (
 	defaultConfigFileData   = ""
 	defaultConfigFilePerm   = fs.ModePerm
 )
-
-//
-func (app *App) persistentPreRunE(cmd *cobra.Command, args []string) error {
-	return nil
-}
 
 // initConfig returns a home directory of the application, and a config file path.
 // if successful.
@@ -152,7 +146,7 @@ func initConfig(cmd *cobra.Command, args []string, logger io.Writer,
 		}
 	}(debugMode)
 
-	rootCommand := getParentCommand(cmd)
+	rootCommand := parentCommand(cmd)
 
 	var (
 		configFileFlagGiven = rootCommand.PersistentFlags().Changed(flags.ConfigName)

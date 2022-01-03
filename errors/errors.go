@@ -23,57 +23,47 @@
  *
  */
 
-package pesakit
+package errors
 
-import (
-	"github.com/pesakit/pesakit/flags"
-	"github.com/spf13/cobra"
-)
+var _ error = (*PesakitError)(nil)
 
-type Config struct {
+type PesakitError struct {
+	code        int
+	description string
+	message     string
+	err         error
 }
 
-func (app *App) createRootCommand() {
-
-	var rootCommand = &cobra.Command{
-		Use:   appName,
-		Short: appShortDesc,
-		Long:  appLongDescription,
-		Run: func(cmd *cobra.Command, args []string) {
-			if err := cmd.Help(); err != nil {
-				app.Logger().Fatal(err)
-			}
-		},
-		PersistentPreRunE: app.persistentPreRun,
+func New(code int, message string, description string, err error) *PesakitError {
+	return &PesakitError{
+		code:        code,
+		description: description,
+		message:     message,
+		err:         err,
 	}
-
-	setFlagsFunc := func() {
-		flags.SetAppFlags(rootCommand)
-		flags.SetMpesa(rootCommand)
-	}
-
-	setFlagsFunc()
-
-	app.root = rootCommand
-
-	addSubCommandsFunc := func() {
-		app.callbacksCommand()
-		app.configCommand()
-		app.pushCommand()
-		app.sessionCommand()
-
-	}
-
-	addSubCommandsFunc()
 }
 
-// parentCommand returns the parent command of the application.
-// it takes cmd *cobra.Command as an argument and traverse the tree
-// to find the parent command.
-func parentCommand(cmd *cobra.Command) *cobra.Command {
-	if cmd.HasParent() {
-		return parentCommand(cmd.Parent())
-	}
+func (e *PesakitError) Code() int {
+	return e.code
+}
 
-	return cmd
+func (e *PesakitError) Unwrap() error { return e.err }
+
+func (e *PesakitError) Description() string {
+	return e.description
+}
+
+func (e *PesakitError) Message() string {
+	return e.message
+}
+
+func (e *PesakitError) Err() error {
+	return e.err
+}
+
+func (e *PesakitError) Error() string {
+	if e.err != nil {
+		return e.message + ": " + e.err.Error()
+	}
+	return e.message
 }

@@ -46,7 +46,7 @@ func SetAppFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().BoolVarP(&app.Debug, flagDebugName, "D", app.Debug, usageDebug)
 }
 
-func LoadAppConfig(cmd *cobra.Command) (*config.App, error) {
+func GetAppConfig(cmd *cobra.Command) (*config.App, error) {
 	app := &config.App{}
 	cmd = getParentCommand(cmd)
 	debug, err := cmd.PersistentFlags().GetBool(flagDebugName)
@@ -75,6 +75,5 @@ func getParentCommand(cmd *cobra.Command) *cobra.Command {
 	if cmd.HasParent() {
 		return getParentCommand(cmd.Parent())
 	}
-
 	return cmd
 }
