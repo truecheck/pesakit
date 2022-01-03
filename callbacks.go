@@ -219,9 +219,13 @@ func (app *App) callbacksCommand() {
 
 	// callbacksCmd represents the callbacks command
 	var callbacksCmd = &cobra.Command{
-		Use:   "callbacks",
-		Short: "monitor http callbacks from mobile money providers",
-		Long:  `monitor http callback requests from mobile money providers.`,
+		Use:     "callbacks",
+		Short:   "listen and logs http callbacks requests",
+		Example: "pesakit callbacks --mno=tigo --port=9095 --path=/callbacks/tigo",
+		Long: `listen and logs http callback requests from mobile money providers.
+A new http server will be set up to listen to tigo callbacks requests.
+at http://host:port/path/
+`,
 		Run: func(cmd *cobra.Command, args []string) {
 			params, err := loadCallbackParams(cmd)
 			if err != nil {
