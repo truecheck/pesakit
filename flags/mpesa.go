@@ -57,12 +57,17 @@ func SetMpesa(cmd *cobra.Command) {
 	intVar := cmd.PersistentFlags().Int64Var
 	strVar(&mpesaConfig.AuthEndpoint, flagMpesaAuthEndpoint, mpesaConfig.AuthEndpoint, usageMpesaAuthEndpoint)
 	strVar(&mpesaConfig.PushEndpoint, flagMpesaPushEndpoint, mpesaConfig.PushEndpoint, usageMpesaPushEndpoint)
-	strVar(&mpesaConfig.DisburseEndpoint, flagMpesaDisburseEndpoint, mpesaConfig.DisburseEndpoint, usageMpesaDisburseEndpoint)
-	strVar(&mpesaConfig.TransactionReverseEndpoint, flagMpesaReversalEndpoint, mpesaConfig.TransactionReverseEndpoint, usageMpesaReversalEndpoint)
+	strVar(&mpesaConfig.DisburseEndpoint, flagMpesaDisburseEndpoint, mpesaConfig.DisburseEndpoint,
+		usageMpesaDisburseEndpoint)
+	strVar(&mpesaConfig.TransactionReverseEndpoint, flagMpesaReversalEndpoint,
+		mpesaConfig.TransactionReverseEndpoint, usageMpesaReversalEndpoint)
 	strVar(&mpesaConfig.B2BEndpoint, flagMpesaB2BEndpoint, mpesaConfig.B2BEndpoint, usageMpesaB2BEndpoint)
-	strVar(&mpesaConfig.DirectDebitCreateEndpoint, flagMpesaDirectDebitCreateEndpoint, mpesaConfig.DirectDebitCreateEndpoint, usageMpesaDirectDebitCreateEndpoint)
-	strVar(&mpesaConfig.DirectDebitPayEndpoint, flagMpesaDirectDebitPayEndpoint, mpesaConfig.DirectDebitPayEndpoint, usageMpesaDirectDebitPayEndpoint)
-	strVar(&mpesaConfig.QueryEndpoint, flagMpesaTransactionStatusEndpoint, mpesaConfig.QueryEndpoint, usageMpesaTransactionStatusEndpoint)
+	strVar(&mpesaConfig.DirectDebitCreateEndpoint, flagMpesaDirectDebitCreateEndpoint,
+		mpesaConfig.DirectDebitCreateEndpoint, usageMpesaDirectDebitCreateEndpoint)
+	strVar(&mpesaConfig.DirectDebitPayEndpoint, flagMpesaDirectDebitPayEndpoint,
+		mpesaConfig.DirectDebitPayEndpoint, usageMpesaDirectDebitPayEndpoint)
+	strVar(&mpesaConfig.QueryEndpoint, flagMpesaTransactionStatusEndpoint, mpesaConfig.QueryEndpoint,
+		usageMpesaTransactionStatusEndpoint)
 	strVar(&mpesaConfig.BasePath, flagMpesaBaseURL, mpesaConfig.BasePath, usageMpesaBaseURL)
 	strVar(&mpesaConfig.Name, flagMpesaAppName, mpesaConfig.Name, usageMpesaAppName)
 	strVar(&mpesaConfig.Version, flagMpesaAppVersion, mpesaConfig.Version, usageMpesaAppVersion)
@@ -71,9 +76,12 @@ func SetMpesa(cmd *cobra.Command) {
 	strVar(&mpesaConfig.OpenApiKey, flagMpesaOpenApiKey, mpesaConfig.OpenApiKey, usageMpesaOpenApiKey)
 	strVar(&mpesaConfig.SandboxPubKey, flagMpesaSandboxPubKey, mpesaConfig.SandboxPubKey, usageMpesaSandboxPubKey)
 	strVar(&mpesaConfig.OpenApiPubKey, flagMpesaOpenAPIPubKey, mpesaConfig.OpenApiPubKey, usageMpesaOpenApiPubKey)
-	intVar(&mpesaConfig.SessionLifetimeMinutes, flagMpesaSessionLifetimeMinutes, mpesaConfig.SessionLifetimeMinutes, usageMpesaSessionLifetimeMinutes)
-	strVar(&mpesaConfig.ServiceProviderCode, flagMpesaServiceProviderCode, mpesaConfig.ServiceProviderCode, usageMpesaServiceProviderCode)
-	strVar(&mpesaConfig.TrustedSources, flagMpesaTrustedSources, mpesaConfig.TrustedSources, usageMpesaTrustedSources)
+	intVar(&mpesaConfig.SessionLifetimeMinutes, flagMpesaSessionLifetimeMinutes, mpesaConfig.SessionLifetimeMinutes,
+		usageMpesaSessionLifetimeMinutes)
+	strVar(&mpesaConfig.ServiceProviderCode, flagMpesaServiceProviderCode, mpesaConfig.ServiceProviderCode,
+		usageMpesaServiceProviderCode)
+	strVar(&mpesaConfig.TrustedSources, flagMpesaTrustedSources, mpesaConfig.TrustedSources,
+		usageMpesaTrustedSources)
 	strVar(&mpesaConfig.Market, flagMpesaMarket, mpesaConfig.Market, usageMpesaMarket)
 	strVar(&mpesaConfig.Platform, flagMpesaPlatform, mpesaConfig.Platform, usageMpesaPlatform)
 }
