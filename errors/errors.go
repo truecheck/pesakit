@@ -25,6 +25,8 @@
 
 package errors
 
+import "fmt"
+
 var _ error = (*PesakitError)(nil)
 
 type PesakitError struct {
@@ -47,7 +49,9 @@ func (e *PesakitError) Code() int {
 	return e.code
 }
 
-func (e *PesakitError) Unwrap() error { return e.err }
+func (e *PesakitError) Unwrap() error {
+	return e.err
+}
 
 func (e *PesakitError) Description() string {
 	return e.description
@@ -62,8 +66,5 @@ func (e *PesakitError) Err() error {
 }
 
 func (e *PesakitError) Error() string {
-	if e.err != nil {
-		return e.message + ": " + e.err.Error()
-	}
-	return e.message
+	return fmt.Sprintf("%d: %s %s: %s", e.code, e.description, e.message, e.err.Error())
 }
