@@ -29,15 +29,7 @@ import (
 	"github.com/pesakit/pesakit/flags"
 	"github.com/spf13/cobra"
 	"github.com/techcraftlabs/airtel"
-	"github.com/techcraftlabs/tigopesa"
 	"strings"
-)
-
-const (
-	flagConfigMpesa  = "mpesa"
-	flagConfigAirtel = "airtel"
-	flagConfigTigo   = "tigo"
-	defConfigValue   = false
 )
 
 func (app *App) configCommand() {
@@ -54,6 +46,7 @@ clients configurations`,
 	setFlagsFunc := func() {
 		flags.SetMno(configCommand, flags.PERSISTENT)
 		flags.SetMpesa(configCommand)
+		flags.SetTigoPesa(configCommand)
 	}
 	setFlagsFunc()
 
@@ -171,84 +164,6 @@ func loadAirtelConfig(command *cobra.Command) (*airtel.Config, error) {
 		Secret:             clientSecret,
 	}
 
-	return config, nil
-}
-
-func loadTigoConfig(command *cobra.Command) (*tigopesa.Config, error) {
-	disburseAccountName, err := command.Flags().GetString(flagTigoDisburseAccountName)
-	if err != nil {
-		return nil, err
-	}
-	disburseAccountMSISDN, err := command.Flags().GetString(flagTigoDisburseAccountMSISDN)
-	if err != nil {
-		return nil, err
-	}
-	disburseBrandID, err := command.Flags().GetString(flagTigoDisburseBrandID)
-	if err != nil {
-		return nil, err
-	}
-	disbursePIN, err := command.Flags().GetString(flagTigoDisbursePIN)
-	if err != nil {
-		return nil, err
-	}
-	disburseRequestURL, err := command.Flags().GetString(flagTigoDisburseURL)
-	if err != nil {
-		return nil, err
-	}
-
-	pushUsername, err := command.Flags().GetString(flagTigoPushUsername)
-	if err != nil {
-		return nil, err
-	}
-	pushPassword, err := command.Flags().GetString(flagTigoPushPassword)
-	if err != nil {
-		return nil, err
-	}
-	pushPasswordGrantType, err := command.Flags().GetString(flagTigoPasswordGrantType)
-	if err != nil {
-		return nil, err
-	}
-	pushBillerCode, err := command.Flags().GetString(flagTigoPushBillerCode)
-	if err != nil {
-		return nil, err
-	}
-	pushBillerMSISDN, err := command.Flags().GetString(flagTigoPushBillerMSISDN)
-	if err != nil {
-		return nil, err
-	}
-	pushBaseURl, err := command.Flags().GetString(flagTigoPushBaseURL)
-	if err != nil {
-		return nil, err
-	}
-	pushTokenEndpoint, err := command.Flags().GetString(flagTigoPushTokenURL)
-	if err != nil {
-		return nil, err
-	}
-
-	pushPayEndpoint, err := command.Flags().GetString(flagTigoPushPayURL)
-	if err != nil {
-		return nil, err
-	}
-
-	config := &tigopesa.Config{
-		Disburse: &tigopesa.DisburseConfig{
-			AccountName:   disburseAccountName,
-			AccountMSISDN: disburseAccountMSISDN,
-			BrandID:       disburseBrandID,
-			PIN:           disbursePIN,
-			RequestURL:    disburseRequestURL,
-		},
-		Push: &tigopesa.PushConfig{
-			Username:          pushUsername,
-			Password:          pushPassword,
-			PasswordGrantType: pushPasswordGrantType,
-			BaseURL:           pushBaseURl,
-			TokenEndpoint:     pushTokenEndpoint,
-			BillerMSISDN:      pushBillerMSISDN,
-			BillerCode:        pushBillerCode,
-			PushPayEndpoint:   pushPayEndpoint,
-		},
-	}
 	return config, nil
 }
 

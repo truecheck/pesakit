@@ -27,7 +27,6 @@ package config
 
 import (
 	"github.com/pesakit/pesakit/env"
-	"github.com/techcraftlabs/mpesa"
 )
 
 const (
@@ -46,12 +45,6 @@ type (
 		Home   string
 		Config string
 		Debug  bool
-	}
-
-	TigoPesa struct {
-		App
-		TigoPesaKey    string
-		TigoPesaSecret string
 	}
 
 	Airtel struct {
@@ -77,15 +70,4 @@ func DefaultMnoConf() *Mno {
 	return &Mno{
 		Value: env.String(homeMnoEnvVar, homeMnoDefaultValue),
 	}
-}
-
-type Info struct {
-	App      *App
-	Mpesa    *Mpesa
-	TigoPesa *TigoPesa
-	Airtel   *Airtel
-}
-
-func (m *Mpesa) ToConfig() *mpesa.Config {
-	return &mpesa.Config{}
 }

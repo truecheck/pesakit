@@ -47,6 +47,7 @@ func (app *App) createRootCommand() {
 	setFlagsFunc := func() {
 		flags.SetAppFlags(rootCommand)
 		flags.SetMpesa(rootCommand)
+		flags.SetTigoPesa(rootCommand)
 	}
 
 	setFlagsFunc()
