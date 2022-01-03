@@ -14,10 +14,8 @@ const (
 	configFileUsage    = "config file"
 )
 
-func SetAppFlags(cmd *cobra.Command, app *config.App) {
-	if app == nil {
-		app = config.DefaultAppConf()
-	}
+func SetAppFlags(cmd *cobra.Command) {
+	app := config.DefaultAppConf()
 	cmd.PersistentFlags().StringVar(&app.Home, HomeDirectoryName, app.Home, homeDirectoryUsage)
 	cmd.PersistentFlags().StringVar(&app.Config, ConfigName, app.Config, configFileUsage)
 	cmd.PersistentFlags().BoolVar(&app.Debug, DebugName, app.Debug, debugModeUsage)
