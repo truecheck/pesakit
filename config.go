@@ -1,12 +1,10 @@
 package pesakit
 
 import (
-	"fmt"
+	"github.com/pesakit/pesakit/flags"
 	"github.com/spf13/cobra"
 	"github.com/techcraftlabs/airtel"
-	"github.com/techcraftlabs/mpesa"
 	"github.com/techcraftlabs/tigopesa"
-	"io"
 	"strings"
 )
 
@@ -19,13 +17,6 @@ const (
 
 func (app *App) configCommand() {
 	rootCommand := app.root
-	out := app.getWriter()
-	var (
-		airtelConfig bool
-		mpesaConfig  bool
-		tigoConfig   bool
-	)
-
 	configCommand := &cobra.Command{
 		Use:   "config",
 		Short: "manages clients configuration",
@@ -35,193 +26,65 @@ clients configurations`,
 			_ = cmd.Help()
 		},
 	}
-	configCommand.PersistentFlags().BoolVar(&airtelConfig, flagConfigAirtel, defConfigValue, "configure airtel client")
-	configCommand.PersistentFlags().BoolVar(&mpesaConfig, flagConfigMpesa, defConfigValue, "configure mpesa client")
-	configCommand.PersistentFlags().BoolVar(&tigoConfig, flagConfigTigo, defConfigValue, "configure tigo client")
+	setFlagsFunc := func() {
+		flags.SetMnoFlag(configCommand, flags.PERSISTENT)
+		flags.SetMpesa(configCommand)
+	}
+	setFlagsFunc()
 
-	initConfigPrintCommand(configCommand, out)
 	rootCommand.AddCommand(configCommand)
 }
 
-func initConfigPrintCommand(parentCommand *cobra.Command, out io.Writer) {
-	configPrintCommand := &cobra.Command{
-		Use:   "print",
-		Short: "prints the configuration",
-		Long:  `prints the configuration if not any is specified all configurations are printed`,
-		Run: func(cmd *cobra.Command, args []string) {
-			airtelConfigBool, err := cmd.Flags().GetBool(flagConfigAirtel)
-			if err != nil {
-				return
-			}
-			mpesaConfigBool, err := cmd.Flags().GetBool(flagConfigMpesa)
-			if err != nil {
-				return
-			}
-			tigoConfigBool, err := cmd.Flags().GetBool(flagConfigTigo)
-			if err != nil {
-				return
-			}
-
-			notAnySpecified := !(airtelConfigBool || mpesaConfigBool || tigoConfigBool)
-			if notAnySpecified {
-				mpesaConfig, err := loadMpesaConfig(cmd)
-				if err != nil {
-					return
-				}
-				_, _ = fmt.Fprintf(out, "Mpesa Config: %v\n", mpesaConfig)
-				airtelConfig, err := loadAirtelConfig(cmd)
-				if err != nil {
-					return
-				}
-				_, _ = fmt.Fprintf(out, "Airtel Config: %v\n", airtelConfig)
-				tigoConfig, err := loadTigoConfig(cmd)
-				if err != nil {
-					return
-				}
-				_, _ = fmt.Fprintf(out, "Tigo Config: %v\n", tigoConfig)
-			}
-
-		},
-	}
-
-	//configPrintCommand.SetHelpFunc(func(command *cobra.Command, strings []string) {
-	//	set := parentCommand.Parent().PersistentFlags()
-	//	markHiddenExcept(set, flagDebugMode, flagConfigAirtel, flagConfigMpesa, flagConfigTigo)
-	//	command.Parent().HelpFunc()(command, strings)
-	//})
-
-	parentCommand.AddCommand(configPrintCommand)
-}
-
-// loadMpesaConfig loads all the mpesa configurations after a command
-func loadMpesaConfig(command *cobra.Command) (*mpesa.Config, error) {
-	authEndpoint, err := command.Flags().GetString(flagMpesaAuthEndpoint)
-	if err != nil {
-		return nil, err
-	}
-	pushEndpoint, err := command.Flags().GetString(flagMpesaPushEndpoint)
-	if err != nil {
-		return nil, err
-	}
-	disburseEndpoint, err := command.Flags().GetString(flagMpesaDisburseEndpoint)
-	if err != nil {
-		return nil, err
-	}
-	queryEndpoint, err := command.Flags().GetString(flagMpesaTransactionStatusEndpoint)
-	if err != nil {
-		return nil, err
-	}
-	directCreateEndpoint, err := command.Flags().GetString(flagMpesaDirectDebitCreateEndpoint)
-	if err != nil {
-		return nil, err
-	}
-	directPayEndpoint, err := command.Flags().GetString(flagMpesaDirectDebitPayEndpoint)
-	if err != nil {
-		return nil, err
-	}
-	reversalEndpoint, err := command.Flags().GetString(flagMpesaReversalEndpoint)
-	if err != nil {
-		return nil, err
-	}
-	b2bEndpoint, err := command.Flags().GetString(flagMpesaB2BEndpoint)
-	if err != nil {
-		return nil, err
-	}
-	trustedSourcesStr, err := command.Flags().GetString(flagMpesaTrustedSources)
-	if err != nil {
-		return nil, err
-	}
-	trustedSources := strings.Split(trustedSourcesStr, " ")
-	providerCode, err := command.Flags().GetString(flagMpesaServiceProviderCode)
-	if err != nil {
-		return nil, err
-	}
-	sessionLifetime, err := command.Flags().GetInt64(flagMpesaSessionLifetimeMinutes)
-	if err != nil {
-		return nil, err
-	}
-	name, err := command.Flags().GetString(flagMpesaAppName)
-	if err != nil {
-		return nil, err
-	}
-	version, err := command.Flags().GetString(flagMpesaAppVersion)
-	if err != nil {
-		return nil, err
-	}
-	desc, err := command.Flags().GetString(flagMpesaAppDesc)
-	if err != nil {
-		return nil, err
-	}
-	basePath, err := command.Flags().GetString(flagMpesaAppDesc)
-	if err != nil {
-		return nil, err
-	}
-	marketString, err := command.Flags().GetString(flagMpesaMarket)
-	if err != nil {
-		return nil, err
-	}
-	market := mpesa.MarketFmt(marketString)
-	platformStr, err := command.Flags().GetString(flagMpesaPlatform)
-	if err != nil {
-		return nil, err
-	}
-	platform := mpesa.PlatformFmt(platformStr)
-
-	endpoints := &mpesa.Endpoints{
-		AuthEndpoint:               authEndpoint,
-		PushEndpoint:               pushEndpoint,
-		DisburseEndpoint:           disburseEndpoint,
-		QueryEndpoint:              queryEndpoint,
-		DirectDebitCreateEndpoint:  directCreateEndpoint,
-		DirectDebitPayEndpoint:     directPayEndpoint,
-		TransactionReverseEndpoint: reversalEndpoint,
-		B2BEndpoint:                b2bEndpoint,
-	}
-	config := &mpesa.Config{
-		Endpoints:              endpoints,
-		Name:                   name,
-		Version:                version,
-		Description:            desc,
-		BasePath:               basePath,
-		Market:                 market,
-		Platform:               platform,
-		APIKey:                 "",
-		PublicKey:              "",
-		SessionLifetimeMinutes: sessionLifetime,
-		ServiceProvideCode:     providerCode,
-		TrustedSources:         trustedSources,
-	}
-
-	if platform == mpesa.OPENAPI {
-		// get production public key and api-key
-		apiKey, err := command.Flags().GetString(flagMpesaOpenApiKey)
-		if err != nil {
-			return nil, err
-		}
-		config.APIKey = apiKey
-
-		pubKey, err := command.Flags().GetString(flagMpesaOpenAPIPubKey)
-		if err != nil {
-			return nil, err
-		}
-		config.PublicKey = pubKey
-	} else {
-		// get sandbox public key and api-key
-		apiKey, err := command.Flags().GetString(flagMpesaSandboxApiKey)
-		if err != nil {
-			return nil, err
-		}
-		config.APIKey = apiKey
-
-		pubKey, err := command.Flags().GetString(flagMpesaSandboxPubKey)
-		if err != nil {
-			return nil, err
-		}
-		config.PublicKey = pubKey
-	}
-
-	return config, nil
-}
+//func initConfigPrintCommand(parentCommand *cobra.Command, out io.Writer) {
+//	configPrintCommand := &cobra.Command{
+//		Use:   "print",
+//		Short: "prints the configuration",
+//		Long:  `prints the configuration if not any is specified all configurations are printed`,
+//		Run: func(cmd *cobra.Command, args []string) {
+//			airtelConfigBool, err := cmd.Flags().GetBool(flagConfigAirtel)
+//			if err != nil {
+//				return
+//			}
+//			mpesaConfigBool, err := cmd.Flags().GetBool(flagConfigMpesa)
+//			if err != nil {
+//				return
+//			}
+//			tigoConfigBool, err := cmd.Flags().GetBool(flagConfigTigo)
+//			if err != nil {
+//				return
+//			}
+//
+//			notAnySpecified := !(airtelConfigBool || mpesaConfigBool || tigoConfigBool)
+//			if notAnySpecified {
+//				mpesaConfig, err := flags.GetMpesaConfig(cmd)
+//				if err != nil {
+//					return
+//				}
+//				_, _ = fmt.Fprintf(out, "Mpesa Config: %v\n", mpesaConfig)
+//				airtelConfig, err := loadAirtelConfig(cmd)
+//				if err != nil {
+//					return
+//				}
+//				_, _ = fmt.Fprintf(out, "Airtel Config: %v\n", airtelConfig)
+//				tigoConfig, err := loadTigoConfig(cmd)
+//				if err != nil {
+//					return
+//				}
+//				_, _ = fmt.Fprintf(out, "Tigo Config: %v\n", tigoConfig)
+//			}
+//
+//		},
+//	}
+//
+//	//configPrintCommand.SetHelpFunc(func(command *cobra.Command, strings []string) {
+//	//	set := parentCommand.Parent().PersistentFlags()
+//	//	markHiddenExcept(set, flagDebugMode, flagConfigAirtel, flagConfigMpesa, flagConfigTigo)
+//	//	command.Parent().HelpFunc()(command, strings)
+//	//})
+//
+//	parentCommand.AddCommand(configPrintCommand)
+//}
+//
 
 func loadAirtelConfig(command *cobra.Command) (*airtel.Config, error) {
 	countriesStr, err := command.Flags().GetString(flagAirtelCountries)

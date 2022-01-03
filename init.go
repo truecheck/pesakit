@@ -53,7 +53,7 @@ func (app *App) persistentPreRun(cmd *cobra.Command, args []string) error {
 
 func (app *App) loadConfigAndSetClients(cmd *cobra.Command, logger io.Writer, debugMode bool) error {
 	// loads all configurations there is
-	configMpesa, err := loadMpesaConfig(cmd)
+	configMpesa, err := flags.GetMpesaConfig(cmd)
 	if err != nil {
 		return err
 	}

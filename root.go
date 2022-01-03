@@ -27,7 +27,12 @@ func (app *App) createRootCommand() {
 	rootCommand.Flags().String("test", "", "test")
 	app.root = rootCommand
 
-	app.callbacksCommand()
+	addSubCommandsFunc := func() {
+		app.callbacksCommand()
+		app.configCommand()
+	}
+
+	addSubCommandsFunc()
 }
 
 func loadCommands(fns ...func()) {

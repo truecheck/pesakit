@@ -55,23 +55,23 @@ It is good to specify the environment as well. if nil, it will default to sandbo
 		},
 	}
 
-	// flags
-	encryptCmd.PersistentFlags().StringP(flagEncryptEnv, pFlagEncryptEnv,
-		defEncryptEnv, usageEncryptEnv)
-	encryptCmd.PersistentFlags().StringP(flagEncryptKey, pFlagEncryptKey,
-		defEncryptKey, usageEncryptKey)
-	encryptCmd.PersistentFlags().StringP(flagEncryptPin, pFlagEncryptPin,
-		defEncryptPin, usageEncryptPin)
-	encryptCmd.PersistentFlags().StringP(flagEncryptMno, pFlagEncryptMno,
-		defEncryptMno, usageEncryptMno)
-
-	encryptCmd.SetHelpFunc(func(command *cobra.Command, strings []string) {
-		markHiddenExcept(rootCommand.PersistentFlags(), flagMpesaSandboxPubKey,
-			flagMpesaSandboxApiKey, flagMpesaOpenApiKey, flagMpesaOpenAPIPubKey,
-			flagAirtelPublicKey,
-		)
-		command.Parent().HelpFunc()(command, strings)
-	})
+	//// flags
+	//encryptCmd.PersistentFlags().StringP(flagEncryptEnv, pFlagEncryptEnv,
+	//	defEncryptEnv, usageEncryptEnv)
+	//encryptCmd.PersistentFlags().StringP(flagEncryptKey, pFlagEncryptKey,
+	//	defEncryptKey, usageEncryptKey)
+	//encryptCmd.PersistentFlags().StringP(flagEncryptPin, pFlagEncryptPin,
+	//	defEncryptPin, usageEncryptPin)
+	//encryptCmd.PersistentFlags().StringP(flagEncryptMno, pFlagEncryptMno,
+	//	defEncryptMno, usageEncryptMno)
+	//
+	//encryptCmd.SetHelpFunc(func(command *cobra.Command, strings []string) {
+	//	markHiddenExcept(rootCommand.PersistentFlags(), flagMpesaSandboxPubKey,
+	//		flagMpesaSandboxApiKey, flagMpesaOpenApiKey, flagMpesaOpenAPIPubKey,
+	//		flagAirtelPublicKey,
+	//	)
+	//	command.Parent().HelpFunc()(command, strings)
+	//})
 
 	rootCommand.AddCommand(encryptCmd)
 }

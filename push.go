@@ -50,34 +50,34 @@ and collect money from the payee mobile money wallet`,
 
 		},
 	}
-	pushCommand.PersistentFlags().Float64P(flagCollectAmount, pFlagCollectAmount, defCollectAmount, usageCollectAmount)
-	pushCommand.PersistentFlags().StringP(flagCollectPhoneNo, pFlagCollectPhoneNo, defCollectPhoneNo, usageCollectPhoneNo)
-	_ = markFlagsRequired(pushCommand, globalFlagType, flagCollectAmount, flagCollectPhoneNo)
-	pushCommand.SetHelpFunc(func(command *cobra.Command, strings []string) {
-		markHiddenExcept(app.root.PersistentFlags(),
-			flagMpesaSandboxPubKey,
-			flagMpesaSandboxApiKey,
-			flagMpesaOpenApiKey,
-			flagMpesaOpenAPIPubKey,
-			flagMpesaBaseURL,
-			flagMpesaMarket,
-			flagMpesaPlatform,
-			flagMpesaAuthEndpoint,
-			flagMpesaPushEndpoint,
-			flagMpesaServiceProviderCode,
-			flagAirtelPublicKey,
-			flagAirtelDeploymentEnv,
-			flagAirtelClientId,
-			flagAirtelClientSecret,
-			flagAirtelCountries,
-			flagTigoPasswordGrantType,
-			flagTigoPushBaseURL,
-			flagTigoPushTokenURL,
-			flagTigoPushPayURL,
-			flagTigoPushUsername,
-			flagTigoPushPassword,
-		)
-		command.Parent().HelpFunc()(command, strings)
-	})
+	//pushCommand.PersistentFlags().Float64P(flagCollectAmount, pFlagCollectAmount, defCollectAmount, usageCollectAmount)
+	//pushCommand.PersistentFlags().StringP(flagCollectPhoneNo, pFlagCollectPhoneNo, defCollectPhoneNo, usageCollectPhoneNo)
+	//_ = markFlagsRequired(pushCommand, globalFlagType, flagCollectAmount, flagCollectPhoneNo)
+	//pushCommand.SetHelpFunc(func(command *cobra.Command, strings []string) {
+	//	markHiddenExcept(app.root.PersistentFlags(),
+	//		flagMpesaSandboxPubKey,
+	//		flagMpesaSandboxApiKey,
+	//		flagMpesaOpenApiKey,
+	//		flagMpesaOpenAPIPubKey,
+	//		flagMpesaBaseURL,
+	//		flagMpesaMarket,
+	//		flagMpesaPlatform,
+	//		flagMpesaAuthEndpoint,
+	//		flagMpesaPushEndpoint,
+	//		flagMpesaServiceProviderCode,
+	//		flagAirtelPublicKey,
+	//		flagAirtelDeploymentEnv,
+	//		flagAirtelClientId,
+	//		flagAirtelClientSecret,
+	//		flagAirtelCountries,
+	//		flagTigoPasswordGrantType,
+	//		flagTigoPushBaseURL,
+	//		flagTigoPushTokenURL,
+	//		flagTigoPushPayURL,
+	//		flagTigoPushUsername,
+	//		flagTigoPushPassword,
+	//	)
+	//	command.Parent().HelpFunc()(command, strings)
+	//})
 	app.root.AddCommand(pushCommand)
 }
