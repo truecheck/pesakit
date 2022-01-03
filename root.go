@@ -30,9 +30,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Config struct {
-}
-
 func (app *App) createRootCommand() {
 
 	var rootCommand = &cobra.Command{
@@ -61,7 +58,7 @@ func (app *App) createRootCommand() {
 		app.configCommand()
 		app.pushCommand()
 		app.sessionCommand()
-
+		app.docsCommand()
 	}
 
 	addSubCommandsFunc()

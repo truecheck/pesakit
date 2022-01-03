@@ -36,6 +36,9 @@ type PesakitError struct {
 	err         error
 }
 
+type HandleFuncErr func(err *PesakitError) error
+type HandleFunc func(err *PesakitError)
+
 func New(code int, message string, description string, err error) *PesakitError {
 	return &PesakitError{
 		code:        code,
