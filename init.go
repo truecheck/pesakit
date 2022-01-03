@@ -33,6 +33,7 @@ import (
 	"github.com/pesakit/pesakit/home"
 	"github.com/spf13/cobra"
 	"github.com/techcraftlabs/mpesa"
+	"github.com/techcraftlabs/tigopesa"
 	"io"
 	"io/fs"
 	"io/ioutil"
@@ -87,15 +88,15 @@ func (app *App) loadConfigAndSetClients(cmd *cobra.Command, logger io.Writer, de
 	//	return err
 	//}
 	//
-	//configTigo, err := loadTigoConfig(cmd)
-	//if err != nil {
-	//	return err
-	//}
+	configTigo, err := flags.GetTigoPesaConfig(cmd)
+	if err != nil {
+		return err
+	}
 	clientMpesa := mpesa.NewClient(configMpesa, mpesa.WithLogger(logger), mpesa.WithDebugMode(debugMode))
-	//clientTigo := tigopesa.NewClient(configTigo, tigopesa.WithDebugMode(debugMode), tigopesa.WithLogger(logger))
+	clientTigo := tigopesa.NewClient(configTigo, tigopesa.WithDebugMode(debugMode), tigopesa.WithLogger(logger))
 	//clientAirtel := airtel.NewClient(configAirtel, nil, true)
 	app.setMpesaClient(clientMpesa)
-	//app.setTigoClient(clientTigo)
+	app.setTigoClient(clientTigo)
 	//app.setAirtelClient(clientAirtel)
 
 	return nil

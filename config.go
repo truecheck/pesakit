@@ -26,6 +26,7 @@
 package pesakit
 
 import (
+	"fmt"
 	"github.com/pesakit/pesakit/flags"
 	"github.com/spf13/cobra"
 	"github.com/techcraftlabs/airtel"
@@ -49,59 +50,33 @@ clients configurations`,
 		flags.SetTigoPesa(configCommand)
 	}
 	setFlagsFunc()
-
+	app.configPrintCommand(configCommand)
 	rootCommand.AddCommand(configCommand)
 }
 
-//func initConfigPrintCommand(parentCommand *cobra.Command, out io.Writer) {
-//	configPrintCommand := &cobra.Command{
-//		Use:   "print",
-//		Short: "prints the configuration",
-//		Long:  `prints the configuration if not any is specified all configurations are printed`,
-//		Run: func(cmd *cobra.Command, args []string) {
-//			airtelConfigBool, err := cmd.Flags().GetBool(flagConfigAirtel)
-//			if err != nil {
-//				return
-//			}
-//			mpesaConfigBool, err := cmd.Flags().GetBool(flagConfigMpesa)
-//			if err != nil {
-//				return
-//			}
-//			tigoConfigBool, err := cmd.Flags().GetBool(flagConfigTigo)
-//			if err != nil {
-//				return
-//			}
-//
-//			notAnySpecified := !(airtelConfigBool || mpesaConfigBool || tigoConfigBool)
-//			if notAnySpecified {
-//				mpesaConfig, err := flags.GetMpesaConfig(cmd)
-//				if err != nil {
-//					return
-//				}
-//				_, _ = fmt.Fprintf(out, "Mpesa Config: %v\n", mpesaConfig)
-//				airtelConfig, err := loadAirtelConfig(cmd)
-//				if err != nil {
-//					return
-//				}
-//				_, _ = fmt.Fprintf(out, "Airtel Config: %v\n", airtelConfig)
-//				tigoConfig, err := loadTigoConfig(cmd)
-//				if err != nil {
-//					return
-//				}
-//				_, _ = fmt.Fprintf(out, "Tigo Config: %v\n", tigoConfig)
-//			}
-//
-//		},
-//	}
-//
-//	//configPrintCommand.SetHelpFunc(func(command *cobra.Command, strings []string) {
-//	//	set := parentCommand.Parent().PersistentFlags()
-//	//	markHiddenExcept(set, flagDebugMode, flagConfigAirtel, flagConfigMpesa, flagConfigTigo)
-//	//	command.Parent().HelpFunc()(command, strings)
-//	//})
-//
-//	parentCommand.AddCommand(configPrintCommand)
-//}
+func (app *App) configPrintCommand(parent *cobra.Command) {
+	configPrintCommand := &cobra.Command{
+		Use:   "print",
+		Short: "prints the configuration",
+		Long:  `prints the configuration if not any is specified all configurations are printed`,
+		Run: func(cmd *cobra.Command, args []string) {
+			writer := app.getWriter()
+			fmt.Fprintf(writer, "Printing configurations\n")
+			fmt.Fprintf(writer, "======================\n")
+			fmt.Fprintf(writer, "mpesa: %+v\n", app.mpesa.Config)
+			fmt.Fprintf(writer, "tigo-pesa: %+v\n", app.tigo.Config)
+		},
+	}
+
+	//configPrintCommand.SetHelpFunc(func(command *cobra.Command, strings []string) {
+	//	set := parentCommand.Parent().PersistentFlags()
+	//	markHiddenExcept(set, flagDebugMode, flagConfigAirtel, flagConfigMpesa, flagConfigTigo)
+	//	command.Parent().HelpFunc()(command, strings)
+	//})
+
+	parent.AddCommand(configPrintCommand)
+}
+
 //
 
 func loadAirtelConfig(command *cobra.Command) (*airtel.Config, error) {
