@@ -97,10 +97,10 @@ func SetMpesa(cmd *cobra.Command) {
 	strVar(&mpesaConfig.Name, flagMpesaAppName, mpesaConfig.Name, usageMpesaAppName)
 	strVar(&mpesaConfig.Version, flagMpesaAppVersion, mpesaConfig.Version, usageMpesaAppVersion)
 	strVar(&mpesaConfig.Description, flagMpesaAppDesc, mpesaConfig.Description, usageMpesaAppDesc)
-	strVar(&mpesaConfig.SandboxApiKey, flagMpesaSandboxApiKey, mpesaConfig.SandboxApiKey, usageMpesaSandboxApiKey)
-	strVar(&mpesaConfig.OpenApiKey, flagMpesaOpenApiKey, mpesaConfig.OpenApiKey, usageMpesaOpenApiKey)
+	strVar(&mpesaConfig.SandboxAPIKey, flagMpesaSandboxApiKey, mpesaConfig.SandboxAPIKey, usageMpesaSandboxApiKey)
+	strVar(&mpesaConfig.OpenAPIKey, flagMpesaOpenApiKey, mpesaConfig.OpenAPIKey, usageMpesaOpenApiKey)
 	strVar(&mpesaConfig.SandboxPubKey, flagMpesaSandboxPubKey, mpesaConfig.SandboxPubKey, usageMpesaSandboxPubKey)
-	strVar(&mpesaConfig.OpenApiPubKey, flagMpesaOpenAPIPubKey, mpesaConfig.OpenApiPubKey, usageMpesaOpenApiPubKey)
+	strVar(&mpesaConfig.OpenAPIPubKey, flagMpesaOpenAPIPubKey, mpesaConfig.OpenAPIPubKey, usageMpesaOpenApiPubKey)
 	intVar(&mpesaConfig.SessionLifetimeMinutes, flagMpesaSessionLifetimeMinutes, mpesaConfig.SessionLifetimeMinutes,
 		usageMpesaSessionLifetimeMinutes)
 	strVar(&mpesaConfig.ServiceProviderCode, flagMpesaServiceProviderCode, mpesaConfig.ServiceProviderCode,
@@ -220,10 +220,10 @@ func GetMpesaConfig(command *cobra.Command) (*mpesa.Config, error) {
 		BasePath:                   basePath,
 		Market:                     marketString,
 		Platform:                   platformStr,
-		SandboxApiKey:              sandboxApiKey,
-		OpenApiKey:                 openAapiKey,
+		SandboxAPIKey:              sandboxApiKey,
+		OpenAPIKey:                 openAapiKey,
 		SandboxPubKey:              sandboxPubKey,
-		OpenApiPubKey:              openApiPubKey,
+		OpenAPIPubKey:              openApiPubKey,
 		SessionLifetimeMinutes:     sessionLifetime,
 		ServiceProviderCode:        providerCode,
 		TrustedSources:             trustedSourcesStr,
