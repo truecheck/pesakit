@@ -14,26 +14,20 @@ func (app *App) createRootCommand() {
 		Use:   appName,
 		Short: appShortDesc,
 		Long:  appLongDescription,
+		Run: func(cmd *cobra.Command, args []string) {
+			if err := cmd.Help(); err != nil {
+				app.Logger().Fatal(err)
+			}
+		},
 		//PersistentPreRunE: app.persistentPreRun,
 	}
 
 	flags.SetAppFlags(rootCommand)
-
+	rootCommand.PersistentFlags().String("test", "", "test")
+	rootCommand.Flags().String("test", "", "test")
 	app.root = rootCommand
 
-	//loadCommands(
-	//	app.b2bCommand,
-	//	app.configCommand,
-	//	app.pushCommand,
-	//	app.reverseCommand,
-	//	app.sessionCommand,
-	//	app.statusCommand,
-	//	app.callbacksCommand,
-	//	app.encryptCommand,
-	//	app.docsCommand,
-	//	app.disburseCommand,
-	//)
-
+	app.callbacksCommand()
 }
 
 func loadCommands(fns ...func()) {

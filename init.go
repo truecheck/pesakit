@@ -24,6 +24,7 @@ func (app *App) persistentPreRun(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	logger, debugMode := app.getWriter(), appConfig.Debug
+	app.setDebugMode(debugMode)
 	appHomeDir, appConfigFile, err := initConfig(cmd, args, logger, debugMode)
 	if err != nil {
 		_, _ = fmt.Fprintf(logger, "error: %v\n", err)
@@ -46,7 +47,7 @@ func (app *App) persistentPreRun(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	_, _ = fmt.Fprintf(logger, "app home is %s and config loaded from %s\n", appHomeDir, appConfigFile)
-
+	//
 	return nil
 }
 

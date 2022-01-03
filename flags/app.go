@@ -9,20 +9,21 @@ const (
 	DebugName          = "debug"
 	debugModeUsage     = "debug mode"
 	HomeDirectoryName  = "home"
-	homeDirectoryUsage = "the home directory of the pesakit application"
+	homeDirectoryUsage = "application home directory"
 	ConfigName         = "config"
-	configFileUsage    = "config file"
+	configFileUsage    = "config file path"
 )
 
 func SetAppFlags(cmd *cobra.Command) {
 	app := config.DefaultAppConf()
-	cmd.PersistentFlags().StringVar(&app.Home, HomeDirectoryName, app.Home, homeDirectoryUsage)
-	cmd.PersistentFlags().StringVar(&app.Config, ConfigName, app.Config, configFileUsage)
-	cmd.PersistentFlags().BoolVar(&app.Debug, DebugName, app.Debug, debugModeUsage)
+	cmd.PersistentFlags().StringVarP(&app.Home, HomeDirectoryName, "H", app.Home, homeDirectoryUsage)
+	cmd.PersistentFlags().StringVarP(&app.Config, ConfigName, "C", app.Config, configFileUsage)
+	cmd.PersistentFlags().BoolVarP(&app.Debug, DebugName, "D", app.Debug, debugModeUsage)
 }
 
 func LoadAppConfig(cmd *cobra.Command) (*config.App, error) {
 	app := &config.App{}
+	cmd = getParentCommand(cmd)
 	debug, err := cmd.PersistentFlags().GetBool(DebugName)
 	if err != nil {
 		return nil, err
@@ -38,5 +39,17 @@ func LoadAppConfig(cmd *cobra.Command) (*config.App, error) {
 		return nil, err
 	}
 	app.Config = configFile
+
 	return app, nil
+}
+
+// getParentCommand returns the parent command of the application.
+// it takes cmd *cobra.Command as an argument and traverse the tree
+// to find the parent command.
+func getParentCommand(cmd *cobra.Command) *cobra.Command {
+	if cmd.HasParent() {
+		return getParentCommand(cmd.Parent())
+	}
+
+	return cmd
 }
