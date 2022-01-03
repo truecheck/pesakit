@@ -177,14 +177,17 @@ func setCallbackFlags(cmd *cobra.Command) {
 	)
 
 	flags.SetMnoFlag(cmd, flags.PERSISTENT)
-	cmd.PersistentFlags().StringVar(&callbackHost, flagCallbackHost, callbackHost, usageCallbackHost)
-	cmd.PersistentFlags().Int64Var(&callbackPort, flagCallbackPort, callbackPort, usageCallbackPort)
-	cmd.PersistentFlags().StringVar(&callbackPath, flagCallbackPath, callbackPath, usageCallbackPath)
-	cmd.PersistentFlags().StringVar(&callbackOps, flagCallbackOperation, callbackOps, usageCallbackOperation)
+	strVar := cmd.PersistentFlags().StringVar
+	intVar := cmd.PersistentFlags().Int64Var
+	strVar(&callbackHost, flagCallbackHost, callbackHost, usageCallbackHost)
+	intVar(&callbackPort, flagCallbackPort, callbackPort, usageCallbackPort)
+	strVar(&callbackPath, flagCallbackPath, callbackPath, usageCallbackPath)
+	strVar(&callbackOps, flagCallbackOperation, callbackOps, usageCallbackOperation)
 }
 
 func loadCallbackParams(cmd *cobra.Command) (*callbackParams, error) {
-	host, err := cmd.Flags().GetString(flagCallbackHost)
+	str := cmd.Flags().GetString
+	host, err := str(flagCallbackHost)
 	if err != nil {
 		return nil, err
 	}
@@ -192,11 +195,11 @@ func loadCallbackParams(cmd *cobra.Command) (*callbackParams, error) {
 	if err != nil {
 		return nil, err
 	}
-	path, err := cmd.Flags().GetString(flagCallbackPath)
+	path, err := str(flagCallbackPath)
 	if err != nil {
 		return nil, err
 	}
-	operation, err := cmd.Flags().GetString(flagCallbackOperation)
+	operation, err := str(flagCallbackOperation)
 	if err != nil {
 		return nil, err
 	}
