@@ -1,0 +1,10 @@
+builds:
+  - main: ./cmd
+    id: "pesakit"
+    binary: pesakit
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
