@@ -5,39 +5,198 @@ Copyright © 2021 NAME HERE <EMAIL ADDRESS>
 package pesakit
 
 import (
+	"context"
+	"errors"
+	"fmt"
+	"github.com/pesakit/pesakit/env"
 	"github.com/pesakit/pesakit/flags"
 	"github.com/pesakit/pesakit/mno"
 	"github.com/spf13/cobra"
+	"io"
+	"log"
+	"net/http"
+	"net/http/httputil"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+	"time"
+)
+
+var (
+	errServerNotinitialized = errors.New("server not initialized")
+	serverClosingTimeout    = 5 * time.Second
+)
+
+const (
+	flagCallbackHost       = "host"
+	flagCallbackPort       = "port"
+	flagCallbackPath       = "path"
+	flagCallbackOperation  = "operation"
+	usageCallbackHost      = "callback host"
+	usageCallbackPort      = "callback port"
+	usageCallbackPath      = "callback path"
+	usageCallbackOperation = "callback operation"
+	envCallbackHost        = "PESAKIT_CALLBACK_HOST"
+	envCallbackPort        = "PESAKIT_CALLBACK_PORT"
+	envCallbackPath        = "PESAKIT_CALLBACK_PATH"
+	envCallbackOps         = "PESAKIT_CALLBACK_OPERATION"
+	defaultCallbackHost    = "localhost"
+	defaultCallbackPort    = 8080
+	defaultCallbackPath    = "/callbacks"
+	defaultCallbackOps     = "push"
 )
 
 const (
 	push callbackOperation = "push"
 )
 
+type callbackServer struct {
+	mu     *sync.RWMutex
+	server *http.Server
+	host   string
+	port   int64
+	path   string
+	op     callbackOperation
+	mno    mno.Mno
+	logger *log.Logger
+	writer io.Writer
+}
+
+func newCallbackServer(params *callbackParams, logger *log.Logger, writer io.Writer) *callbackServer {
+	srv := &callbackServer{
+		mu:     &sync.RWMutex{},
+		host:   params.Host,
+		port:   params.Port,
+		path:   params.Path,
+		op:     params.Operation,
+		mno:    params.Mno,
+		logger: logger,
+		writer: writer,
+	}
+
+	if params.Mno == mno.Airtel {
+		srv.makeServer(srv.genericHandlerFunc)
+	} else {
+		srv.makeServer(nil)
+	}
+	return srv
+}
+
+func (s *callbackServer) get() *http.Server {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.server
+}
+
+func (s *callbackServer) genericHandlerFunc(w http.ResponseWriter, r *http.Request) {
+	s.logger.Printf("%s %s %s", r.Method, r.URL.Path, r.Proto)
+	// dump the whole request
+	dump, err := httputil.DumpRequest(r, true)
+	if err != nil {
+		s.logger.Printf("error dumping request: %s", err)
+	}
+	_, err = s.writer.Write(dump)
+	if err != nil {
+		s.logger.Printf("error writing request: %s", err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write([]byte("OK"))
+	if err != nil {
+		s.logger.Printf("error writing response: %s", err)
+		return
+	}
+}
+
+// serveMux is the HTTP multiplexer used by the callback server.
+func (s *callbackServer) serveMux(handler http.HandlerFunc) *http.ServeMux {
+	if handler == nil {
+		handler = s.genericHandlerFunc
+	}
+	mux := http.NewServeMux()
+	mux.HandleFunc(s.path, handler)
+	return mux
+}
+
+func (s *callbackServer) makeServer(handler http.HandlerFunc) {
+	mux := s.serveMux(handler)
+	srv := &http.Server{
+		Addr:              fmt.Sprintf("%s:%d", s.host, s.port),
+		Handler:           mux,
+		ReadTimeout:       20 * time.Second,
+		ReadHeaderTimeout: 20 * time.Second,
+		WriteTimeout:      20 * time.Second,
+		IdleTimeout:       20 * time.Second,
+		MaxHeaderBytes:    1 << 20,
+		ErrorLog:          s.logger,
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.server = srv
+}
+
+func (s *callbackServer) ListenAndServe() error {
+	s.logger.Printf("Starting callback server on %s:%d", s.host, s.port)
+	srv := s.get()
+	if srv == nil {
+		return errServerNotinitialized
+	}
+
+	return srv.ListenAndServe()
+}
+
+func (s *callbackServer) Shutdown() error {
+	s.logger.Printf("Shutting down callback server on %s:%d", s.host, s.port)
+	srv := s.get()
+	if srv == nil {
+		return errServerNotinitialized
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), serverClosingTimeout)
+	defer cancel()
+
+	return srv.Shutdown(ctx)
+}
+
 type callbackOperation string
 
 type callbackParams struct {
 	Mno       mno.Mno
 	Host      string
-	Port      int
+	Port      int64
 	Path      string
 	Operation callbackOperation
 }
 
+func setCallbackFlags(cmd *cobra.Command) {
+	var (
+		callbackHost = env.String(envCallbackHost, defaultCallbackHost)
+		callbackPort = env.Int64(envCallbackPort, defaultCallbackPort)
+		callbackPath = env.String(envCallbackPath, defaultCallbackPath)
+		callbackOps  = env.String(envCallbackOps, defaultCallbackOps)
+	)
+
+	flags.SetMnoFlag(cmd, flags.PERSISTENT)
+	cmd.PersistentFlags().StringVar(&callbackHost, flagCallbackHost, callbackHost, usageCallbackHost)
+	cmd.PersistentFlags().Int64Var(&callbackPort, flagCallbackPort, callbackPort, usageCallbackPort)
+	cmd.PersistentFlags().StringVar(&callbackPath, flagCallbackPath, callbackPath, usageCallbackPath)
+	cmd.PersistentFlags().StringVar(&callbackOps, flagCallbackOperation, callbackOps, usageCallbackOperation)
+}
+
 func loadCallbackParams(cmd *cobra.Command) (*callbackParams, error) {
-	host, err := cmd.Flags().GetString("host")
+	host, err := cmd.Flags().GetString(flagCallbackHost)
 	if err != nil {
 		return nil, err
 	}
-	port, err := cmd.Flags().GetInt("port")
+	port, err := cmd.Flags().GetInt64(flagCallbackPort)
 	if err != nil {
 		return nil, err
 	}
-	path, err := cmd.Flags().GetString("path")
+	path, err := cmd.Flags().GetString(flagCallbackPath)
 	if err != nil {
 		return nil, err
 	}
-	operation, err := cmd.Flags().GetString("operation")
+	operation, err := cmd.Flags().GetString(flagCallbackOperation)
 	if err != nil {
 		return nil, err
 	}
@@ -61,29 +220,36 @@ func (app *App) callbacksCommand() {
 	// callbacksCmd represents the callbacks command
 	var callbacksCmd = &cobra.Command{
 		Use:   "callbacks",
-		Short: "Monitor http callbacks from mobile money providers",
-		Long:  `Monitor http callbacks from mobile money providers.`,
+		Short: "monitor http callbacks from mobile money providers",
+		Long:  `monitor http callback requests from mobile money providers.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			if app.getDebugMode() {
-				app.Logger().Printf("debug mode is ON\n")
-				app.Logger().Printf("callbacks called\n")
-			}
-
 			params, err := loadCallbackParams(cmd)
 			if err != nil {
 				app.Logger().Printf("error: %s\n", err)
 
 				return
 			}
+			logger := app.Logger()
+			writer := app.getWriter()
+			server := newCallbackServer(params, logger, writer)
+			c := make(chan os.Signal, 1)
+			signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+			go func() {
+				<-c
+				err := server.Shutdown()
+				if err != nil {
+					return
+				}
+				os.Exit(0)
+			}()
+			err = server.ListenAndServe()
+			if err != nil {
+				app.Logger().Printf("error: %v\n", err)
 
-			app.Logger().Printf("callback params: %+v\n", params)
-
+				return
+			}
 		},
 	}
-	flags.SetMnoFlag(callbacksCmd, flags.PERSISTENT)
-	callbacksCmd.PersistentFlags().Int("port", 8080, "callback server port")
-	callbacksCmd.PersistentFlags().String("host", "localhost", "callback server host")
-	callbacksCmd.PersistentFlags().String("path", "/callbacks", "callback server path")
-	callbacksCmd.PersistentFlags().String("operation", "push", "operation to listen to")
+	setCallbackFlags(callbacksCmd)
 	app.root.AddCommand(callbacksCmd)
 }
