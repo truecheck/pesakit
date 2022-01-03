@@ -55,15 +55,12 @@ func (app *App) createRootCommand() {
 	addSubCommandsFunc := func() {
 		app.callbacksCommand()
 		app.configCommand()
+		app.pushCommand()
+		app.sessionCommand()
+
 	}
 
 	addSubCommandsFunc()
-}
-
-func loadCommands(fns ...func()) {
-	for _, fn := range fns {
-		fn()
-	}
 }
 
 // getParentCommand returns the parent command of the application.

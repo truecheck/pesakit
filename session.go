@@ -26,15 +26,9 @@
 package pesakit
 
 import (
-	"fmt"
+	"github.com/pesakit/pesakit/flags"
+	"github.com/pesakit/pesakit/mno"
 	"github.com/spf13/cobra"
-)
-
-const (
-	flagSessionMno  = "mno"
-	pFlagSessionMno = "m"
-	defSessionValue = "mpesa"
-	usageSessionMno = "mobile money operator"
 )
 
 func (app *App) sessionCommand() {
@@ -49,28 +43,28 @@ use it with other API client tools like Postman.
 You need to specify the mno if not specified, the default mno is mpesa.
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			varSessionMno, err := cmd.Flags().GetString(flagSessionMno)
+			mnoValue, err := flags.GetMno(cmd, flags.PERSISTENT)
 			if err != nil {
-				_, _ = fmt.Fprintf(app.getWriter(), "error loading the mno: %v\n", err)
+				return
 			}
-			if varSessionMno == "" {
-				varSessionMno = defSessionValue
-			} else if varSessionMno == "mpesa" || varSessionMno == "vodacom" {
-				_, _ = fmt.Fprintln(app.getWriter(), "mpesa session id")
-			} else if varSessionMno == "airtel" {
-				_, _ = fmt.Fprintln(app.getWriter(), "airtel session id")
-			} else if varSessionMno == "tigo" {
-				_, _ = fmt.Fprintln(app.getWriter(), "tigo session id")
-			} else {
-				_, _ = fmt.Fprintf(app.getWriter(), "unknown mno: %v\n", varSessionMno)
-				_ = cmd.Help()
 
+			switch mnoValue {
+			case mno.Airtel:
+				app.Logger().Printf("retrieving session id for airtel\n")
+				return
+			case mno.Vodacom:
+				app.Logger().Printf("retrieving session id for vodacom\n")
+				return
+			case mno.Tigo:
+				app.Logger().Printf("retrieving session id for tigo\n")
 				return
 
+			default:
+				_ = cmd.Help()
 			}
 
 		},
 	}
-	sessionCmd.Flags().StringP(flagSessionMno, pFlagSessionMno, defSessionValue, usageSessionMno)
+	flags.SetMno(sessionCmd, flags.PERSISTENT)
 	app.root.AddCommand(sessionCmd)
 }

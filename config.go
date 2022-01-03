@@ -52,7 +52,7 @@ clients configurations`,
 		},
 	}
 	setFlagsFunc := func() {
-		flags.SetMnoFlag(configCommand, flags.PERSISTENT)
+		flags.SetMno(configCommand, flags.PERSISTENT)
 		flags.SetMpesa(configCommand)
 	}
 	setFlagsFunc()

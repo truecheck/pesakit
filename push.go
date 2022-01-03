@@ -26,20 +26,8 @@
 package pesakit
 
 import (
-	"fmt"
-	"github.com/pesakit/pesakit/mno"
+	"github.com/pesakit/pesakit/flags"
 	"github.com/spf13/cobra"
-)
-
-const (
-	flagCollectAmount   = "amount"
-	pFlagCollectAmount  = "a"
-	defCollectAmount    = 0.0
-	usageCollectAmount  = "amount to collect from the user"
-	flagCollectPhoneNo  = "phone"
-	pFlagCollectPhoneNo = "p"
-	defCollectPhoneNo   = ""
-	usageCollectPhoneNo = "phone number to send collection request"
 )
 
 func (app *App) pushCommand() {
@@ -49,30 +37,12 @@ func (app *App) pushCommand() {
 		Long: `send a push pay request to the payer mobile money wallet
 and collect money from the payee mobile money wallet`,
 		Run: func(cmd *cobra.Command, args []string) {
-			out := app.getWriter()
-			// get amount and phone number
-			amount, err := cmd.Flags().GetFloat64(flagCollectAmount)
+			request, err := flags.GetTransactionRequest(cmd)
 			if err != nil {
-				_, _ = fmt.Fprintf(out, "could not obtain amount %v\n", err)
+				app.logger.Fatal(err)
 				return
 			}
-
-			phone, err := cmd.Flags().GetString(flagCollectPhoneNo)
-			if err != nil {
-				_, _ = fmt.Fprintf(out, "could not obtain phone %v\n", err)
-				return
-			}
-			operator, phoneNumber, err := mno.PhoneNumberInfo(phone)
-			if err != nil {
-				return
-			}
-
-			if operator == mno.Unknown {
-				return
-			}
-
-			_, _ = fmt.Fprintf(out, "sending %s push pay request of amount %.2f to %s\n", operator, amount, phoneNumber)
-
+			app.Logger().Printf("%+v\n", request)
 		},
 	}
 	//pushCommand.PersistentFlags().Float64P(flagCollectAmount, pFlagCollectAmount, defCollectAmount, usageCollectAmount)
@@ -104,5 +74,11 @@ and collect money from the payee mobile money wallet`,
 	//	)
 	//	command.Parent().HelpFunc()(command, strings)
 	//})
+	setFlags := func() {
+		flags.SetMpesa(pushCommand)
+		flags.SetTransactionRequestFlags(pushCommand)
+	}
+
+	setFlags()
 	app.root.AddCommand(pushCommand)
 }

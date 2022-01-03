@@ -196,7 +196,7 @@ func setCallbackFlags(cmd *cobra.Command) {
 		callbackOps  = env.String(envCallbackOps, defaultCallbackOps)
 	)
 
-	flags.SetMnoFlag(cmd, flags.PERSISTENT)
+	flags.SetMno(cmd, flags.PERSISTENT)
 	strVar := cmd.PersistentFlags().StringVar
 	intVar := cmd.PersistentFlags().Int64Var
 	strVar(&callbackHost, flagCallbackHost, callbackHost, usageCallbackHost)
@@ -223,7 +223,7 @@ func loadCallbackParams(cmd *cobra.Command) (*callbackParams, error) {
 	if err != nil {
 		return nil, err
 	}
-	mnoValue, err := flags.LoadMnoConfig(cmd, flags.PERSISTENT)
+	mnoValue, err := flags.GetMno(cmd, flags.PERSISTENT)
 	if err != nil {
 		return nil, err
 	}

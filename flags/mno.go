@@ -35,11 +35,11 @@ import (
 
 const (
 	mnoName    = "mno"
-	mnoUsage   = "mobile network operator"
+	mnoUsage   = "mobile network operator (airtel|tigo|vodacom)"
 	mnoDefault = ""
 )
 
-func SetMnoFlag(cmd *cobra.Command, p Type) {
+func SetMno(cmd *cobra.Command, p Type) {
 
 	defaultMnoConf := config.DefaultMnoConf()
 	switch p {
@@ -50,7 +50,7 @@ func SetMnoFlag(cmd *cobra.Command, p Type) {
 	}
 }
 
-func LoadMnoConfig(cmd *cobra.Command, p Type) (mno.Mno, error) {
+func GetMno(cmd *cobra.Command, p Type) (mno.Mno, error) {
 	var (
 		mnoValue mno.Mno
 		err      error
