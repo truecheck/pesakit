@@ -47,12 +47,6 @@ type (
 		Debug  bool
 	}
 
-	Airtel struct {
-		App
-		AirtelKey    string
-		AirtelSecret string
-	}
-
 	Mno struct {
 		Value string
 	}

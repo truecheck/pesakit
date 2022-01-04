@@ -29,8 +29,6 @@ import (
 	"fmt"
 	"github.com/pesakit/pesakit/flags"
 	"github.com/spf13/cobra"
-	"github.com/techcraftlabs/airtel"
-	"strings"
 )
 
 func (app *App) configCommand() {
@@ -75,79 +73,4 @@ func (app *App) configPrintCommand(parent *cobra.Command) {
 	//})
 
 	parent.AddCommand(configPrintCommand)
-}
-
-//
-
-func loadAirtelConfig(command *cobra.Command) (*airtel.Config, error) {
-	countriesStr, err := command.Flags().GetString(flagAirtelCountries)
-	if err != nil {
-		return nil, err
-	}
-	countries := strings.Split(countriesStr, " ")
-	disbursePin, err := command.Flags().GetString(flagAirtelDisbursePin)
-	if err != nil {
-		return nil, err
-	}
-
-	callbackPrivateKey, err := command.Flags().GetString(flagAirtelCallbackPrivKey)
-	if err != nil {
-		return nil, err
-	}
-
-	callbackAuth, err := command.Flags().GetBool(flagAirtelCallbackAuth)
-	if err != nil {
-		return nil, err
-	}
-
-	clientID, err := command.Flags().GetString(flagAirtelClientId)
-	if err != nil {
-		return nil, err
-	}
-
-	clientSecret, err := command.Flags().GetString(flagAirtelClientSecret)
-	if err != nil {
-		return nil, err
-	}
-
-	environmentStr, err := command.Flags().GetString(flagAirtelDeploymentEnv)
-	if err != nil {
-		return nil, err
-	}
-
-	environment := airtelEnv(environmentStr)
-
-	publicKey, err := command.Flags().GetString(flagAirtelPublicKey)
-	if err != nil {
-		return nil, err
-	}
-
-	config := &airtel.Config{
-		AllowedCountries: map[airtel.ApiGroup][]string{
-			airtel.Transaction: countries,
-			airtel.Collection:  countries,
-			airtel.Disburse:    countries,
-			airtel.Account:     countries,
-			airtel.KYC:         countries,
-		},
-		DisbursePIN:        disbursePin,
-		CallbackPrivateKey: callbackPrivateKey,
-		CallbackAuth:       callbackAuth,
-		PublicKey:          publicKey,
-		Environment:        environment,
-		ClientID:           clientID,
-		Secret:             clientSecret,
-	}
-
-	return config, nil
-}
-
-func airtelEnv(value string) airtel.Environment {
-	if value == "production" || value == "prod" {
-		return airtel.PRODUCTION
-	} else if value == "sandbox" || value == "staging" {
-		return airtel.STAGING
-	} else {
-		return airtel.STAGING
-	}
 }
