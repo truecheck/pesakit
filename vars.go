@@ -24,14 +24,3 @@
  */
 
 package pesakit
-
-const (
-	flagAirtelPublicKey       = "airtel-public-key"
-	flagAirtelDisbursePin     = "airtel-disburse-pin"
-	flagAirtelClientId        = "airtel-client-id"
-	flagAirtelClientSecret    = "airtel-client-secret"
-	flagAirtelDeploymentEnv   = "airtel-deployment"
-	flagAirtelCallbackAuth    = "airtel-callback-auth"
-	flagAirtelCallbackPrivKey = "airtel-callback-private-key"
-	flagAirtelCountries       = "airtel-countries"
-)

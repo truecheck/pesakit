@@ -62,23 +62,20 @@ const (
 
 func SetTigoPesa(cmd *cobra.Command) {
 	t := config.DefaultTigoPesaConfig()
-	str := cmd.PersistentFlags().StringVar
-	str(&t.DisburseAccountName, flagTigoDisburseAccountName, t.DisburseAccountName,
-		usageTigoDisburseAccountName)
-	str(&t.DisburseAccountMSISDN, flagTigoDisburseAccountMSISDN, t.DisburseAccountMSISDN,
-		usageTigoDisburseAccountMSISDN)
-	str(&t.DisburseBrandID, flagTigoDisburseBrandID, t.DisburseBrandID, usageTigoDisburseBrandID)
-	str(&t.DisbursePIN, flagTigoDisbursePIN, t.DisbursePIN, usageTigoDisbursePIN)
-	str(&t.DisburseRequestURL, flagTigoDisburseURL, t.DisburseRequestURL, usageTigoDisburseURL)
-	str(&t.PushBillerCode, flagTigoPushBillerCode, t.PushBillerCode, usageTigoPushBillerCode)
-	str(&t.PushBillerMSISDN, flagTigoPushBillerMSISDN, t.PushBillerMSISDN, usageTigoPushBillerMSISDN)
-	str(&t.PushBaseURL, flagTigoPushBaseURL, t.PushBaseURL, usageTigoPushBaseURL)
-	str(&t.PushPassword, flagTigoPushPassword, t.PushPassword, usageTigoPushPassword)
-	str(&t.PushUsername, flagTigoPushUsername, t.PushUsername, usageTigoPushUsername)
-	str(&t.PushTokenEndpoint, flagTigoPushTokenURL, t.PushTokenEndpoint, usageTigoPushTokenURL)
-	str(&t.PushPayEndpoint, flagTigoPushPayURL, t.PushPayEndpoint, usageTigoPushPayURL)
-	str(&t.PasswordGrantType, flagTigoPasswordGrantType, t.PasswordGrantType,
-		usageTigoPasswordGrantType)
+	s := cmd.PersistentFlags().String
+	s(flagTigoDisburseAccountName, t.DisburseAccountName, usageTigoDisburseAccountName)
+	s(flagTigoDisburseAccountMSISDN, t.DisburseAccountMSISDN, usageTigoDisburseAccountMSISDN)
+	s(flagTigoDisburseBrandID, t.DisburseBrandID, usageTigoDisburseBrandID)
+	s(flagTigoDisbursePIN, t.DisbursePIN, usageTigoDisbursePIN)
+	s(flagTigoDisburseURL, t.DisburseRequestURL, usageTigoDisburseURL)
+	s(flagTigoPushBillerCode, t.PushBillerCode, usageTigoPushBillerCode)
+	s(flagTigoPushBillerMSISDN, t.PushBillerMSISDN, usageTigoPushBillerMSISDN)
+	s(flagTigoPushBaseURL, t.PushBaseURL, usageTigoPushBaseURL)
+	s(flagTigoPushPassword, t.PushPassword, usageTigoPushPassword)
+	s(flagTigoPushUsername, t.PushUsername, usageTigoPushUsername)
+	s(flagTigoPushTokenURL, t.PushTokenEndpoint, usageTigoPushTokenURL)
+	s(flagTigoPushPayURL, t.PushPayEndpoint, usageTigoPushPayURL)
+	s(flagTigoPasswordGrantType, t.PasswordGrantType, usageTigoPasswordGrantType)
 }
 
 func GetTigoPesaConfig(cmd *cobra.Command) (*tigopesa.Config, error) {
