@@ -1,0 +1,29 @@
+name: pesakit
+summary: epayment command line tool for developers, testers and sysadmins
+description: |
+  pesakit is a highly configurable commandline tool that comes on handy during testing and development
+  of systems that integrate with mobile money vendors. With pesakit you can perform a number of tasks
+  both is sandbox or production environment such as encrypting api keys,generation session keys,
+  sending C2B push requests,sending B2C requests to mobile money wallets, sending B2B requests to organizations
+  mobile money wallets, checking the status of a transaction, reversing a transaction, direct debit create
+  and payment for MPESA, Supported Vendors: Tigo Pesa, Airtel Money and Vodacom MPESA. Hypothetically the tool
+  should work in countries that the vendors API supports e.g GHANA for MPESA. But the tool has been tested for
+  Tanzania only
+  For extensive documentation of usage please visit https://github.com/pesakit/cli/docs
+
+version: git
+grade: stable
+base: core20
+
+confinement: devmode
+
+apps:
+  pesakit:
+    command: bin/pesakit
+    plugs:
+      - home
+parts:
+  pesakit:
+    plugin: go
+    source-type: git
+    source: https://github.com/pesakit/pesakit

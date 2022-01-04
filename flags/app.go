@@ -48,7 +48,7 @@ func SetAppFlags(cmd *cobra.Command) {
 
 func GetAppConfig(cmd *cobra.Command) (*config.App, error) {
 	app := &config.App{}
-	cmd = getParentCommand(cmd)
+	cmd = parentCommand(cmd)
 	debug, err := cmd.PersistentFlags().GetBool(flagDebugName)
 	if err != nil {
 		return nil, err
@@ -68,12 +68,12 @@ func GetAppConfig(cmd *cobra.Command) (*config.App, error) {
 	return app, nil
 }
 
-// getParentCommand returns the parent command of the application.
+// parentCommand returns the parent command of the application.
 // it takes cmd *cobra.Command as an argument and traverse the tree
 // to find the parent command.
-func getParentCommand(cmd *cobra.Command) *cobra.Command {
+func parentCommand(cmd *cobra.Command) *cobra.Command {
 	if cmd.HasParent() {
-		return getParentCommand(cmd.Parent())
+		return parentCommand(cmd.Parent())
 	}
 	return cmd
 }
