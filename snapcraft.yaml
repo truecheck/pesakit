@@ -19,7 +19,7 @@ confinement: devmode
 
 apps:
   pesakit:
-    command: bin/pesakit
+    command: pesakit
     plugs:
       - home
 parts:
