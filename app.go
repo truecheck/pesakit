@@ -23,4 +23,4 @@
  *
  */
 
-package pesakit
+package main

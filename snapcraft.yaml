@@ -14,12 +14,11 @@ description: |
 version: git
 grade: stable
 base: core20
-
-confinement: devmode
+confinement: strict
 
 apps:
   pesakit:
-    command: pesakit
+    command: bin/pesakit
     plugs:
       - home
 parts:
@@ -27,3 +26,6 @@ parts:
     plugin: go
     source-type: git
     source: https://github.com/pesakit/pesakit
+    override-pull: |
+      snapcraftctl pull
+      snapcraftctl set-version "$(git describe --tags | sed -e 's/^v//')"

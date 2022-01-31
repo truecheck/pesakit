@@ -23,7 +23,7 @@
  *
  */
 
-package pesakit
+package main
 
 import "testing"
 

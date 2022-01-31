@@ -22,7 +22,7 @@
  * SOFTWARE.
  *
  */
-package pesakit
+package main
 
 import (
 	"context"

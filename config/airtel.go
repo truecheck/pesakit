@@ -112,33 +112,34 @@ type (
 )
 
 func DefaultAirtelConfig() *Airtel {
-	s := env.String
-	b := env.Bool
+	es := env.String
+	eb := env.Bool
+
 	return &Airtel{
-		AuthEndpoint:                   s(envAirtelAuthEndpoint, defAirtelAuthEndpoint),
-		PushEndpoint:                   s(envAirtelPushEndpoint, defAirtelPushEndpoint),
-		RefundEndpoint:                 s(envAirtelRefundEndpoint, defAirtelRefundEndpoint),
-		PushEnquiryEndpoint:            s(envAirtelPushEnquiryEndpoint, defAirtelPushEnquiryEndpoint),
-		DisbursementEndpoint:           s(envAirtelDisbursementEndpoint, defAirtelDisbursementEndpoint),
-		DisbursementEnquiryEndpoint:    s(envAirtelDisbursementEnquiryEndpoint, defAirtelDisbursementEnquiryEndpoint),
-		TransactionSummaryEndpoint:     s(envAirtelTransactionSummaryEndpoint, defAirtelTransactionSummaryEndpoint),
-		BalanceEnquiryEndpoint:         s(envAirtelBalanceEnquiryEndpoint, defAirtelBalanceEnquiryEndpoint),
-		UserEnquiryEndpoint:            s(envAirtelUserEnquiryEndpoint, defAirtelUserEnquiryEndpoint),
-		AuthRegisteredCountries:        s(envAirtelAuthRegisteredCountries, defAirtelAuthRegisteredCountries),
-		AccountRegisteredCountries:     s(envAirtelAccountRegisteredCountries, defAirtelAccountRegisteredCountries),
-		CollectionRegisteredCountries:  s(envAirtelCollectionRegisteredCountries, defAirtelCollectionRegisteredCountries),
-		DisburseRegisteredCountries:    s(envAirtelDisburseRegisteredCountries, defAirtelDisburseRegisteredCountries),
-		KYCRegisteredCountries:         s(envAirtelKYCRegisteredCountries, defAirtelKYCRegisteredCountries),
-		TransactionRegisteredCountries: s(envAirtelTransactionRegisteredCountries, defAirtelTransactionRegisteredCountries),
-		DisbursePIN:                    s(envAirtelDisbursePIN, defAirtelDisbursePIN),
-		CallbackPrivateKey:             s(envAirtelCallbackPrivateKey, defAirtelCallbackPrivateKey),
-		CallbackAuth:                   b(envAirtelCallbackAuth, defAirtelCallbackAuth),
-		PublicKey:                      s(envAirtelPublicKey, defAirtelPublicKey),
-		Environment:                    s(envAirtelEnvironment, defAirtelEnvironment),
-		ClientID:                       s(envAirtelClientID, defAirtelClientID),
-		ProdBaseURL:                    s(envAirtelProdBaseURL, defAirtelProdBaseURL),
-		StagingBaseURL:                 s(envAirtelStagingBaseURL, defAirtelStagingBaseURL),
-		Secret:                         s(envAirtelSecret, defAirtelSecret),
+		AuthEndpoint:                   es(envAirtelAuthEndpoint, defAirtelAuthEndpoint),
+		PushEndpoint:                   es(envAirtelPushEndpoint, defAirtelPushEndpoint),
+		RefundEndpoint:                 es(envAirtelRefundEndpoint, defAirtelRefundEndpoint),
+		PushEnquiryEndpoint:            es(envAirtelPushEnquiryEndpoint, defAirtelPushEnquiryEndpoint),
+		DisbursementEndpoint:           es(envAirtelDisbursementEndpoint, defAirtelDisbursementEndpoint),
+		DisbursementEnquiryEndpoint:    es(envAirtelDisbursementEnquiryEndpoint, defAirtelDisbursementEnquiryEndpoint),
+		TransactionSummaryEndpoint:     es(envAirtelTransactionSummaryEndpoint, defAirtelTransactionSummaryEndpoint),
+		BalanceEnquiryEndpoint:         es(envAirtelBalanceEnquiryEndpoint, defAirtelBalanceEnquiryEndpoint),
+		UserEnquiryEndpoint:            es(envAirtelUserEnquiryEndpoint, defAirtelUserEnquiryEndpoint),
+		AuthRegisteredCountries:        es(envAirtelAuthRegisteredCountries, defAirtelAuthRegisteredCountries),
+		AccountRegisteredCountries:     es(envAirtelAccountRegisteredCountries, defAirtelAccountRegisteredCountries),
+		CollectionRegisteredCountries:  es(envAirtelCollectionRegisteredCountries, defAirtelCollectionRegisteredCountries),
+		DisburseRegisteredCountries:    es(envAirtelDisburseRegisteredCountries, defAirtelDisburseRegisteredCountries),
+		KYCRegisteredCountries:         es(envAirtelKYCRegisteredCountries, defAirtelKYCRegisteredCountries),
+		TransactionRegisteredCountries: es(envAirtelTransactionRegisteredCountries, defAirtelTransactionRegisteredCountries),
+		DisbursePIN:                    es(envAirtelDisbursePIN, defAirtelDisbursePIN),
+		CallbackPrivateKey:             es(envAirtelCallbackPrivateKey, defAirtelCallbackPrivateKey),
+		CallbackAuth:                   eb(envAirtelCallbackAuth, defAirtelCallbackAuth),
+		PublicKey:                      es(envAirtelPublicKey, defAirtelPublicKey),
+		Environment:                    es(envAirtelEnvironment, defAirtelEnvironment),
+		ClientID:                       es(envAirtelClientID, defAirtelClientID),
+		ProdBaseURL:                    es(envAirtelProdBaseURL, defAirtelProdBaseURL),
+		StagingBaseURL:                 es(envAirtelStagingBaseURL, defAirtelStagingBaseURL),
+		Secret:                         es(envAirtelSecret, defAirtelSecret),
 	}
 }
 

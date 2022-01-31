@@ -23,12 +23,16 @@
  *
  */
 
-package pesakit
+package main
 
 import (
 	"github.com/pesakit/pesakit/flags"
 	"github.com/spf13/cobra"
 )
+
+func InitRootCommand(app *App) error {
+	return nil
+}
 
 func (app *App) createRootCommand() {
 
