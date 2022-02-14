@@ -1,0 +1,13 @@
+## commands
+- token
+- encrypt
+- docs
+- b2b
+- b2c
+- c2b
+- mock
+- number
+- check
+- config
+- version
+- help

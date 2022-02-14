@@ -32,10 +32,10 @@ import (
 	"sync"
 
 	xlog "github.com/pesakit/pesakit/log"
+	"github.com/pesakit/pesalib/airtel"
+	"github.com/pesakit/pesalib/mpesa"
+	"github.com/pesakit/pesalib/tigo"
 	"github.com/spf13/cobra"
-	"github.com/techcraftlabs/airtel"
-	"github.com/techcraftlabs/mpesa"
-	"github.com/techcraftlabs/tigopesa"
 )
 
 const (
@@ -71,9 +71,9 @@ type (
 		debugMode bool
 		home      *string
 		root      *cobra.Command
-		mpesa     *mpesa.Client
-		airtel    *airtel.Client
-		tigo      *tigopesa.Client
+		mpesa     mpesa.Service
+		airtel    airtel.Service
+		tigo      tigo.Service
 		logger    *log.Logger
 	}
 )
@@ -144,37 +144,37 @@ func (app *App) getHome() string {
 	return *app.home
 }
 
-func (app *App) setMpesaClient(client *mpesa.Client) {
+func (app *App) setMpesaClient(client mpesa.Service) {
 	app.mu.Lock()
 	defer app.mu.Unlock()
 	app.mpesa = client
 }
 
-func (app *App) MpesaClient() *mpesa.Client {
+func (app *App) MpesaClient() mpesa.Service {
 	app.mu.RLock()
 	defer app.mu.RUnlock()
 	return app.mpesa
 }
 
-func (app *App) setAirtelClient(client *airtel.Client) {
+func (app *App) setAirtelClient(client airtel.Service) {
 	app.mu.Lock()
 	defer app.mu.Unlock()
 	app.airtel = client
 }
 
-func (app *App) AirtelClient() *airtel.Client {
+func (app *App) AirtelClient() airtel.Service {
 	app.mu.RLock()
 	defer app.mu.RUnlock()
 	return app.airtel
 }
 
-func (app *App) setTigoClient(client *tigopesa.Client) {
+func (app *App) setTigoClient(client tigo.Service) {
 	app.mu.Lock()
 	defer app.mu.Unlock()
 	app.tigo = client
 }
 
-func (app *App) TigoClient() *tigopesa.Client {
+func (app *App) TigoClient() tigo.Service {
 	app.mu.RLock()
 	defer app.mu.RUnlock()
 	return app.tigo

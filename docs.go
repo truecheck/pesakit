@@ -57,10 +57,6 @@ directory.`,
 	}
 
 	docsCmd.Flags().StringP("dir", "d", "", "Directory to write the docs to")
-	//docsCmd.SetHelpFunc(func(command *cobra.Command, strings []string) {
-	//	markHiddenExcept(app.root.PersistentFlags(), flaflagDebugMode, flagConfigFile)
-	//	command.Parent().HelpFunc()(command, strings)
-	//})
 
 	app.root.AddCommand(docsCmd)
 }
