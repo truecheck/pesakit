@@ -26,19 +26,51 @@
 package main
 
 import (
-	"fmt"
-	"github.com/spf13/cobra"
+	"github.com/urfave/cli/v2"
 )
 
-func (app *App) reverseCommand() {
-	// reverseCmd represents the reverse command
-	var reverseCmd = &cobra.Command{
-		Use:   "reverse",
-		Short: "Reverse the transaction",
-		Long:  `Reverse the transaction. Mpesa and Airtel are the only supported networks.`,
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("reverse called")
+var (
+	reverseCommandName  = "reverse"
+	reverseCommandUsage = "reverse a transaction"
+)
+
+func reverseCommand() *cli.Command {
+	return &cli.Command{
+		Name:         reverseCommandName,
+		Aliases:      nil,
+		Usage:        reverseCommandUsage,
+		UsageText:    "",
+		Description:  "",
+		ArgsUsage:    "",
+		Category:     "",
+		BashComplete: nil,
+		Before:       nil,
+		After:        nil,
+		Action: func(c *cli.Context) error {
+			return nil
 		},
+		OnUsageError:           nil,
+		Subcommands:            nil,
+		Flags:                  nil,
+		SkipFlagParsing:        false,
+		HideHelp:               false,
+		HideHelpCommand:        false,
+		Hidden:                 false,
+		UseShortOptionHandling: false,
+		HelpName:               "",
+		CustomHelpTemplate:     "",
 	}
-	app.root.AddCommand(reverseCmd)
 }
+
+//func (app *App) reverseCommand() {
+//	// reverseCmd represents the reverse command
+//	var reverseCmd = &cobra.Command{
+//		Use:   "reverse",
+//		Short: "Reverse the transaction",
+//		Long:  `Reverse the transaction. Mpesa and Airtel are the only supported networks.`,
+//		Run: func(cmd *cobra.Command, args []string) {
+//			fmt.Println("reverse called")
+//		},
+//	}
+//	app.root.AddCommand(reverseCmd)
+//}

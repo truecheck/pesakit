@@ -64,6 +64,13 @@ Author:
 `
 )
 
+type Config struct {
+	LogLevel string
+	LogFile  string
+	HomeDir  string
+	Debug    bool
+}
+
 type (
 	App struct {
 		mu        *sync.RWMutex

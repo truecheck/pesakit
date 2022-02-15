@@ -60,7 +60,6 @@ func (app *App) createRootCommand() {
 	app.root = rootCommand
 
 	addSubCommandsFunc := func() {
-		app.callbacksCommand()
 		app.configCommand()
 		app.pushCommand()
 		app.sessionCommand()
