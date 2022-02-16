@@ -1,6 +1,8 @@
 package main
 
 import (
+	cli2 "github.com/pesakit/pesakit/cli"
+	"github.com/pesakit/pesalib/vat"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -94,6 +96,7 @@ func main() {
 					return nil
 				},
 			},
+			cli2.VatCommand(os.Stderr, vat.NewCalculator()),
 		},
 	}
 
