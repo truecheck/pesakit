@@ -23,4 +23,58 @@
  *
  */
 
-package main
+package cli
+
+import (
+	"fmt"
+	"syscall"
+)
+
+type readfd int
+
+func (r readfd) Read(buf []byte) (int, error) {
+	n, err := syscall.Read(int(r), buf)
+	if err != nil {
+		return -1, fmt.Errorf("pesalib/io read error: %w", err)
+	}
+
+	return n, nil
+}
+
+type writefd int
+
+func (w writefd) Write(buf []byte) (int, error) {
+	n, err := syscall.Write(int(w), buf)
+	if err != nil {
+		return -1, fmt.Errorf("pesalib/io write error %w", err)
+	}
+
+	return n, nil
+}
+
+type readWriter int
+
+func (rw readWriter) Read(buf []byte) (int, error) {
+	n, err := syscall.Read(int(rw), buf)
+	if err != nil {
+		return -1, fmt.Errorf("pesalib/io read error: %w", err)
+	}
+
+	return n, nil
+}
+
+func (rw readWriter) Write(buf []byte) (int, error) {
+	n, err := syscall.Write(int(rw), buf)
+	if err != nil {
+		return -1, fmt.Errorf("pesalib/io write error %w", err)
+	}
+
+	return n, nil
+}
+
+const (
+	Stdin  = readfd(0)
+	Stdout = writefd(1)
+	Stderr = writefd(2)
+	Stdio  = readWriter(1)
+)

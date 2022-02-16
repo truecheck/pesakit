@@ -1,12 +1,8 @@
 package main
 
 import (
-	cli2 "github.com/pesakit/pesakit/cli"
-	"github.com/pesakit/pesalib/vat"
-	"github.com/urfave/cli/v2"
-	"log"
+	"github.com/pesakit/pesakit/cli"
 	"os"
-	"sort"
 )
 
 //func main() {
@@ -61,51 +57,55 @@ import (
 //}
 
 func main() {
-	app := &cli.App{
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:    "lang",
-				Aliases: []string{"l"},
-				Value:   "english",
-				Usage:   "Language for the greeting",
-			},
-			&cli.StringFlag{
-				Name:    "config",
-				Aliases: []string{"c"},
-				Usage:   "Load configuration from `FILE`",
-			},
-		},
-		Commands: []*cli.Command{
-			{
-				Name:    "complete",
-				Aliases: []string{"c"},
+	//app := &cli.App{
+	//	Flags: []cli.Flag{
+	//		&cli.StringFlag{
+	//			Name:    "lang",
+	//			Aliases: []string{"l"},
+	//			Value:   "english",
+	//			Usage:   "Language for the greeting",
+	//		},
+	//		&cli.StringFlag{
+	//			Name:    "config",
+	//			Aliases: []string{"c"},
+	//			Usage:   "Load configuration from `FILE`",
+	//		},
+	//	},
+	//	Commands: []*cli.Command{
+	//		{
+	//			Name:    "complete",
+	//			Aliases: []string{"c"},
+	//
+	//			Usage: "complete a task on the list",
+	//			//UsageText:   "Usage Text Here Is my input",
+	//			Description: "Commands Desc here is My Input",
+	//			Category:    "push category here is my input",
+	//			Action: func(c *cli.Context) error {
+	//				return nil
+	//			},
+	//		},
+	//		{
+	//			Name:    "add",
+	//			Aliases: []string{"a"},
+	//			Usage:   "add a task to the list",
+	//			Action: func(c *cli.Context) error {
+	//				return nil
+	//			},
+	//		},
+	//		cli2.VatCommand(os.Stderr, vat.NewCalculator()),
+	//		cli2.MnaCommand(os.Stderr),
+	//	},
+	//}
+	//
+	//sort.Sort(cli.FlagsByName(app.Flags))
+	//sort.Sort(cli.CommandsByName(app.Commands))
+	//
+	//err := app.Run(os.Args)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 
-				Usage: "complete a task on the list",
-				//UsageText:   "Usage Text Here Is my input",
-				Description: "Commands Desc here is My Input",
-				Category:    "push category here is my input",
-				Action: func(c *cli.Context) error {
-					return nil
-				},
-			},
-			{
-				Name:    "add",
-				Aliases: []string{"a"},
-				Usage:   "add a task to the list",
-				Action: func(c *cli.Context) error {
-					return nil
-				},
-			},
-			cli2.VatCommand(os.Stderr, vat.NewCalculator()),
-			cli2.MnaCommand(os.Stderr),
-		},
-	}
-
-	sort.Sort(cli.FlagsByName(app.Flags))
-	sort.Sort(cli.CommandsByName(app.Commands))
-
-	err := app.Run(os.Args)
-	if err != nil {
-		log.Fatal(err)
+	if app := cli.NewApp(); app.Run(os.Args) != nil {
+		os.Exit(1)
 	}
 }
