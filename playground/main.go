@@ -97,6 +97,7 @@ func main() {
 				},
 			},
 			cli2.VatCommand(os.Stderr, vat.NewCalculator()),
+			cli2.MnaCommand(os.Stderr),
 		},
 	}
 
